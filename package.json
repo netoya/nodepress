@@ -1,0 +1,36 @@
+{
+  "name": "nodepress",
+  "version": "0.1.0",
+  "private": true,
+  "description": "WordPress-compatible CMS built on Node.js and TypeScript",
+  "license": "GPL-3.0-or-later",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "npm@10.8.0",
+  "workspaces": [
+    "packages/*",
+    "admin"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=packages/server",
+    "dev:admin": "npm run dev --workspace=admin",
+    "build": "npm run build --workspaces",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint . --ext .ts,.tsx",
+    "lint:fix": "eslint . --ext .ts,.tsx --fix",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md}\"",
+    "typecheck": "tsc --build",
+    "db:migrate": "npm run migrate --workspace=packages/db",
+    "db:seed": "npm run seed --workspace=packages/db",
+    "cli": "npm run start --workspace=packages/cli --"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "eslint": "^9.0.0",
+    "prettier": "^3.3.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}
