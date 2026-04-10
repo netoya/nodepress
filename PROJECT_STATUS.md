@@ -19,7 +19,7 @@
 
 | Sprint | Fechas | Estado | Objetivo |
 |--------|--------|--------|----------|
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | 🔵 PENDIENTE | Scaffolding: monorepo, CI, docker, packages init |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | 🟢 EN CURSO | Scaffolding: monorepo, CI, docker, packages init |
 | Sprint 1 | 2026-04-17 → 2026-04-30 | ⚪ PLANIFICADO | Hook system + CRUD posts REST + Admin shell |
 | Sprint 2 | 2026-05-01 → 2026-05-14 | ⚪ BACKLOG | Roles/capabilities + taxonomías + CLI port-plugin |
 | Sprint 3 | 2026-05-15 → 2026-05-28 | ⚪ BACKLOG | Plugin API + vm.Context + primer plugin ejemplo |
@@ -32,19 +32,20 @@
 
 | # | Tarea | Responsable | Estado | Notas |
 |---|-------|-------------|--------|-------|
-| 1 | docker-compose.yml (PG 16 + Redis 7) | Román | ⬜ TODO | Día 1-2 |
-| 2 | tsconfig.base.json + vitest.workspace.ts + .env.example | Román | ⬜ TODO | Día 1-2 |
-| 3 | CI GitHub Actions (lint + typecheck + test) | Román + Helena | ⬜ TODO | Día 3-5 |
-| 4 | Schema Drizzle (posts, users) en packages/db | Ingrid | ⬜ TODO | Día 3-5, depende de docker |
-| 5 | Scaffolding admin/ (Vite + React 19 + tokens CSS) | Lucas | ⬜ TODO | Día 1-3 |
-| 6 | DoD formal + WORKFLOW.md | Tomás | ⬜ TODO | Día 1 |
-| 7 | ADR-003: PHP Compatibility Strategy | Román | ⬜ TODO | Antes de Sprint 1 |
-| 8 | ADR-004: Plugin Lifecycle | Román | ⬜ TODO | Antes de Sprint 1 |
-| 9 | contributing.md (git flow, PRs, reviews) | Román | ⬜ TODO | Día 1-2 |
-| 10 | PR template con DoD checklist | Román | ⬜ TODO | Día 1 |
-| 11 | Definir ICP formal go-to-market | Alejandro + Eduardo | ⬜ TODO | Esta semana |
-| 12 | Investigar licencia (GPL vs dual) | Alejandro | ⬜ TODO | Antes de repo público |
-| 13 | Tablero GitHub Projects | Martín | ⬜ TODO | Hoy |
+| 1 | docker-compose.yml (PG 16 + Redis 7) | Román | ✅ DONE | 3b8b061 |
+| 2 | tsconfig.base.json + vitest.workspace.ts + .env.example | Román | ✅ DONE | 3b8b061 |
+| 3 | CI GitHub Actions (lint + typecheck + test) | Helena | ✅ DONE | ed292fa |
+| 4 | Schema Drizzle (posts, users, terms, options, comments, plugin_registry) | Ingrid | ✅ DONE | ed292fa |
+| 5 | Scaffolding admin/ (Vite + React 19 + tokens CSS) | Lucas | ✅ DONE | 3b8b061 |
+| 6 | DoD formal + WORKFLOW.md | Tomás | ✅ DONE | ad4a389 |
+| 7 | ADR-003: PHP Compatibility Strategy | Román | ✅ DONE | d14c490 |
+| 8 | ADR-004: Plugin Lifecycle | Román | ✅ DONE | d14c490 |
+| 9 | contributing.md (git flow, PRs, reviews) | Román | ✅ DONE | d14c490 |
+| 10 | PR template con DoD checklist | Román | ✅ DONE | 3b8b061 |
+| 11 | Definir ICP formal go-to-market | Alejandro + Eduardo | ⬜ TODO | Pendiente (no técnico) |
+| 12 | Investigar licencia (GPL vs dual) | Alejandro | ⬜ TODO | Pendiente (no técnico) |
+| 13 | Tablero GitHub Projects | Martín | ⬜ TODO | Pendiente |
+| 14 | Agent task protocol (team-level) | Diana | ✅ DONE | 999ab7f |
 
 ---
 
@@ -114,8 +115,8 @@
 |-----|--------|--------|-------|
 | 001 | Architecture Overview | ✅ Accepted | Román |
 | 002 | Folder Structure | ✅ Accepted | Román |
-| 003 | PHP Compatibility Strategy | 📝 Pendiente | Román |
-| 004 | Plugin Lifecycle | 📝 Pendiente | Román |
+| 003 | PHP Compatibility Strategy | ✅ Accepted | Román |
+| 004 | Plugin Lifecycle | ✅ Accepted | Román |
 
 ---
 
