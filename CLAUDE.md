@@ -17,6 +17,13 @@
 - Theme engine con soporte para templates PHP convertidos
 - Admin panel moderno en React (no legacy WP admin)
 
+## Execution Model
+
+- **SIEMPRE delegar tareas a subagentes** usando la herramienta Agent. No ejecutar tareas directamente en el contexto principal.
+- El orchestrator analiza, planifica y delega. Los subagentes ejecutan.
+- Lanzar subagentes en paralelo cuando las tareas sean independientes.
+- Cada subagente recibe un brief completo y autocontenido (no tiene contexto de la conversación).
+
 ## Code Standards
 
 - Language: TypeScript strict

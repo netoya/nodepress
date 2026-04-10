@@ -1,0 +1,14 @@
+{
+  "name": "@nodepress/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "migrate": "drizzle-kit migrate",
+    "seed": "tsx src/seeds/index.ts"
+  }
+}
