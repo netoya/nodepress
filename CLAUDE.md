@@ -23,6 +23,9 @@
 - El orchestrator analiza, planifica y delega. Los subagentes ejecutan.
 - Lanzar subagentes en paralelo cuando las tareas sean independientes.
 - Cada subagente recibe un brief completo y autocontenido (no tiene contexto de la conversación).
+- **Agent Task Protocol:** ver [docs/ai/agent-task-protocol.md](docs/ai/agent-task-protocol.md) para el lifecycle completo (context loading, task receipt, execution, task delivery).
+- **Memorias se commitean con el trabajo.** Nunca separado, nunca después. `.claude/memory/` y `.claude/task_log.md` van en el mismo commit que el código.
+- **Task log:** actualizar `.claude/task_log.md` (append-only) al completar cada tarea.
 
 ## Code Standards
 
