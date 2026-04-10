@@ -42,9 +42,9 @@
 | 8 | ADR-004: Plugin Lifecycle | Román | ✅ DONE | d14c490 |
 | 9 | contributing.md (git flow, PRs, reviews) | Román | ✅ DONE | d14c490 |
 | 10 | PR template con DoD checklist | Román | ✅ DONE | 3b8b061 |
-| 11 | Definir ICP formal go-to-market | Alejandro + Eduardo | ⬜ TODO | Pendiente (no técnico) |
-| 12 | Investigar licencia (GPL vs dual) | Alejandro | ⬜ TODO | Pendiente (no técnico) |
-| 13 | Tablero GitHub Projects | Martín | ⬜ TODO | Pendiente |
+| 11 | Definir ICP formal go-to-market | Alejandro + Eduardo | ✅ DONE | docs/business/icp.md |
+| 12 | Investigar licencia (GPL vs dual) | Alejandro | ✅ DONE | docs/business/licensing.md — Dual License (GPL + Commercial) |
+| 13 | Labels + Milestones + 14 Issues GitHub | Martín | ✅ DONE | github.com/netoya/nodepress/issues |
 | 14 | Agent task protocol (team-level) | Diana | ✅ DONE | 999ab7f |
 
 ---
