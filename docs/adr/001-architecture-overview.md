@@ -12,16 +12,16 @@ NodePress aims to be a modern CMS built on Node.js/TypeScript that maintains com
 
 ### Stack
 
-| Layer | Choice | Why | Trade-off |
-|---|---|---|---|
-| Runtime | Node.js 22 LTS + TypeScript 5.x strict | Ecosystem size, async-native, type safety | No PHP — WP plugins need adaptation layer |
-| HTTP Framework | Fastify | Plugin system built-in, schema validation, 2x faster than Express | Smaller community than Express |
-| Database | PostgreSQL 16 | JSONB for meta, CTEs for hierarchies, row-level security | WP ecosystem assumes MySQL — queries need translation |
-| ORM | Drizzle ORM | Type-safe, SQL-like API, migrations built-in, lightweight | Younger than Prisma — smaller ecosystem |
-| Cache | Redis 7 | Object cache, sessions, transient API compatible with WP | Extra infra dependency |
-| Admin Panel | React 19 + Vite | Modern DX, component ecosystem, fast builds | Separate from WP's PHP admin — no backward compat |
-| Testing | Vitest | Fast, TS-native, compatible with Jest API | — |
-| Auth | Custom (Passport.js strategies) | WP-compatible roles/caps + modern OAuth2/OIDC | More work than Auth0, but full control needed for WP compat |
+| Layer          | Choice                                 | Why                                                               | Trade-off                                                   |
+| -------------- | -------------------------------------- | ----------------------------------------------------------------- | ----------------------------------------------------------- |
+| Runtime        | Node.js 22 LTS + TypeScript 5.x strict | Ecosystem size, async-native, type safety                         | No PHP — WP plugins need adaptation layer                   |
+| HTTP Framework | Fastify                                | Plugin system built-in, schema validation, 2x faster than Express | Smaller community than Express                              |
+| Database       | PostgreSQL 16                          | JSONB for meta, CTEs for hierarchies, row-level security          | WP ecosystem assumes MySQL — queries need translation       |
+| ORM            | Drizzle ORM                            | Type-safe, SQL-like API, migrations built-in, lightweight         | Younger than Prisma — smaller ecosystem                     |
+| Cache          | Redis 7                                | Object cache, sessions, transient API compatible with WP          | Extra infra dependency                                      |
+| Admin Panel    | React 19 + Vite                        | Modern DX, component ecosystem, fast builds                       | Separate from WP's PHP admin — no backward compat           |
+| Testing        | Vitest                                 | Fast, TS-native, compatible with Jest API                         | —                                                           |
+| Auth           | Custom (Passport.js strategies)        | WP-compatible roles/caps + modern OAuth2/OIDC                     | More work than Auth0, but full control needed for WP compat |
 
 ### Component Diagram
 
@@ -95,6 +95,7 @@ HookRegistry {
 ```
 
 **Key decisions:**
+
 - **Filters are synchronous.** WP filters are synchronous and plugins depend on this. Async filters would break the mental model and ordering guarantees.
 - **Actions are async.** Actions don't return values, so async is safe and enables I/O in hooks.
 - **Priority is numeric (default 10).** Identical to WP. Lower number = earlier execution.
@@ -111,6 +112,7 @@ plugins/
 ```
 
 **Loading sequence:**
+
 1. Scan `plugins/` directory for `plugin.json` manifests
 2. Validate manifest (name, version, dependencies, WP compat flag)
 3. Load in dependency order (topological sort)
@@ -118,12 +120,14 @@ plugins/
 5. Plugins with `wpCompat: true` get access to a WP API shim layer
 
 **WP Compatibility Layer:**
+
 - Provides global-like functions: `add_action`, `add_filter`, `get_option`, `wp_query`, etc.
 - These are thin wrappers around NodePress core APIs
 - **No PHP bridge.** PHP-to-JS transpilation is out of scope. Plugins must be JS/TS native, but the API surface mirrors WP.
 - Trade-off: We lose direct WP plugin reuse but gain type safety, testability, and performance. The API familiarity reduces migration effort for WP developers.
 
 **Sandboxing:**
+
 - Each plugin runs in a Node.js `vm.Context` with controlled globals
 - Plugins cannot access filesystem or network directly — only through provided APIs
 - Crash isolation: a failing plugin doesn't take down the server
@@ -135,6 +139,7 @@ plugins/
 WP's schema (`wp_posts`, `wp_postmeta` as EAV, `wp_options` as key-value) is optimized for MySQL and PHP's flexibility. Replicating it in PostgreSQL would waste PG's strengths.
 
 **Our approach:**
+
 - **Posts:** Proper columns for common fields + JSONB `meta` column (replaces EAV `postmeta`)
 - **Taxonomies:** Proper relational tables with junction tables
 - **Options:** JSONB-based settings table, typed
@@ -142,23 +147,24 @@ WP's schema (`wp_posts`, `wp_postmeta` as EAV, `wp_options` as key-value) is opt
 - **WP Import/Export:** CLI tool to migrate from WP's MySQL schema to NodePress PG schema
 
 ```
-posts (id, type, status, title, slug, content, excerpt, author_id, 
+posts (id, type, status, title, slug, content, excerpt, author_id,
        parent_id, menu_order, meta JSONB, created_at, updated_at)
 
 terms (id, taxonomy, name, slug, description, parent_id, meta JSONB)
 
 term_relationships (post_id, term_id, order)
 
-users (id, login, email, display_name, password_hash, 
+users (id, login, email, display_name, password_hash,
        roles text[], capabilities JSONB, meta JSONB)
 
 options (id, name UNIQUE, value JSONB, autoload boolean)
 
-comments (id, post_id, author_id, parent_id, content, 
+comments (id, post_id, author_id, parent_id, content,
           status, type, meta JSONB, created_at)
 ```
 
 **Trade-off:** We lose byte-for-byte schema compatibility with WP, but gain:
+
 - 10-100x faster meta queries (JSONB vs EAV joins)
 - Type safety in the ORM layer
 - GIN indexes on JSONB for flexible querying

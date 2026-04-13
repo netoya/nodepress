@@ -9,29 +9,34 @@
 ## Preparación Individual
 
 ### Alejandro (CEO)
+
 - Propone plugin-server como materialización de Fase C
 - Resuelve $wpdb con MySQL real y schema WP
 - Go-to-market enterprise: compatibilidad PHP como producto de pago
 - Acepta que no debe alterar Sprint 0/1
 
 ### Román (Tech Lead)
+
 - 6 opciones de base PHP evaluadas: recomienda PHP custom con shims, no WP core
 - Bloqueador: apply_filters síncrono + HTTP. Solo acciones PHP en v1
 - Sync PG→MySQL: event-driven simple, unidireccional
 - Estimación: 7-8 semanas senior. No cabe antes de Sprint 3
 
 ### Ingrid (Lead Backend)
+
 - Schema mapping PG→MySQL es semanas de trabajo (EAV, serialización PHP)
 - Bidireccional es un proyecto aparte — recomienda read-only para PHP v1
 - PHP custom mínimo, no WP core stripped
 
 ### Helena (IT Manager)
+
 - 5 servicios requieren K8s en producción, no solo Docker Compose
 - DR con dos DBs necesita snapshots coordinados
 - Superficie de ataque de WP reimportada — 4 condiciones no negociables
 - Coste infra: +70-120€/mes base
 
 ### Eduardo (Consultor)
+
 - "Esto ya existe y se llama WordPress headless"
 - Cuestiona identidad del producto: ¿CMS nativo o orquestador sobre WP?
 - El cliente con WooCommerce no es el ICP de NodePress
@@ -124,12 +129,12 @@ Mi propuesta concreta: metemos el plugin-server en el roadmap como **Fase C post
 
 ## Acciones
 
-| # | Acción | Responsable | Plazo |
-|---|--------|-------------|-------|
-| 1 | Incluir Tier 3 (plugin-server) como "Future" en ADR-003 | Román | Con ADR-003 (fin Sprint 1) |
-| 2 | Documentar condiciones pre-requisito Tier 3 | Helena | Con ADR-003 |
-| 3 | Definir ICP formal para go-to-market | Alejandro + Eduardo | Sprint 0 |
-| 4 | Spike php-wasm sin cambios | Raúl (sup. Román) | Sprint 1 |
+| #   | Acción                                                  | Responsable         | Plazo                      |
+| --- | ------------------------------------------------------- | ------------------- | -------------------------- |
+| 1   | Incluir Tier 3 (plugin-server) como "Future" en ADR-003 | Román               | Con ADR-003 (fin Sprint 1) |
+| 2   | Documentar condiciones pre-requisito Tier 3             | Helena              | Con ADR-003                |
+| 3   | Definir ICP formal para go-to-market                    | Alejandro + Eduardo | Sprint 0                   |
+| 4   | Spike php-wasm sin cambios                              | Raúl (sup. Román)   | Sprint 1                   |
 
 ---
 

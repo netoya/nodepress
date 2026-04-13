@@ -12,13 +12,13 @@ ADR-001 established that the plugin system would be JS/TS native with a WP-compa
 
 ### Options evaluated and discarded
 
-| Option | Why discarded |
-|---|---|
-| PHP-to-JS transpilation | No mature technology exists. Discarded immediately. |
-| FrankenPHP embedded in Node | Not an embeddable runtime for this use case. Not viable standalone. |
-| PHP-FPM sidecar process | +400MB Docker image, dual CVE pipeline, php-fpm process has no sandbox equivalent to `vm.Context`, IPC crossing for sync filters costs 5–50ms per call — eliminates Node performance advantage. |
-| Full dual runtime (Node + PHP) | Months of engineering, two sources of truth, identity problem: "is this a Node CMS or a WordPress orchestrator?" |
-| WP core stripped as PHP base | 50MB of PHP globals, require loops, non-isolatable. Any PHP base must be custom shims only. |
+| Option                         | Why discarded                                                                                                                                                                                   |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PHP-to-JS transpilation        | No mature technology exists. Discarded immediately.                                                                                                                                             |
+| FrankenPHP embedded in Node    | Not an embeddable runtime for this use case. Not viable standalone.                                                                                                                             |
+| PHP-FPM sidecar process        | +400MB Docker image, dual CVE pipeline, php-fpm process has no sandbox equivalent to `vm.Context`, IPC crossing for sync filters costs 5–50ms per call — eliminates Node performance advantage. |
+| Full dual runtime (Node + PHP) | Months of engineering, two sources of truth, identity problem: "is this a Node CMS or a WordPress orchestrator?"                                                                                |
+| WP core stripped as PHP base   | 50MB of PHP globals, require loops, non-isolatable. Any PHP base must be custom shims only.                                                                                                     |
 
 ### Market validation
 
@@ -64,6 +64,7 @@ Plugins run in a `vm.Context` sandbox with controlled globals. Direct filesystem
 For PHP plugins that require only pure content logic: shortcodes, text filters, simple widgets. **No database access. No filesystem. No networking.**
 
 The bridge mechanism:
+
 1. `@php-wasm/node` executes the plugin's `activate()` function
 2. PHP calls to `add_action` / `add_filter` are intercepted by a PHP shim that serializes hook registrations to the JS HookRegistry
 3. When a hook fires, NodePress calls back into the WASM module with serialized arguments
@@ -75,13 +76,13 @@ The bridge mechanism:
 
 **Why php-wasm over php-fpm for Tier 2:**
 
-| Concern | php-fpm | php-wasm |
-|---|---|---|
-| Docker image delta | +400MB | +70MB |
-| Second process required | Yes | No |
-| Sandbox model | `disable_functions` (fragile) | WASM sandbox (structural) |
-| IPC overhead | 5–50ms per crossing | Microseconds (in-process) |
-| PHP installation on server | Required | No |
+| Concern                    | php-fpm                       | php-wasm                  |
+| -------------------------- | ----------------------------- | ------------------------- |
+| Docker image delta         | +400MB                        | +70MB                     |
+| Second process required    | Yes                           | No                        |
+| Sandbox model              | `disable_functions` (fragile) | WASM sandbox (structural) |
+| IPC overhead               | 5–50ms per crossing           | Microseconds (in-process) |
+| PHP installation on server | Required                      | No                        |
 
 **Entry condition for Tier 2:** Sprint 1 spike (Raúl, 2 days, supervised by Román) must demonstrate a real WP shortcode plugin executing successfully in NodePress via `@php-wasm/node` with acceptable latency and memory footprint. If the spike fails to demonstrate viability, Tier 2 does not enter the roadmap.
 
@@ -96,6 +97,7 @@ The bridge mechanism:
 A separate opt-in microservice (`nodepress-wp-plugin-server`) running PHP custom shims (not WP core) against a MySQL database containing WP-compatible schema. NodePress synchronizes data from PostgreSQL to MySQL (unidirectional — PG is source of truth). Plugins can read via `$wpdb`; writes from PHP are not supported in v1 (single source of truth constraint).
 
 **Technical constraints if ever built:**
+
 - `apply_filters` síncrono + HTTP is a hard blocker. Only `do_action` (async) can cross the bridge in v1. PHP filters must be ported to JS.
 - Schema sync: JSONB meta in PG must be flattened to EAV rows in MySQL, including PHP-serialized array format. Estimated 2 weeks for the PG→MySQL mapper alone.
 - PHP base must be a custom minimal implementation (~300 lines for hook system + `$wpdb` wrapper + common function shims). **Never WP core** — it is non-isolatable.
@@ -104,6 +106,7 @@ A separate opt-in microservice (`nodepress-wp-plugin-server`) running PHP custom
 - Estimated engineering effort: 7–8 weeks senior developer, not including DR and CVE pipeline work.
 
 **Pre-requisites before this tier can enter the active roadmap (non-negotiable):**
+
 1. Dedicated ADR with full technical design and trade-offs
 2. Threat model (PHP-FPM executing third-party code is categorically different attack surface from `vm.Context`)
 3. Coordinated DR strategy documented and validated
@@ -133,19 +136,20 @@ NodePress's target customer is agencies and development teams that want to move 
 The client who has WooCommerce and cannot rewrite it is not the current ICP. That client should remain on WordPress.
 
 The go-to-market position:
+
 > "NodePress: CMS moderno con API WordPress-compatible. Tu equipo trabaja en TypeScript. Tus shortcodes PHP simples funcionan. Y hay herramientas para portar el resto."
 
 This position is conditional on the Sprint 1 spike validating Tier 2. No public PHP compatibility claims before a working demo exists.
 
 ## Sprint 1 Spike — Acceptance Criteria
 
-| Metric | Target |
-|---|---|
-| Plugin type | Real WP shortcode plugin (e.g., Contact Form 7 or similar) |
-| Execution | Shortcode renders correctly in NodePress response |
-| Latency overhead | < 20ms for content-only shortcodes |
-| Memory footprint | < 100MB WASM module baseline |
-| PHP extensions required | Must work within WASM extension constraints |
+| Metric                  | Target                                                     |
+| ----------------------- | ---------------------------------------------------------- |
+| Plugin type             | Real WP shortcode plugin (e.g., Contact Form 7 or similar) |
+| Execution               | Shortcode renders correctly in NodePress response          |
+| Latency overhead        | < 20ms for content-only shortcodes                         |
+| Memory footprint        | < 100MB WASM module baseline                               |
+| PHP extensions required | Must work within WASM extension constraints                |
 
 Spike owner: Raúl. Supervised by: Román (Tech Lead). Duration: 2 days within Sprint 1.
 

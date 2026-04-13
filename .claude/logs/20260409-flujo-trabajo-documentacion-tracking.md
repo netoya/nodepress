@@ -9,18 +9,21 @@
 ## Preparación Individual
 
 ### Tomás (Scrum Master)
+
 - Diagnóstico: 4 reuniones, 40+ decisiones, gap entre actas y alineamiento
 - Propone 3 artefactos: PROJECT_STATUS.md, WORKFLOW.md, ADRs
 - Daily asíncrono, ceremonies Scrum ligero
 - 26 acciones a convertir en issues
 
 ### Román (Tech Lead)
+
 - Estructura docs/: adr/, design/, api/, guides/, status/
 - Trunk-based simplificado, PR review tiered
 - ADR-003 y ADR-004 urgentes antes de Sprint 1
 - contributing.md + PR template
 
 ### Martín (Ops Manager)
+
 - GitHub Projects como herramienta única
 - Reporte semanal verde/amarillo/rojo para Alejandro
 - Decision Log consolidado
@@ -88,17 +91,17 @@
 
 ## Acciones
 
-| # | Acción | Responsable | Plazo |
-|---|--------|-------------|-------|
-| 1 | Crear tablero GitHub Projects | Martín | Hoy |
-| 2 | Crear 26 issues de las 4 reuniones | Tomás | Hoy noche |
-| 3 | Redactar PROJECT_STATUS.md | Tomás | Hoy noche |
-| 4 | Validar PROJECT_STATUS.md | Román | Hoy noche |
-| 5 | .github/pull_request_template.md | Román | Sprint 0 día 1 |
-| 6 | docs/guides/contributing.md | Román | Sprint 0 día 1-2 |
-| 7 | ADR-003 PHP Compatibility | Román | Sprint 0 |
-| 8 | ADR-004 Plugin Lifecycle | Román | Sprint 0 |
-| 9 | Primer reporte semanal | Martín | Viernes 2026-04-16 |
+| #   | Acción                             | Responsable | Plazo              |
+| --- | ---------------------------------- | ----------- | ------------------ |
+| 1   | Crear tablero GitHub Projects      | Martín      | Hoy                |
+| 2   | Crear 26 issues de las 4 reuniones | Tomás       | Hoy noche          |
+| 3   | Redactar PROJECT_STATUS.md         | Tomás       | Hoy noche          |
+| 4   | Validar PROJECT_STATUS.md          | Román       | Hoy noche          |
+| 5   | .github/pull_request_template.md   | Román       | Sprint 0 día 1     |
+| 6   | docs/guides/contributing.md        | Román       | Sprint 0 día 1-2   |
+| 7   | ADR-003 PHP Compatibility          | Román       | Sprint 0           |
+| 8   | ADR-004 Plugin Lifecycle           | Román       | Sprint 0           |
+| 9   | Primer reporte semanal             | Martín      | Viernes 2026-04-16 |
 
 ---
 

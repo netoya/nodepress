@@ -9,17 +9,20 @@
 ## Preparación Individual
 
 ### Tomás (Scrum Master)
+
 - Checklist de arranque de 7 pasos como blocking gate
 - Exit protocol de 4 pasos post-tarea
 - Regla de commit atómico para memorias
 - Agentes no se hablan entre sí — todo por orchestrator
 
 ### Román (Tech Lead)
+
 - task_log.md como audit trail operacional
 - Memorias en commit separado vs junto al código
 - Review de agente = otro agente lanzado con contexto del output
 
 ### Diana (Talent Architect)
+
 - Protocolo de 4 fases: Context Loading → Task Receipt → Execution → Task Delivery
 - Autodefensa en AGENT.md — agente rechaza brief sin context loading
 - Task Receipt con "out of scope" explícito
@@ -83,12 +86,12 @@
 
 ## Acciones
 
-| # | Acción | Responsable | Plazo |
-|---|--------|-------------|-------|
-| 1 | Crear docs/ai/agent-task-protocol.md | Diana | Sprint 0 ✅ |
-| 2 | Crear .claude/task_log.md | Tomás | Sprint 0 ✅ |
-| 3 | Actualizar AGENT.md con Task Lifecycle + autodefensa | Diana | Esta semana |
-| 4 | Añadir regla commit memorias a CLAUDE.md | Román | Sprint 0 ✅ |
+| #   | Acción                                               | Responsable | Plazo       |
+| --- | ---------------------------------------------------- | ----------- | ----------- |
+| 1   | Crear docs/ai/agent-task-protocol.md                 | Diana       | Sprint 0 ✅ |
+| 2   | Crear .claude/task_log.md                            | Tomás       | Sprint 0 ✅ |
+| 3   | Actualizar AGENT.md con Task Lifecycle + autodefensa | Diana       | Esta semana |
+| 4   | Añadir regla commit memorias a CLAUDE.md             | Román       | Sprint 0 ✅ |
 
 ---
 
