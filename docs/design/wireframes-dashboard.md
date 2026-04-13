@@ -29,6 +29,7 @@ El admin se divide en **tres zonas permanentes** y un **área de contenido** var
 **Dimensiones:** 240px de ancho en estado expandido. 60px en estado colapsado (solo iconos).
 
 **Comportamiento:**
+
 - Fijo (no hace scroll con el contenido).
 - Colapsable mediante toggle en la parte inferior. Estado persistido en `localStorage`.
 - En viewport < 1024px: el sidebar se convierte en drawer que aparece sobre el contenido (overlay), no empuja el layout.
@@ -78,6 +79,7 @@ El admin se divide en **tres zonas permanentes** y un **área de contenido** var
 ```
 
 **Comportamiento de items de nav:**
+
 - Estado hover: background `neutral-100`, transición `transition-base`.
 - Estado activo: background `primary-50`, borde izquierdo `3px solid primary-500`, texto `primary-700`.
 - Items con sub-menú: la flecha rota 90° al expandir, animación `transition-slow`.
@@ -100,11 +102,13 @@ El admin se divide en **tres zonas permanentes** y un **área de contenido** var
 ```
 
 **Zona izquierda (breadcrumb):**
+
 - Ruta actual de navegación. Ej: "Entradas / Añadir nueva".
 - En dashboard home: solo "Dashboard".
 - El último elemento es el título de la página actual (no clickable). Los anteriores son links.
 
 **Zona derecha (acciones globales):**
+
 - **Icono notificaciones:** campana con badge numérico (rojo si hay pendientes urgentes). Al hacer clic: dropdown con últimas 5 notificaciones (comentarios pendientes, actualizaciones de plugins, alertas de sistema). Link "Ver todas".
 - **Icono ayuda:** abre documentation sidebar o enlaza a docs externas.
 - **Avatar menu:** iniciales del usuario en círculo `primary-500`. Dropdown al hacer clic: "Mi perfil", "Ver sitio" (abre front en nueva pestaña), "Cerrar sesión". Separador antes de "Cerrar sesión".
@@ -182,6 +186,7 @@ El dashboard es la primera pantalla que ve el usuario al entrar. Objetivo: visi�
 Cada widget de stat es una card con:
 
 **Estructura interna:**
+
 ```
 ┌─────────────────────────────────┐
 │  [Icono 20px]  [Label de métrica]     [Menú ⋯]  │
@@ -200,6 +205,7 @@ Cada widget de stat es una card con:
 - **Card:** `shadow-sm`, border `neutral-200`, border-radius `radius-lg`. En hover: `shadow-md`, transición `transition-base`.
 
 **Los 4 widgets (v1):**
+
 1. **Entradas publicadas** — icono documento. Delta: entradas nuevas hoy.
 2. **Páginas publicadas** — icono página. Delta: sin cambio si no hay actividad.
 3. **Comentarios pendientes** — icono comentario. Si >0: valor en `warning-700`, delta en rojo si aumentó.
@@ -329,6 +335,7 @@ Aparece cuando el sitio es nuevo y no tiene contenido aún. Prioridad UX: guiar 
 ```
 
 **Especificaciones del empty state:**
+
 - Ilustración: SVG simple, no un stock illustration. Estilo line art, colores `primary-200` y `secondary-200`.
 - Título: `font-size-xl`, `font-weight-semibold`, `neutral-800`.
 - Descripción: `font-size-base`, `neutral-500`, máx 2 líneas.
@@ -407,6 +414,7 @@ Layout estándar descrito arriba. Sidebar expandido por defecto.
 ### Mobile (< 768px)
 
 v1 es admin-first desktop. En mobile:
+
 - Sidebar: drawer con overlay al activar hamburger menu en el header.
 - Stats row: 1 columna (4 cards apiladas).
 - Tabla de entradas: columnas reducidas (Título + Estado). El resto en sub-fila expandible.

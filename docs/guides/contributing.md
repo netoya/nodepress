@@ -34,10 +34,10 @@ Trunk-based development keeps integration pain minimal and `main` always deploya
 
 ## Branch Naming
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Feature | `feat/NP-XXX-short-description` | `feat/NP-042-hook-registry` |
-| Bug fix | `fix/NP-XXX-short-description` | `fix/NP-107-filter-priority` |
+| Type             | Pattern                          | Example                       |
+| ---------------- | -------------------------------- | ----------------------------- |
+| Feature          | `feat/NP-XXX-short-description`  | `feat/NP-042-hook-registry`   |
+| Bug fix          | `fix/NP-XXX-short-description`   | `fix/NP-107-filter-priority`  |
 | Spike / research | `spike/NP-XXX-short-description` | `spike/NP-015-php-wasm-bench` |
 
 - `NP-XXX` maps to the GitHub issue number.
@@ -54,11 +54,11 @@ Every PR requires at least **one approving review** from a team member who is no
 
 **Tiered review — critical packages require Román's approval:**
 
-| Package | Reviewer required |
-|---------|------------------|
-| `packages/core` | Román (mandatory) |
-| `packages/plugin-api` | Román (mandatory) |
-| All other packages | Any peer (1 approval) |
+| Package               | Reviewer required     |
+| --------------------- | --------------------- |
+| `packages/core`       | Román (mandatory)     |
+| `packages/plugin-api` | Román (mandatory)     |
+| All other packages    | Any peer (1 approval) |
 
 ### Size limit
 
@@ -111,13 +111,13 @@ NodePress uses [Conventional Commits](https://www.conventionalcommits.org/). All
 
 ### Types
 
-| Type | When to use |
-|------|-------------|
-| `feat` | New feature or capability |
-| `fix` | Bug fix |
-| `chore` | Maintenance, dependencies, config |
-| `docs` | Documentation only |
-| `test` | Adding or updating tests |
+| Type       | When to use                                 |
+| ---------- | ------------------------------------------- |
+| `feat`     | New feature or capability                   |
+| `fix`      | Bug fix                                     |
+| `chore`    | Maintenance, dependencies, config           |
+| `docs`     | Documentation only                          |
+| `test`     | Adding or updating tests                    |
 | `refactor` | Code restructuring without behaviour change |
 
 ### Scope (optional)

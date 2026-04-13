@@ -9,17 +9,20 @@
 ## Preparación Individual
 
 ### Román (Tech Lead)
+
 - 6 puntos de decisión: instalación, activación, cleanup, hot reload, estado, crash isolation
 - Propuesta: plugins/ filesystem + DB, dynamic import(), PluginContext como DisposableRegistry
 - vm.Context para todos los plugins, 1-3ms overhead aceptable
 
 ### Ingrid (Lead Backend)
+
 - namespace-by-pluginId en HookRegistry para cleanup automático
 - DisposableRegistry con timeout 5s para timers, listeners, connections
 - plugin_registry table separada de options para admin panel
 - Estado DRAINING para desactivación mid-request
 
 ### Raúl (Dev Backend)
+
 - vm.Context: ~5-15µs por llamada, 1-3ms por request con muchos hooks
 - unhandledRejection en async code escapa vm.Context — showstopper sin wrapper
 - ESM vs CJS: plugins deben compilar a CJS para vm.Context
@@ -67,9 +70,9 @@ Mi propuesta: **namespace-by-pluginId en el HookRegistry**. Cada entrada de hook
 
 ```typescript
 interface HookEntry {
-  callback: Function
-  priority: number
-  pluginId: string   // nuevo
+  callback: Function;
+  priority: number;
+  pluginId: string; // nuevo
 }
 ```
 
@@ -79,17 +82,18 @@ El plugin no tiene que saber que esto existe. El cleanup es automático e incond
 
 ```typescript
 export async function activate(context: PluginContext) {
-  context.addAction('save_post', myHandler)     // registra en HookRegistry + en la lista interna
+  context.addAction("save_post", myHandler); // registra en HookRegistry + en la lista interna
 
-  const interval = setInterval(syncJob, 60000)
-  context.registerTimer(interval)                // el context sabe que tiene que hacer clearInterval
+  const interval = setInterval(syncJob, 60000);
+  context.registerTimer(interval); // el context sabe que tiene que hacer clearInterval
 
-  const pool = new Pool(config)
-  context.registerDisposable(pool)               // el context llamará pool.end() al desactivar
+  const pool = new Pool(config);
+  context.registerDisposable(pool); // el context llamará pool.end() al desactivar
 }
 ```
 
 En desactivación, el PluginManager llama `context.dispose()` que:
+
 1. Ejecuta `plugin.deactivate()` si existe — hook opcional para cleanup custom del plugin
 2. `clearInterval` de todos los timers registrados
 3. `emitter.off` de todos los listeners registrados
@@ -116,7 +120,7 @@ function wrapCallback(pluginId: string, fn: Function) {
     try {
       return await fn(...args);
     } catch (err) {
-      logger.error({ pluginId, err }, 'Plugin hook error');
+      logger.error({ pluginId, err }, "Plugin hook error");
     }
   };
 }
@@ -134,12 +138,15 @@ function wrapSyncFilter(pluginId: string, fn: Function) {
     try {
       const result = fn(...args);
       if (result instanceof Promise) {
-        logger.error({ pluginId }, 'Filter returned Promise — filters must be sync');
+        logger.error(
+          { pluginId },
+          "Filter returned Promise — filters must be sync",
+        );
         return args[0]; // devuelve valor sin modificar
       }
       return result;
     } catch (err) {
-      logger.error({ pluginId, err }, 'Plugin filter error');
+      logger.error({ pluginId, err }, "Plugin filter error");
       return args[0]; // devuelve valor sin modificar
     }
   };
@@ -150,7 +157,7 @@ function wrapAsyncAction(pluginId: string, fn: Function) {
     try {
       await fn(...args);
     } catch (err) {
-      logger.error({ pluginId, err }, 'Plugin action error');
+      logger.error({ pluginId, err }, "Plugin action error");
     }
   };
 }
@@ -206,15 +213,15 @@ Bien, resumo las decisiones. ¿Alguna objeción antes de cerrar?
 
 ## Acciones
 
-| # | Acción | Responsable | Plazo |
-|---|--------|-------------|-------|
-| 1 | Diseñar interfaz PluginContext + DisposableRegistry (types.ts) | Ingrid | Sprint 1 (semana 1) |
-| 2 | Implementar removeAllByPlugin(pluginId) en HookRegistry | Román | Sprint 1 |
-| 3 | Implementar wrapSyncFilter + wrapAsyncAction + circuit breaker | Raúl | Sprint 1 |
-| 4 | Benchmark vm.Context: plugin 50 hooks, overhead por request | Raúl | Sprint 1 (spike) |
-| 5 | Schema plugin_registry table en packages/db | Ingrid | Sprint 1 |
-| 6 | Definir `nodepress plugin build` en CLI scope (esbuild→CJS) | Román | Sprint 2 |
-| 7 | Documentar Plugin Development Guide | Román | Sprint 2 |
+| #   | Acción                                                         | Responsable | Plazo               |
+| --- | -------------------------------------------------------------- | ----------- | ------------------- |
+| 1   | Diseñar interfaz PluginContext + DisposableRegistry (types.ts) | Ingrid      | Sprint 1 (semana 1) |
+| 2   | Implementar removeAllByPlugin(pluginId) en HookRegistry        | Román       | Sprint 1            |
+| 3   | Implementar wrapSyncFilter + wrapAsyncAction + circuit breaker | Raúl        | Sprint 1            |
+| 4   | Benchmark vm.Context: plugin 50 hooks, overhead por request    | Raúl        | Sprint 1 (spike)    |
+| 5   | Schema plugin_registry table en packages/db                    | Ingrid      | Sprint 1            |
+| 6   | Definir `nodepress plugin build` en CLI scope (esbuild→CJS)    | Román       | Sprint 2            |
+| 7   | Documentar Plugin Development Guide                            | Román       | Sprint 2            |
 
 ---
 

@@ -9,6 +9,7 @@
 ## Preparación Individual
 
 ### Alejandro (CEO)
+
 - El PoC está sobrepensado, hora de ejecutar
 - MVP debe ser demostrable: hook system + CRUD posts + REST API WP-compatible + admin básico
 - Secuenciar por capas, no por features
@@ -17,6 +18,7 @@
 - Riesgos: scope creep WP, theme engine puede hundir timeline, GPL-3.0 es decisión de negocio
 
 ### Román (Tech Lead)
+
 - Orden: db → core → server → plugin-api → theme-engine → cli
 - Hook system es el corazón: cobertura 100% antes de content engine
 - Scope guard explícito: solo 5 endpoints CRUD posts en sprint 1
@@ -24,6 +26,7 @@
 - Riesgos: filtros sync vs async, Drizzle joven, vm.Context overhead
 
 ### Ingrid (Lead Backend)
+
 - Schema DB primero, sin negociación
 - Core no puede importar de DB
 - JSONB necesita tipos TypeScript estrictos desde día 1
@@ -31,12 +34,14 @@
 - Riesgos: sin test suite de referencia WP, scope creep en hook system
 
 ### Lucas (Lead Frontend)
+
 - Puede arrancar ya con mocks (MSW)
 - CSS custom properties desde tokens, no Tailwind
 - Radix UI como primitivos, Zustand + React Query
 - Riesgos: WP API quirks, plugins que extienden admin UI, sin admin/package.json
 
 ### Tomás (Scrum Master)
+
 - Sprint 0 de 1 semana no negociable
 - Sprints de 2 semanas desde Sprint 1
 - OpenAPI spec (o spec WP) como contrato frontend/backend
@@ -142,20 +147,20 @@
 
 ## Acciones
 
-| # | Acción | Responsable | Plazo |
-|---|--------|-------------|-------|
-| 1 | docker-compose.yml (PG 16 + Redis 7) | Román | Sprint 0 (día 1-2) |
-| 2 | tsconfig.base.json + vitest.workspace.ts + .env.example | Román | Sprint 0 (día 1-2) |
-| 3 | CI básico GitHub Actions (lint + typecheck + test) | Román + Helena | Sprint 0 (día 3-5) |
-| 4 | Schema Drizzle (posts, users) en packages/db | Ingrid | Sprint 0 (día 3-5) |
-| 5 | Scaffolding admin/ (Vite + React 19 + tokens CSS) | Lucas | Sprint 0 (día 1-3) |
-| 6 | DoD formal en documento del repo | Tomás | Sprint 0 (día 1) |
-| 7 | Investigar modelo de licencia (GPL vs dual) | Alejandro | Antes de repo público |
-| 8 | Hook system (HookRegistry) + tests exhaustivos | Román | Sprint 1 |
-| 9 | Content engine (posts CRUD) + 5 endpoints REST | Ingrid + Carmen | Sprint 1 |
-| 10 | Test harness WP API conformance | Ingrid | Sprint 1 |
-| 11 | Admin shell + dashboard 4 estados | Lucas + Marta | Sprint 1 |
-| 12 | Design system componentes base | Marta | Sprint 1 |
+| #   | Acción                                                  | Responsable     | Plazo                 |
+| --- | ------------------------------------------------------- | --------------- | --------------------- |
+| 1   | docker-compose.yml (PG 16 + Redis 7)                    | Román           | Sprint 0 (día 1-2)    |
+| 2   | tsconfig.base.json + vitest.workspace.ts + .env.example | Román           | Sprint 0 (día 1-2)    |
+| 3   | CI básico GitHub Actions (lint + typecheck + test)      | Román + Helena  | Sprint 0 (día 3-5)    |
+| 4   | Schema Drizzle (posts, users) en packages/db            | Ingrid          | Sprint 0 (día 3-5)    |
+| 5   | Scaffolding admin/ (Vite + React 19 + tokens CSS)       | Lucas           | Sprint 0 (día 1-3)    |
+| 6   | DoD formal en documento del repo                        | Tomás           | Sprint 0 (día 1)      |
+| 7   | Investigar modelo de licencia (GPL vs dual)             | Alejandro       | Antes de repo público |
+| 8   | Hook system (HookRegistry) + tests exhaustivos          | Román           | Sprint 1              |
+| 9   | Content engine (posts CRUD) + 5 endpoints REST          | Ingrid + Carmen | Sprint 1              |
+| 10  | Test harness WP API conformance                         | Ingrid          | Sprint 1              |
+| 11  | Admin shell + dashboard 4 estados                       | Lucas + Marta   | Sprint 1              |
+| 12  | Design system componentes base                          | Marta           | Sprint 1              |
 
 ---
 

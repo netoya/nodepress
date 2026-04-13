@@ -28,10 +28,10 @@ plugins/
 
 **Registry — dual storage:**
 
-| Store | Purpose |
-|---|---|
-| `options.active_plugins` (autoload: true) | Source of truth for server boot — which plugins to load |
-| `plugin_registry` table | Source of truth for admin panel — installed plugins and their state |
+| Store                                     | Purpose                                                             |
+| ----------------------------------------- | ------------------------------------------------------------------- |
+| `options.active_plugins` (autoload: true) | Source of truth for server boot — which plugins to load             |
+| `plugin_registry` table                   | Source of truth for admin panel — installed plugins and their state |
 
 ```sql
 plugin_registry (
@@ -54,7 +54,9 @@ Plugins bundle their own dependencies. No global `npm install`. This avoids depe
 The PluginLoader uses `dynamic import()` with cache busting to load a plugin at runtime:
 
 ```typescript
-const module = await import(`./plugins/${slug}/index.js?v=${version}&t=${Date.now()}`);
+const module = await import(
+  `./plugins/${slug}/index.js?v=${version}&t=${Date.now()}`
+);
 await module.activate(context);
 ```
 
@@ -74,8 +76,8 @@ Every plugin receives its own isolated `PluginContext` instance. This is the plu
 ```typescript
 export async function activate(context: PluginContext) {
   // Hooks — registered in HookRegistry AND tracked in context
-  context.addAction('save_post', myHandler);
-  context.addFilter('the_content', myFilter);
+  context.addAction("save_post", myHandler);
+  context.addFilter("the_content", myFilter);
 
   // Timers — context will clearInterval on dispose
   const interval = setInterval(syncJob, 60_000);
@@ -109,7 +111,7 @@ ADR-001 defined `removeAction(tag, callback)` and `removeFilter(tag, callback)` 
 interface HookEntry {
   callback: Function;
   priority: number;
-  pluginId: string;  // injected automatically by PluginContext
+  pluginId: string; // injected automatically by PluginContext
 }
 ```
 
@@ -140,12 +142,15 @@ function wrapSyncFilter(pluginId: string, fn: Function) {
     try {
       const result = fn(...args);
       if (result instanceof Promise) {
-        logger.error({ pluginId }, 'Filter returned Promise — filters must be sync');
+        logger.error(
+          { pluginId },
+          "Filter returned Promise — filters must be sync",
+        );
         return args[0]; // return value unmodified — fail-safe
       }
       return result;
     } catch (err) {
-      logger.error({ pluginId, err }, 'Plugin filter error');
+      logger.error({ pluginId, err }, "Plugin filter error");
       return args[0]; // return value unmodified
     }
   };
@@ -157,7 +162,7 @@ function wrapAsyncAction(pluginId: string, fn: Function) {
     try {
       await fn(...args);
     } catch (err) {
-      logger.error({ pluginId, err }, 'Plugin action error');
+      logger.error({ pluginId, err }, "Plugin action error");
       // error contained — does not propagate
     }
   };
@@ -175,12 +180,14 @@ Filters that return a Promise are detected immediately and the value passes thro
 Deactivation follows a two-phase protocol:
 
 **Phase 1 — DRAINING state:**
+
 - Plugin state transitions to `DRAINING`
 - No new hook executions are accepted for this plugin
 - In-flight executions (async actions doing I/O) are allowed to complete
 - Maximum drain timeout: 10 seconds
 
 **Phase 2 — Dispose:**
+
 - `context.dispose()` runs (see PluginContext section)
 - Runs unconditionally — even if the plugin is in error state or `deactivate()` throws
 - Plugin state transitions to `inactive` in `plugin_registry`
@@ -194,12 +201,12 @@ Plugins may maintain in-memory state. This is a feature, not a bug — it enable
 
 **Rules:**
 
-| Rule | Constraint |
-|---|---|
-| Ephemeral | State does not survive a server restart |
-| Non-persistent | Persistence requires DB or Redis via the PluginContext API |
-| Isolated | `vm.Context` prevents plugins from sharing globals |
-| Lifecycle-bound | State is destroyed with the PluginContext on deactivation |
+| Rule            | Constraint                                                 |
+| --------------- | ---------------------------------------------------------- |
+| Ephemeral       | State does not survive a server restart                    |
+| Non-persistent  | Persistence requires DB or Redis via the PluginContext API |
+| Isolated        | `vm.Context` prevents plugins from sharing globals         |
+| Lifecycle-bound | State is destroyed with the PluginContext on deactivation  |
 
 ### Plugin Compilation
 

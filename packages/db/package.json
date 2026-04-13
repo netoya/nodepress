@@ -9,6 +9,9 @@
     "build": "tsc",
     "test": "vitest run",
     "migrate": "drizzle-kit migrate",
+    "drizzle:generate": "drizzle-kit generate",
+    "drizzle:push": "drizzle-kit push",
+    "drizzle:status": "drizzle-kit status",
     "seed": "tsx src/seeds/index.ts"
   },
   "dependencies": {

@@ -21,11 +21,13 @@ El repo **no es público todavía**. Tenemos margen para decidir antes de que ha
 WordPress usa GPL-2.0-or-later. Nosotros tenemos GPL-3.0-or-later (más restrictiva).
 
 **Pros:**
+
 - Coherencia total con el ecosistema WordPress
 - La comunidad WP entiende y respeta la GPL
 - Fuerza que los derivados sean open source — protege el proyecto de apropiaciones
 
 **Contras:**
+
 - Todo derivado (plugins, temas, integraciones) hereda la GPL
 - Imposible vender plugins premium con código cerrado bajo este modelo
 - El plugin-server (Tier 3 Future) — nuestro producto de pago potencial — no puede ser propietario si está construido sobre el core GPL
@@ -38,11 +40,13 @@ WordPress usa GPL-2.0-or-later. Nosotros tenemos GPL-3.0-or-later (más restrict
 ### 2. MIT — "Máxima libertad"
 
 **Pros:**
+
 - Cualquier empresa puede usar NodePress sin restricción
 - Atrae a más adoptadores corporativos
 - Sin fricción legal para integraciones
 
 **Contras:**
+
 - AWS, Automattic o cualquier cloud podría lanzar "NodePress managed" sin devolver nada
 - Pierde el espíritu de comunidad que tiene WP
 - No diferencia entre comunidad y competidores directos
@@ -60,12 +64,14 @@ Modelo: MySQL (Oracle), Qt (The Qt Company), GitLab (EE vs CE), Metabase.
 - **Tier comercial:** licencia propietaria para empresas que necesiten usarlo en productos cerrados o quieran el plugin-server
 
 **Pros:**
+
 - Monetización clara: las empresas que no quieren GPL pagan
 - Comunidad mantiene el free tier con la seguridad de que el core no desaparece
 - El plugin-server (Tier 3) puede existir como producto propietario bajo la licencia comercial
 - Modelo probado en el mercado de infraestructura de software
 
 **Contras:**
+
 - Requiere **CLA (Contributor License Agreement)** para recibir contribuciones externas — sin CLA, no podemos re-licenciar las contribuciones de la comunidad bajo la licencia comercial
 - Añade fricción al onboarding de contribuidores (pequeño pero real)
 - Gestión legal más compleja: hay que mantener dos licencias
@@ -80,10 +86,12 @@ Modelo: MySQL (Oracle), Qt (The Qt Company), GitLab (EE vs CE), Metabase.
 Usado por MongoDB (hasta que cambió a SSPL), Nextcloud, Mastodon.
 
 **Pros:**
+
 - Fuerza open source incluso en despliegues SaaS — el "loophole" de la GPL (usar el software como servicio sin distribuir binarios) se cierra
 - Protege el proyecto de que un cloud lo monetice sin contribuir
 
 **Contras:**
+
 - Asusta a empresas, especialmente a las que tienen políticas internas contra AGPL
 - Las agencias (nuestro ICP) pueden tener clientes con restricciones sobre AGPL
 - No resuelve el problema del plugin-server propietario — seguimos necesitando dual license si queremos producto cerrado
@@ -99,10 +107,12 @@ Usado por MariaDB, Sentry, HashiCorp (hasta que cambió a BSL), CockroachDB.
 El código es "source available" con restricciones comerciales durante N años, luego pasa a ser open source.
 
 **Pros:**
+
 - Protección comercial real durante el periodo de growth
 - Eventualmente se convierte en open source — hay un "contrato social" con la comunidad
 
 **Contras:**
+
 - No es open source según la OSI — daña la credibilidad ante la comunidad developer
 - El ecosistema WordPress es profundamente open source — adoptar BSL nos aleja del ICP que queremos conquistar
 - Más complejo de gestionar: hay que definir el "Change Date" y la "Additional Use Grant"
@@ -151,6 +161,7 @@ Sin CLA, cualquier contribución externa queda bajo GPL y no podemos re-licencia
 **No cambiamos el campo `license`.** `GPL-3.0-or-later` sigue siendo correcto — es la licencia del tier comunidad.
 
 Lo que SÍ hay que hacer antes de hacer el repo público:
+
 - [ ] Añadir `LICENSE` (texto GPL-3.0)
 - [ ] Añadir `COMMERCIAL-LICENSE.md` (placeholder hasta asesoría legal)
 - [ ] Añadir `CONTRIBUTING.md` con referencia al CLA
@@ -159,13 +170,13 @@ Lo que SÍ hay que hacer antes de hacer el repo público:
 
 ### Timeline sugerido
 
-| Acción | Responsable | Cuando |
-|---|---|---|
-| Configurar CLA Assistant | DevOps / Román | Antes de repo público |
-| Redactar `COMMERCIAL-LICENSE.md` (draft) | Alejandro + Legal | Sprint 0 |
-| Revisar con asesoría legal | Alejandro | Sprint 1 |
-| Publicar repo | Todo el equipo | Tras Sprint 0 |
+| Acción                                   | Responsable       | Cuando                |
+| ---------------------------------------- | ----------------- | --------------------- |
+| Configurar CLA Assistant                 | DevOps / Román    | Antes de repo público |
+| Redactar `COMMERCIAL-LICENSE.md` (draft) | Alejandro + Legal | Sprint 0              |
+| Revisar con asesoría legal               | Alejandro         | Sprint 1              |
+| Publicar repo                            | Todo el equipo    | Tras Sprint 0         |
 
 ---
 
-*Decisión tomada por Alejandro (CEO) en meet del 2026-04-09. Próxima revisión si hay inversión externa o cambio de ICP.*
+_Decisión tomada por Alejandro (CEO) en meet del 2026-04-09. Próxima revisión si hay inversión externa o cambio de ICP._

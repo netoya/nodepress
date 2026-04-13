@@ -9,24 +9,28 @@
 ## Preparación Individual
 
 ### Alejandro (CEO)
+
 - Sin PHP, NodePress no compite en el ecosistema WP real (60.000 plugins)
 - ADR-001 tiene contradicción: promete compatibilidad WP pero prohíbe PHP
 - WordPress Playground demuestra viabilidad de php-wasm
 - Necesita revisión del ADR antes de seguir construyendo
 
 ### Román (Tech Lead)
+
 - Evaluó 6 opciones técnicas: proceso hijo php-fpm, php-wasm, transpilación, adapter layer, dual runtime, FrankenPHP
 - Descarta transpilación y dual runtime completo
 - Propone estrategia en dos fases: adapter layer + php-wasm para lógica de contenido
 - Spike de 2 días en sprint 1 para datos reales
 
 ### Ingrid (Lead Backend)
+
 - Filtros síncronos con PHP: 5-50ms overhead por crossing IPC
 - $wpdb es el problema gordo: SQL crudo contra MySQL, schema diferente
 - El 80% del problema está en $wpdb y hook registry bridge
 - WooCommerce como caso de prueba de realidad
 
 ### Helena (IT Manager)
+
 - php-wasm más seguro que php-fpm: sandbox WASM, sin segundo proceso
 - Docker: +70MB con WASM vs +400MB con php-fpm
 - Extensiones PHP (curl, gd, imagick) no disponibles en WASM
@@ -34,6 +38,7 @@
 - Exige ADR formal para cualquier cambio
 
 ### Eduardo (Consultor)
+
 - Ningún proyecto fuera de WP logró compatibilidad PHP (Ghost, Strapi, Directus)
 - Mercado no premia PHP compat, premia DX moderna
 - Framework A/B/C: nativo → top 20 reimplementados → PHP bridge enterprise
@@ -130,14 +135,14 @@
 
 ## Acciones
 
-| # | Acción | Responsable | Plazo |
-|---|--------|-------------|-------|
-| 1 | Spike php-wasm: shortcode plugin WP real en NodePress | Raúl (supervisado por Román) | Sprint 1 (2 días) |
-| 2 | ADR-003: PHP Compatibility Strategy (Tier 1/2) | Román | Fin de Sprint 1 |
-| 3 | Añadir `nodepress port-plugin` CLI al roadmap | Román + Ingrid | Sprint 2 |
-| 4 | Matriz de extensiones PHP en php-wasm | Helena | Sprint 1 |
-| 5 | Definir ICP y messaging sin PHP completo | Alejandro + Eduardo | Pre-comunicación pública |
-| 6 | Documentar limitaciones Tier 2 | Román | Con ADR-003 |
+| #   | Acción                                                | Responsable                  | Plazo                    |
+| --- | ----------------------------------------------------- | ---------------------------- | ------------------------ |
+| 1   | Spike php-wasm: shortcode plugin WP real en NodePress | Raúl (supervisado por Román) | Sprint 1 (2 días)        |
+| 2   | ADR-003: PHP Compatibility Strategy (Tier 1/2)        | Román                        | Fin de Sprint 1          |
+| 3   | Añadir `nodepress port-plugin` CLI al roadmap         | Román + Ingrid               | Sprint 2                 |
+| 4   | Matriz de extensiones PHP en php-wasm                 | Helena                       | Sprint 1                 |
+| 5   | Definir ICP y messaging sin PHP completo              | Alejandro + Eduardo          | Pre-comunicación pública |
+| 6   | Documentar limitaciones Tier 2                        | Román                        | Con ADR-003              |
 
 ---
 
