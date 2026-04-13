@@ -29,3 +29,7 @@
 - **Dispose timeout:** 5s por plugin. Si cuelga, kill + log + alerta. **Date:** 2026-04-09
 - **Filtros sync + Promise detection:** `wrapSyncFilter` devuelve valor sin modificar si callback retorna Promise. **Date:** 2026-04-09
 - **Estado DRAINING:** Inflight completan antes de dispose. Timeout 10s. **Date:** 2026-04-09
+
+## Session Todos
+- move-migrations-to-drizzle: done
+- clean-duplicate-migrations: done
