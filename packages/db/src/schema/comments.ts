@@ -8,8 +8,8 @@ import {
   timestamp,
   index,
 } from "drizzle-orm/pg-core";
-import { posts } from "./posts.ts";
-import { users } from "./users.ts";
+import { posts } from "./posts.js";
+import { users } from "./users.js";
 
 export const comments = pgTable(
   "comments",

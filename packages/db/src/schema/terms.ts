@@ -9,7 +9,7 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { posts } from "./posts.ts";
+import { posts } from "./posts.js";
 
 export const terms = pgTable(
   "terms",
