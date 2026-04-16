@@ -16,7 +16,19 @@
 
 ## Lessons
 
-<!-- To be filled as project progresses -->
+- **2026-04-16:** Root `README.md` authored in English. License referenced as
+  declared in `package.json` (GPL-3.0-or-later); `docs/business/licensing.md`
+  notes dual-license evaluation is open — README links to it instead of
+  freezing the decision.
+- **2026-04-16:** `allowImportingTsExtensions` is incompatible with
+  `composite: true` + emit (which is our setup in `tsconfig.base.json`:
+  `declaration`, `declarationMap`, `sourceMap`, `outDir`). TS requires
+  `noEmit` or `emitDeclarationOnly` alongside that flag. CI broke in PR #17
+  after a previous commit added it "for CI". The flag was unnecessary — zero
+  `.ts` imports exist in the repo (imports already use `.js` per NodeNext).
+  Removed the flag from `tsconfig.base.json`. Rule: never add tsc flags
+  without validating the full semantic implications (emit vs noEmit,
+  composite, moduleResolution).
 
 ## Meet 2026-04-09 — Cómo llevar NodePress al siguiente paso
 

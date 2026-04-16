@@ -11,3 +11,5 @@
 | 2026-04-09 | —               | Version agent memories and logs            | 16 files | a4d22dc | ✅     |
 | 2026-04-09 | roman           | ADR-003, ADR-004, contributing.md          | 3 files  | d14c490 | ✅     |
 | 2026-04-09 | —               | WORKFLOW.md quick reference                | 1 file   | ad4a389 | ✅     |
+| 2026-04-16 | roman           | docs: root README added and pushed         | 2 files  | pending | ✅     |
+| 2026-04-16 | roman           | fix(ts): remove allowImportingTsExtensions | 3 files  | pending | ✅     |
