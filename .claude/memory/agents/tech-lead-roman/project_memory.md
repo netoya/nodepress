@@ -16,7 +16,10 @@
 
 ## Lessons
 
-<!-- To be filled as project progresses -->
+- **2026-04-16:** Root `README.md` authored in English. License referenced as
+  declared in `package.json` (GPL-3.0-or-later); `docs/business/licensing.md`
+  notes dual-license evaluation is open — README links to it instead of
+  freezing the decision.
 
 ## Meet 2026-04-09 — Cómo llevar NodePress al siguiente paso
 
