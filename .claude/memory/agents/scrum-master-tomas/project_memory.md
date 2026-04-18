@@ -134,3 +134,13 @@
 - **Retro Sprint 1:** lanzar asíncrona 30-04 al cierre demo, cerrar lunes 4-05. **Date:** 2026-04-18
 - **Track frontend ausente de kickoff:** sync con Lucas lunes antes 10:00. Román facilita. **Date:** 2026-04-18
 - **Protocolo scope freeze activo Sprint 2:** tickets nuevos requieren Román + Tomás + Martín co-sign. **Date:** 2026-04-18
+
+## Sprint 2 — Trabajo ejecutado (2026-04-18)
+
+- **ADR-009 context=edit implementado:** SerializeContext type, toWpPost/toWpPostAsync aceptan context param. context=edit retorna raw fields (title/content/excerpt), gateado por requireAdmin. **Date:** 2026-04-18
+- **Nuevos tests:** 12 tests nuevos (7 context-edit integration + 5 serialize unit). Total: 231 tests verdes, 23 ficheros. **Date:** 2026-04-18
+- **OpenAPI actualizado:** ?context param documentado en GET /wp/v2/posts y GET /wp/v2/posts/{id}. RenderedFieldEdit schema añadido. **Date:** 2026-04-18
+- **CI cache mejorado:** ci.yml migra de manual actions/cache a cache: npm en setup-node. S2-infra-backlog cerrado. **Date:** 2026-04-18
+- **PROJECT_STATUS.md:** Sección Sprint 2 completa (#28-#43), decisiones D-019..D-024 documentadas. **Date:** 2026-04-18
+- **call-log-template.md:** Creado en docs/process/outreach/. 9 campos, checklist post-call. **Date:** 2026-04-18
+- **Estado Sprint 2:** 16/16 tickets completados. 231 tests. 23 test files. CI 5 workflows activos. **Date:** 2026-04-18
