@@ -251,3 +251,19 @@
 - **ADR-009 context=edit implementado:** SerializeContext type, toWpPost/toWpPostAsync branching, requireAdmin gate. **Date:** 2026-04-18
 - **OpenAPI actualizado:** ?context param documentado GET /wp/v2/posts + GET /wp/v2/posts/{id}. RenderedFieldEdit schema. **Date:** 2026-04-18
 - **Estado Sprint 2:** 16/16 tickets done. ADRs 001-009 + 013-019 Accepted (16 total). 231 tests verdes. **Date:** 2026-04-18
+
+## Sprint 2 completado (2026-04-18)
+
+- **16/16 tickets cerrados.** 241 tests. 16 ADRs (ADR-001 a ADR-019). Bridge Tier 2 php-wasm + 3 pilots en verde.
+- **ADR-009 implemented:** `SerializeContext = "view" | "edit"`, raw fields gated a `context=edit` + requireAdmin. Commit 942dc8e.
+- **Skeleton packages:** cli, theme-engine, plugin-api — index.ts de 1 línea. ADR-010/011/012 en Proposed.
+
+## Meet 2026-04-18 — Planning Sprint 3 (roles, taxonomías, admin edit, CLI init)
+
+- **ADRs 010/011/012 gate:** deben estar Accepted antes de 05-05 11:00. Román coordina; ADR-012 necesita firma Alejandro. **Date:** 2026-04-18
+- **ADR-020 Plugin Loader Runtime + ADR-021 Theme↔Core:** Román redacta en Sprint 3 (días 2 y 3 respectivamente). **Date:** 2026-04-18
+- **Taxonomías WP-compat mínima sin jerarquía Sprint 3:** jerarquía documentada como deuda en ADR. Ingrid spec → Carmen implementa. **Date:** 2026-04-18
+- **CLI `serve` + `migrate`:** P0 para TTFA <5 min fresh clone. Raúl implementa (~2 días). Helena CI step npm publish. **Date:** 2026-04-18
+- **`disposeAll` D-014 context.ts:60 + timeout bridge renderShortcodes:** Raúl, mismo patrón AbortSignal 5s. **Date:** 2026-04-18
+- **Feature freeze 12-05 12:00:** Román + Tomás enforzan. **Date:** 2026-04-18
+- **Schema DB ya tiene roles/capabilities:** `roles text[]` + `capabilities jsonb` en tabla users — #44 solo necesita leer lo que existe. **Date:** 2026-04-18

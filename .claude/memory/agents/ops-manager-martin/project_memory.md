@@ -51,3 +51,11 @@
 - **DoD updated:** "Clean-clone test executed, documented in PR body". **Date:** 2026-04-18
 - **Señal equipo sana:** 4 de 5 participantes asumieron responsabilidad sin ser forzados. Tomás indicador de madurez. **Date:** 2026-04-18
 - **Martín asume fallo de governance:** commit no pasó por trío (Martín+Román+Tomás) pese a protocolo aprobado esa mañana. No se repite. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Planning Sprint 3 (roles, taxonomías, admin edit, CLI init)
+
+- **GitHub Issues Sprint 3 (#44-#57 aprox.):** Martín crea antes del 21-04 con labels P0/P1/P2. **Date:** 2026-04-18
+- **Release readiness checklist:** Helena + Martín, lista 13-05 EOD. Incluye CI step npm publish CLI. **Date:** 2026-04-18
+- **Repo público 14-05:** owner del checklist = Helena + Martín. Demo video Playwright regenerado antes del 14-05. **Date:** 2026-04-18
+- **Call-log template listo** (commit 8beb2fd): outreach 15 calls ICP-1 arranca 24-04. **Date:** 2026-04-18
+- **Capacity Sprint 3:** mismo equipo, 14 días (05-05 → 16-05), ~12 efectivos con 15% buffer. Sin nuevos miembros hasta Sprint 4. **Date:** 2026-04-18

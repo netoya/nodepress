@@ -144,3 +144,13 @@
 - **PROJECT_STATUS.md:** Sección Sprint 2 completa (#28-#43), decisiones D-019..D-024 documentadas. **Date:** 2026-04-18
 - **call-log-template.md:** Creado en docs/process/outreach/. 9 campos, checklist post-call. **Date:** 2026-04-18
 - **Estado Sprint 2:** 16/16 tickets completados. 231 tests. 23 test files. CI 5 workflows activos. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Planning Sprint 3 (roles, taxonomías, admin edit, CLI init)
+
+- **Sprint Goal Sprint 3:** Auth roles reales, taxonomías WP-compat, admin editor, CLI serve+migrate, repo público 14-05 TTFA <5 min. **Date:** 2026-04-18
+- **Proceso planning:** 05-05 AM planning + 05-05 PM revisión outreach signal + 06-05 ajuste backlog si hay cambio material. **Date:** 2026-04-18
+- **Feature freeze 12-05 12:00 inamovible:** Tomás + Román enforzan. 2 días QA antes de repo público 14-05. **Date:** 2026-04-18
+- **Temperature checks:** 05-05 antes del planning + 12-05 (freeze day). **Date:** 2026-04-18
+- **14 tickets máximo + 2 buffer:** si Alejandro añade más, hay que quitar algo equivalente. Techo acordado con el equipo. **Date:** 2026-04-18
+- **Retro Sprint 1 async:** lanzar 30-04, cerrar 04-05, consolidar 05-05 AM. **Date:** 2026-04-18
+- **#23 dashboard visual → Sprint 4 opcional:** admin editor funcional tiene prioridad. **Date:** 2026-04-18

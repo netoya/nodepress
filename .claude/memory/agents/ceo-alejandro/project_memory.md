@@ -101,3 +101,12 @@
 - **Scope freeze confirmado:** CF7 y plugins con network requieren ADR + señal outreach antes de entrar al backlog. ADRs 010/011/012 permanecen Proposed. **Date:** 2026-04-18
 - **Outreach 24-04:** 15 calls CTOs ICP-1, pregunta neutral sobre dolor/stack real. NO sobre plugins compat. Eduardo + Alejandro redactan. **Date:** 2026-04-18
 - **Lección comunicación consolidada:** "no vale" del PO = preguntar binaria antes de re-scope. Registrado en comunicado 2026-04-18. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Planning Sprint 3 (roles, taxonomías, admin edit, CLI init)
+
+- **Sprint Goal Sprint 3:** Auth con roles reales, taxonomías WP-compat (categorías + tags), admin edit flow completo, CLI serve+migrate, repo público 14-05 con TTFA <5 min. **Date:** 2026-04-18
+- **ADR-012 (plugin-api) requiere firma de Alejandro** por implicaciones de licencia — revisar 04-05 (vuelo). **Date:** 2026-04-18
+- **Feature freeze 12-05 12:00 inamovible:** 2 días QA antes de repo público 14-05. Alejandro no puede añadir tickets post-freeze. **Date:** 2026-04-18
+- **CLA Assistant:** 23-04 (jueves) 90 min con Eduardo. Bloquea contribuciones externas hasta que esté activo. **Date:** 2026-04-18
+- **Demo ≤3 min README + dual license docs:** Alejandro + Valentina, deadline 12-05. **Date:** 2026-04-18
+- **Outreach signal review:** 05-05 PM tras planning AM. Ajuste backlog 06-05 si hay cambio material en señal ICP-1. **Date:** 2026-04-18

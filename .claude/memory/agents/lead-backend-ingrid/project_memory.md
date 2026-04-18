@@ -238,3 +238,12 @@
 - **toWpPostAsync:** async serializer con bridge pre-process + sync the_content filter. Backward compat preservado. **Date:** 2026-04-18
 - **ADR-009 context=edit:** SerializeContext param en toWpPost/toWpPostAsync. raw fields en context=edit. 5 nuevos tests serialize. **Date:** 2026-04-18
 - **Estado Sprint 2:** 16/16 done. 231 tests verdes. 16 ADRs Accepted. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Planning Sprint 3 (roles, taxonomías, admin edit, CLI init)
+
+- **#44 P0 día 1: auth roles DB.** `requireAdmin` debe consultar `roles` en DB, no solo validar Bearer. Schema ya tiene `roles text[]` + `capabilities jsonb`. **Date:** 2026-04-18
+- **`GET /wp/v2/users/me` encadenado en #44:** no es ticket separado. Ingrid lo hace en el mismo PR aprovechando user del token. **Date:** 2026-04-18
+- **Spec OpenAPI taxonomías bloquea implementación Carmen:** Ingrid entrega spec días 1-2 Sprint 3. Endpoints: `GET /wp/v2/categories`, `GET /wp/v2/tags`, `GET /wp/v2/taxonomies`. **Date:** 2026-04-18
+- **Taxonomías mínimas sin jerarquía:** categorías y tags planas en Sprint 3. Jerarquía = deuda documentada en ADR. **Date:** 2026-04-18
+- **Timeout `renderShortcodes` bridge:** sin timeout = riesgo de producción (request cuelga si php-wasm se congela). Raúl añade AbortSignal 5s. **Date:** 2026-04-18
+- **`context=edit` circular dependency resuelta:** requireAdmin real (roles DB) necesario para que context=edit sea seguro. Sprint 3 #44 cierra el círculo. **Date:** 2026-04-18
