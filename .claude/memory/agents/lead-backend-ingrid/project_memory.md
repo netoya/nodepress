@@ -30,6 +30,13 @@
 - **Filtros sync + Promise detection:** `wrapSyncFilter` devuelve valor sin modificar si callback retorna Promise. **Date:** 2026-04-09
 - **Estado DRAINING:** Inflight completan antes de dispose. Timeout 10s. **Date:** 2026-04-09
 
+## Sprint 1 día 1 — contrato de hooks
+
+- **Q1 — HookRegistry recibe FilterEntry construida:** Aprobado sin cambios. `PluginContext` como único inyector de `pluginId` mantiene el invariante de seguridad. Cualquier alternativa que acepte `fn` + `opts` directamente en el registry permitiría construir entries con `pluginId` arbitrario. **Date:** 2026-04-17
+- **Q2 — `applyFilters<T, R = T>` cerrado a `R = T` en v1:** Aplicado. El registry no puede verificar coherencia de tipos en una cadena de entries heterogéneas. Silenciosa desviación de tipo en runtime supera el beneficio teórico. Reabierto si aparece caso documentado con ADR. Cambio aplicado en `types.ts` — `applyFilters<T>` devuelve `T`. **Date:** 2026-04-17
+- **Q3 — `addHook` en PluginContext:** Mantenido. ADR-005 lo documenta explícitamente como soporte para plugins portados. Alias tipado, coste mínimo, win de compatibilidad real. **Date:** 2026-04-17
+- **DisposableRegistry creada en context.ts:** `register(dispose)` + `disposeAll(): Promise<void>`. `PluginContext extends DisposableRegistry`. Re-exportada desde hooks/index.ts. Typecheck verde. **Date:** 2026-04-17
+
 ## Session Todos
 - move-migrations-to-drizzle: done
 - clean-duplicate-migrations: done

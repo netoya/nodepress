@@ -1,0 +1,74 @@
+/**
+ * NodePress Admin Shell — Layout Tokens
+ * Shell grid, sidebar widths, header height, breakpoints.
+ * Import after tokens.css.
+ */
+
+:root {
+  /* ============================================
+     Shell dimensions
+     ============================================ */
+  --shell-sidebar-width: 240px;
+  --shell-sidebar-width-collapsed: 64px;
+  --shell-header-height: 56px;
+
+  /* ============================================
+     Shell colors (semantic aliases over tokens)
+     ============================================ */
+  --shell-sidebar-bg: var(--color-neutral-900);
+  --shell-sidebar-fg: var(--color-neutral-300);
+  --shell-sidebar-fg-active: var(--color-neutral-0);
+  --shell-sidebar-item-hover-bg: rgba(255, 255, 255, 0.06);
+  --shell-sidebar-item-active-bg: var(--color-primary-700);
+  --shell-sidebar-border: rgba(255, 255, 255, 0.08);
+
+  --shell-header-bg: var(--color-neutral-0);
+  --shell-header-border: var(--color-neutral-200);
+  --shell-header-fg: var(--color-neutral-800);
+
+  --shell-main-bg: var(--color-neutral-50);
+  --shell-main-fg: var(--color-neutral-800);
+}
+
+/* ============================================
+   App shell grid
+   ============================================ */
+.app-shell {
+  display: grid;
+  grid-template-areas:
+    "sidebar header"
+    "sidebar main";
+  grid-template-columns: var(--shell-sidebar-width) 1fr;
+  grid-template-rows: var(--shell-header-height) 1fr;
+  min-height: 100vh;
+}
+
+.app-shell__sidebar {
+  grid-area: sidebar;
+}
+
+.app-shell__header {
+  grid-area: header;
+}
+
+.app-shell__main {
+  grid-area: main;
+  overflow-y: auto;
+}
+
+/* ============================================
+   Responsive: collapse sidebar on small screens
+   ============================================ */
+@media (max-width: 768px) {
+  .app-shell {
+    grid-template-areas:
+      "header"
+      "main";
+    grid-template-columns: 1fr;
+    grid-template-rows: var(--shell-header-height) 1fr;
+  }
+
+  .app-shell__sidebar {
+    display: none;
+  }
+}
