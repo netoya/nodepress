@@ -41,11 +41,12 @@ x-nodepress-notes:
       adr_candidate: true
     - id: DIV-004
       field: categories / tags
-      status: missing
+      status: implemented
       description: |
         WP exposes taxonomy term arrays (categories, tags) on each post.
-        NodePress has no taxonomy tables yet. Omitted from v1 Post schema.
-      adr_candidate: true
+        NodePress stores these in term_relationships table.
+        Exposed on Post responses as `categories` and `tags` (arrays of term IDs).
+      adr_candidate: false
     - id: DIV-005
       field: type / menu_order / meta (JSONB)
       status: extra
@@ -157,6 +158,18 @@ components:
           type: integer
           description: The ID for the author of the post (authorId in DB).
           example: 1
+        categories:
+          type: array
+          description: Array of category term IDs assigned to the post. See DIV-004.
+          items:
+            type: integer
+          example: [1, 5]
+        tags:
+          type: array
+          description: Array of tag term IDs assigned to the post. See DIV-004.
+          items:
+            type: integer
+          example: [3, 7, 9]
         _nodepress:
           type: object
           description: NodePress-specific fields not in WP REST API v2 (see DIV-005).
@@ -213,6 +226,18 @@ components:
             If omitted or empty, auto-derived from title (kebab-case, lowercase, alphanumeric + hyphens only).
             If the derived slug already exists, automatically suffixed: -2, -3, etc. until a unique slug is found.
             If an explicit slug is provided and conflicts with an existing post, returns 409 Conflict (no auto-suffix).
+        categories:
+          type: array
+          description: Array of category term IDs to assign to the post (optional).
+          items:
+            type: integer
+          example: [1, 5]
+        tags:
+          type: array
+          description: Array of tag term IDs to assign to the post (optional).
+          items:
+            type: integer
+          example: [3, 7]
 
     PostUpdateBody:
       type: object
@@ -235,6 +260,16 @@ components:
           type: string
         slug:
           type: string
+        categories:
+          type: array
+          description: Array of category term IDs to assign. Replaces existing categories (idempotent).
+          items:
+            type: integer
+        tags:
+          type: array
+          description: Array of tag term IDs to assign. Replaces existing tags (idempotent).
+          items:
+            type: integer
 
     WpTerm:
       type: object
@@ -289,6 +324,147 @@ components:
             The parent term ID. Always 0 in Sprint 3 (flat taxonomy, no hierarchy).
           example: 0
 
+    WpUserPublic:
+      type: object
+      description: |
+        A user object returned by GET /wp/v2/users (public listing).
+        Omits email and sensitive fields for public exposure.
+        Mirrors WP REST API v2 user shape.
+      required:
+        - id
+        - name
+        - slug
+        - url
+        - description
+        - link
+        - avatar_urls
+        - _links
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the user.
+          example: 1
+        name:
+          type: string
+          description: The name of the user (displayName or login fallback).
+          example: "Admin User"
+        slug:
+          type: string
+          description: URL-friendly username (maps to login).
+          example: "admin"
+        url:
+          type: string
+          description: Author archive URL (empty in NodePress v1).
+          example: ""
+        description:
+          type: string
+          description: Short biography (empty in NodePress v1).
+          example: ""
+        link:
+          type: string
+          description: Author archive link (empty in NodePress v1).
+          example: ""
+        avatar_urls:
+          type: object
+          description: Avatar URLs by size (empty in NodePress v1).
+          additionalProperties:
+            type: string
+          example:
+            "24": ""
+            "48": ""
+            "96": ""
+        _links:
+          type: object
+          description: HAL links (empty in NodePress v1).
+          additionalProperties: true
+
+    WpUser:
+      type: object
+      description: |
+        A user object returned by GET /wp/v2/users/me (authenticated context).
+        Includes email and all fields available in the users table.
+        Mirrors WP REST API v2 user shape with NodePress extensions.
+      required:
+        - id
+        - name
+        - slug
+        - email
+        - url
+        - description
+        - link
+        - locale
+        - nickname
+        - registered_date
+        - roles
+        - capabilities
+        - _nodepress
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the user.
+          example: 1
+        name:
+          type: string
+          description: The name of the user (displayName or login fallback).
+          example: "Admin User"
+        slug:
+          type: string
+          description: URL-friendly username (maps to login).
+          example: "admin"
+        email:
+          type: string
+          format: email
+          description: The user's email address.
+          example: "admin@example.com"
+        url:
+          type: string
+          description: Author archive URL (empty in NodePress v1).
+          example: ""
+        description:
+          type: string
+          description: Short biography (empty in NodePress v1).
+          example: ""
+        link:
+          type: string
+          description: Author archive link (empty in NodePress v1).
+          example: ""
+        locale:
+          type: string
+          description: User locale (hardcoded to en_US in NodePress v1).
+          example: "en_US"
+        nickname:
+          type: string
+          description: User nickname (displayName or login fallback).
+          example: "Admin User"
+        registered_date:
+          type: string
+          format: date-time
+          description: User registration date (createdAt from database).
+          example: "2026-04-17T10:00:00.000Z"
+        roles:
+          type: array
+          description: Array of role names (e.g., ["admin", "editor"]).
+          items:
+            type: string
+          example:
+            - "admin"
+        capabilities:
+          type: object
+          description: Capability map for the user (e.g., edit_posts true).
+          additionalProperties: true
+          example:
+            edit_posts: true
+        _nodepress:
+          type: object
+          description: NodePress-specific user fields.
+          required:
+            - login
+          properties:
+            login:
+              type: string
+              description: Database login field (username).
+              example: "admin"
+
     ErrorResponse:
       type: object
       required:
@@ -309,6 +485,75 @@ components:
               example: 401
 
 paths:
+  /wp/v2/users:
+    get:
+      operationId: listUsers
+      summary: List users
+      description: |
+        Returns a list of users (public endpoint). Email and sensitive fields are omitted.
+        Mirrors WP REST API GET /wp/v2/users behaviour for public consumption.
+      tags:
+        - Users
+      parameters:
+        - name: page
+          in: query
+          description: Current page of the collection.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          description: Maximum number of items to return (max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        "200":
+          description: A list of users (public data only, no email).
+          headers:
+            X-WP-Total:
+              description: Total number of users.
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WpUserPublic"
+
+  /wp/v2/users/me:
+    get:
+      operationId: getAuthenticatedUser
+      summary: Retrieve authenticated user
+      description: |
+        Returns the currently authenticated user's full profile (including email).
+        Requires a valid Bearer token. Anonymous requests receive 401.
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Authenticated user profile (with email).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WpUser"
+        "401":
+          description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /wp/v2/categories:
     get:
       operationId: listCategories
