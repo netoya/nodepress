@@ -1,3 +1,13 @@
+# IMPORTANT: Before this workflow can enforce manual approval, you must configure
+# the "production" environment in GitHub repo settings:
+#   Settings → Environments → New environment → Name: "production"
+#   → Required reviewers: add at least 1 reviewer (e.g., Román or Helena)
+#   → Save protection rules
+#
+# Without that configuration, the `environment: production` key below has no effect.
+# The version-tag check will still run and catch mismatches, but the human gate
+# requires the environment to exist with required reviewers set.
+
 name: Publish CLI
 
 on:
@@ -8,15 +18,30 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: "https://registry.npmjs.org"
           cache: "npm"
+
       - run: npm ci
+
+      - name: Verify tag matches package.json version
+        run: |
+          PKG_VERSION=$(node -p "require('./packages/cli/package.json').version")
+          TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+          if [ "$PKG_VERSION" != "$TAG_VERSION" ]; then
+            echo "ERROR: Tag v$TAG_VERSION does not match packages/cli/package.json version $PKG_VERSION"
+            exit 1
+          fi
+          echo "Version check passed: $PKG_VERSION"
+
       - run: npm run build --workspace=packages/cli
+
       - run: npm publish --workspace=packages/cli --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
