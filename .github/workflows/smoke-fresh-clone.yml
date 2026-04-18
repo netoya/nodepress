@@ -62,11 +62,11 @@ jobs:
       - name: DB — drizzle push (apply schema)
         run: npm run db:drizzle:push
 
-      - name: Build packages/core (server needs dist/)
-        run: npm run build --workspace=packages/core
-
-      - name: Build packages/db (server needs dist/)
-        run: npm run build --workspace=packages/db
+      - name: Build workspace packages (server needs dist/)
+        run: |
+          npm run build --workspace=packages/core
+          npm run build --workspace=packages/db
+          npm run build --workspace=packages/theme-engine
 
       - name: Start server in background
         run: npm run dev &
