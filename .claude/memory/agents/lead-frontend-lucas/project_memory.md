@@ -1,3 +1,15 @@
+## Sprint 5 — #68 React Router v7 migration (2026-04-18)
+
+- **Migration complete:** Hash routing manual (window.location.hash + split('/')) replaced with `createHashRouter`. Commit f5d9a2b. **Date:** 2026-04-18
+- **New files:** `admin/src/router.tsx` (createHashRouter config), `admin/src/layouts/AdminLayout.tsx` (AppShell + Outlet), `admin/src/features/posts/PostEditorRoute.tsx` (useParams adapter). **Date:** 2026-04-18
+- **App.tsx retired from routing:** RouterProvider in main.tsx replaces `<App />`. App.tsx still exists but is no longer used — can be deleted in cleanup. **Date:** 2026-04-18
+- **Adapter pattern for PostEditorPage:** PostEditorPage stays prop-driven (postId: number | null). PostEditorRoute reads useParams and forwards. This means unit tests for PostEditorPage need NO MemoryRouter — just vi.mock("react-router-dom"). **Date:** 2026-04-18
+- **Sidebar uses NavLink:** `end` prop on Dashboard ("/") prevents match on all routes. onMouseLeave reads aria-current="page" to restore active styles correctly. **Date:** 2026-04-18
+- **Test strategy:** vi.mock("react-router-dom", () => ({ useNavigate: () => mockNavigate })) in PostEditorPage.test and PostsListPage.test. No MemoryRouter needed. mockNavigate cleared in afterEach. **Date:** 2026-04-18
+- **@types/react bumped to 19.1:** Required for NavLink/Outlet JSX compat with React 19. Side effect: Textarea.tsx onInput cast from FormEvent → any (InputEvent type change in 19.1). Runtime behavior unchanged. **Date:** 2026-04-18
+- **createHashRouter chosen over createBrowserRouter:** No server-side fallback configured. Hash URLs (/#/posts) work everywhere without nginx/vite config. Switch to BrowserRouter when deploying behind a proper fallback. **Date:** 2026-04-18
+- **95/95 tests green, 0 TS errors, 0 ESLint errors after migration.** **Date:** 2026-04-18
+
 ## Meet 2026-04-18 — Kickoff Sprint 5
 
 - **D-035 React Router v7 migración:** Entra como ticket Sprint 5. Hash routing manual con split('/') no escala con /plugins + /apariencia pages. 3 días (1 implementación + 2 tests con Marta). **Date:** 2026-04-18
