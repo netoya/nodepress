@@ -45,13 +45,13 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado      | Objetivo                                                     |
-| ------------ | ----------------------- | ----------- | ------------------------------------------------------------ |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init             |
-| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO  | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
-| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO  | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
-| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO  | Roles/capabilities + taxonomías + admin edit flow + CLI init |
-| **Sprint 4** | 2026-05-19 → 2026-05-30 | 🟡 PLANNING | Plugin system + Theme engine + post-launch ICP-1 signal      |
+| Sprint       | Fechas                  | Estado     | Objetivo                                                     |
+| ------------ | ----------------------- | ---------- | ------------------------------------------------------------ |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO | Scaffolding: monorepo, CI, docker, packages init             |
+| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
+| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
+| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO | Roles/capabilities + taxonomías + admin edit flow + CLI init |
+| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO | Plugin system + Theme engine + post-launch ICP-1 signal      |
 
 ---
 
@@ -382,18 +382,26 @@ _Mantenido por Tomás (Scrum Master). Última actualización: 2026-05-19 (Sprint
 
 ### Ticket Mapping Sprint 4 (preliminary)
 
-| PROJECT_STATUS # | GitHub Issue | Short title                                            | Responsable        | Estado  |
-| ---------------- | ------------ | ------------------------------------------------------ | ------------------ | ------- |
-| 56               | —            | vm.Context sandbox para plugins (ADR-004)              | Raúl + Román       | ⬜ TODO |
-| 57               | —            | Plugin demo "Hello World" (JS/TS, via loadPlugins)     | Raúl               | ⬜ TODO |
-| 58               | —            | ThemeEngine interface MVP (ADR-021 implementación)     | Román + Lucas      | ⬜ TODO |
-| 59               | —            | Primer template theme (single post + archive)          | Lucas + Marta      | ⬜ TODO |
-| 60               | —            | Backlog adjustment post-ICP-1 signal                   | Alejandro + Martín | ⬜ TODO |
-| 61               | —            | Issues externos triage + CLA checks (post-lanzamiento) | Martín + Helena    | ⬜ TODO |
-| 62               | —            | Plugin API docs (ADR-012 → README plugin authors)      | Román              | ⬜ TODO |
-| 63               | —            | WP Import CLI básico (import-wp subcommand stub)       | Carmen             | ⬜ TODO |
-| 64               | —            | users readonly endpoint GET /wp/v2/users               | Ingrid + Carmen    | ⬜ TODO |
-| 65               | —            | Dashboard #23 visual refinement (defer de Sprint 3)    | Lucas + Marta      | ⬜ TODO |
+| PROJECT_STATUS # | GitHub Issue | Short title                                             | Responsable        | Estado  |
+| ---------------- | ------------ | ------------------------------------------------------- | ------------------ | ------- |
+| 56               | —            | vm.Context sandbox para plugins (ADR-004)               | Raúl + Román       | ⬜ TODO |
+| 57               | —            | Plugin demo "Hello World" (JS/TS, via loadPlugins)      | Raúl               | ⬜ TODO |
+| 58               | —            | ThemeEngine interface MVP (ADR-021 implementación)      | Román + Lucas      | ⬜ TODO |
+| 59               | —            | Primer template theme (single post + archive)           | Lucas + Marta      | ⬜ TODO |
+| 60               | —            | Backlog adjustment post-ICP-1 signal                    | Alejandro + Martín | 🔵 S5   |
+| 61               | —            | Issues externos triage + CLA checks (post-lanzamiento)  | Martín + Helena    | 🔵 S5   |
+| 62               | —            | Plugin API docs (docs/guides/plugin-api.md)             | Carmen             | ✅ DONE |
+| 63               | —            | WP Import CLI básico (import-wp subcommand stub)        | Carmen             | ✅ DONE |
+| 64               | —            | users readonly endpoint GET /wp/v2/users                | Carmen             | ✅ DONE |
+| 65               | —            | Dashboard #23 visual refinement + last-update indicator | Lucas              | ✅ DONE |
+
+### Sprint 4 — Estado cierre (2026-05-19)
+
+- **Tickets completados:** 8/10 (#60 y #61 → Sprint 5 post-outreach)
+- **Tests:** 388 verdes (193 server + 95 admin + 83 core + 8 theme-engine + 6 cli + 5 db)
+- **ADRs:** 14 Accepted (001-021), 0 Proposed
+- **Feature freeze:** 28-05 12:00
+- **Plugin system operativo:** loadPlugins() + runInSandbox() + Hello World plugin demo
 
 ### Sprint 4 — Kickoff (2026-05-19)
 

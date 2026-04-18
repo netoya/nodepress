@@ -4,10 +4,11 @@
  * NodePress CLI — entry point.
  *
  * Usage:
- *   nodepress serve       — Start the Fastify server (default port 3000)
- *   nodepress migrate     — Run database migrations
- *   nodepress --help      — Show this message
- *   nodepress --version   — Show version
+ *   nodepress serve           — Start the Fastify server (default port 3000)
+ *   nodepress migrate         — Run database migrations
+ *   nodepress import-wp       — Import WordPress content (stub)
+ *   nodepress --help          — Show this message
+ *   nodepress --version       — Show version
  */
 
 import { readFileSync } from "fs";
@@ -63,15 +64,73 @@ async function migrateCommand(): Promise<void> {
   }
 }
 
+function importWpCommand(argv: string[]): void {
+  // Check for --help early
+  if (argv.includes("--help") || argv.includes("-h")) {
+    showImportWpHelp();
+    process.exit(0);
+  }
+
+  // Parse <source>, --format, --dry-run
+  const source = argv[0];
+  let format = "wxr";
+  let dryRun = false;
+
+  for (let i = 1; i < argv.length; i++) {
+    if (argv[i] === "--format" && i + 1 < argv.length) {
+      format = argv[i + 1];
+      i++;
+    } else if (argv[i] === "--dry-run") {
+      dryRun = true;
+    }
+  }
+
+  if (!source) {
+    console.error("[ERROR] import-wp requires <source> argument");
+    showImportWpHelp();
+    process.exit(1);
+  }
+
+  // Print status message
+  console.log(
+    `[import-wp] Source: ${source}, format: ${format}, dry-run: ${dryRun}`,
+  );
+  console.log("[import-wp] WP Import not yet implemented. Coming in Sprint 5.");
+  process.exit(0);
+}
+
+function showImportWpHelp(): void {
+  console.log(`
+NodePress import-wp — WordPress content importer (stub)
+
+Usage:
+  nodepress import-wp <source> [OPTIONS]
+
+Arguments:
+  <source>              Path to WordPress export file
+
+Options:
+  --format <format>     Source format: wxr (WordPress eXtended RSS) [default: wxr]
+  --dry-run             Parse and validate without writing to DB
+  --help, -h            Show this help message
+
+Example:
+  nodepress import-wp ./export.xml
+  nodepress import-wp ./export.xml --dry-run
+  nodepress import-wp ./export.xml --format wxr
+`);
+}
+
 function showHelp(): void {
   console.log(`
 NodePress ${version}
 
 Usage:
-  nodepress serve       Start the Fastify server (default port 3000)
-  nodepress migrate     Run database migrations
-  nodepress --help      Show this message
-  nodepress --version   Show version
+  nodepress serve           Start the Fastify server (default port 3000)
+  nodepress migrate         Run database migrations
+  nodepress import-wp       Import WordPress content (stub, coming in Sprint 5)
+  nodepress --help          Show this message
+  nodepress --version       Show version
 
 Environment Variables:
   PORT                  Server port (default: 3000)
@@ -102,6 +161,8 @@ async function main(): Promise<void> {
     await serveCommand();
   } else if (command === "migrate") {
     await migrateCommand();
+  } else if (command === "import-wp") {
+    importWpCommand(args.slice(1));
   } else {
     console.error(`Unknown command: ${command}`);
     showHelp();

@@ -40,4 +40,28 @@ describe("CLI smoke tests", () => {
       });
     }).toThrow();
   });
+
+  it("nodepress import-wp ./export.xml shows not yet implemented message", () => {
+    const result = execSync(`npx tsx ${cliPath} import-wp ./export.xml`, {
+      encoding: "utf-8",
+      stdio: "pipe",
+    });
+    expect(result).toContain("[import-wp]");
+    expect(result).toContain("Source: ./export.xml");
+    expect(result).toContain("format: wxr");
+    expect(result).toContain("dry-run: false");
+    expect(result).toContain("WP Import not yet implemented");
+    expect(result).toContain("Coming in Sprint 5");
+  });
+
+  it("nodepress import-wp --help shows help text", () => {
+    const result = execSync(`npx tsx ${cliPath} import-wp --help`, {
+      encoding: "utf-8",
+      stdio: "pipe",
+    });
+    expect(result).toContain("WordPress content importer");
+    expect(result).toContain("--format");
+    expect(result).toContain("--dry-run");
+    expect(result).toContain("Example:");
+  });
 });

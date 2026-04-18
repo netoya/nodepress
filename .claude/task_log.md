@@ -101,3 +101,10 @@
 | 2026-04-18 | helena          | #54 CI publish-cli.yml (v\* tag trigger) + release-readiness-checklist.md (owner Helena+Martín)                               | 2 files   | 947a1c5 | ✅     |
 | 2026-04-18 | raul            | #52 loadPlugins() Plugin Loader Runtime + ADR-020 → Accepted + 7 tests (368 total)                                            | 4 files   | 3a4b884 | ✅     |
 | 2026-04-18 | lucas           | #55 demo spec Sprint 3 — TaxonomySelector panels + category selection flow                                                    | 1 file    | 3a4b884 | ✅     |
+| 2026-04-18 | orchestrator    | fix(ci): TS errors resueltos + smoke build steps + ci.yml Postgres + coverage db:push                                         | 8 files   | 0a46a4d | ✅     |
+| 2026-05-19 | raul            | #56 runInSandbox() vm.Context timeout guard + #57 Hello World plugin (13 tests)                                               | 6 files   | e948f68 | ✅     |
+| 2026-05-19 | roman           | #58 ADR-021 → Accepted + InlineThemeEngine single/archive + wire handlers (6 tests, 380 total)                                | 8 files   | e948f68 | ✅     |
+| 2026-05-19 | orchestrator    | fix(ci): theme-engine tsconfig reference + smoke build theme-engine                                                           | 2 files   | 035fb97 | ✅     |
+| 2026-05-19 | carmen          | #64 GET /wp/v2/users readonly (4 tests) + #62 docs/guides/plugin-api.md                                                       | 4 files   | e7cac27 | ✅     |
+| 2026-05-19 | lucas           | #59 theme templates mejorados (nav, footer, date) + #65 dashboard last-update indicator (8 tests)                             | 4 files   | e7cac27 | ✅     |
+| 2026-05-19 | carmen          | #63 import-wp CLI stub + help text (2 tests, 388 total) + PROJECT_STATUS Sprint 4 closed                                      | 3 files   | done    | ✅     |

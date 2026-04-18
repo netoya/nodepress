@@ -138,3 +138,23 @@ type: project
   - Sandbox: 5-second timeout guard (ADR-020).
   - References: ADR-012, ADR-020.
 - **Date:** 2026-04-18
+
+## Sprint 4 — #63: WP Import CLI stub (2026-04-18)
+
+- **Tarea:** Añadir comando CLI `nodepress import-wp <source>` como stub — no implementa import real (Sprint 5+), pero es ejecutable con ayuda clara.
+- **Implementación:**
+  1. **Nueva función `importWpCommand(argv: string[])`:** Parsea `<source>` (required), `--format` (default "wxr"), `--dry-run` (flag). Valida source (error + exit 1 si falta).
+  2. **Help system `showImportWpHelp()`:** Help text detallado con examples. Invocable con `--help` o `-h`.
+  3. **Output del stub:**
+     - `[import-wp] Source: <source>, format: <format>, dry-run: <bool>` (info input)
+     - `[import-wp] WP Import not yet implemented. Coming in Sprint 5.` (aviso)
+     - Exit code 0 (no falla — es stub)
+  4. **Integración en `main()`:** Rama `else if (command === "import-wp")` llama `importWpCommand(args.slice(1))`.
+  5. **Help global actualizado:** Main help text añade `import-wp` en la lista de comandos.
+- **Tests:** 2 nuevos en `cli.test.ts`:
+  - `nodepress import-wp ./export.xml` → muestra source + format + dry-run + "not yet implemented"
+  - `nodepress import-wp --help` → muestra help text (WordPress content importer, --format, --dry-run, ejemplos)
+- **All 6/6 tests verde** (2 nuevos + 4 existentes).
+- **Format:** `npx prettier` + `npx eslint --fix` aplicado. Type-check TS strict sin errores.
+- **Ficheros modificados:** `packages/cli/src/index.ts` (+73 líneas: importWpCommand, showImportWpHelp, main branch), `packages/cli/src/__tests__/cli.test.ts` (+21 líneas: 2 nuevos tests).
+- **Date:** 2026-04-18
