@@ -61,4 +61,55 @@ describe("registerDemoHooks", () => {
     expect(registry.hasFilter("pre_save_post")).toBe(false);
     expect(registry.hasFilter("the_content")).toBe(false);
   });
+
+  it("is idempotent: calling twice does not duplicate filters", () => {
+    registerDemoHooks(registry);
+    registerDemoHooks(registry);
+
+    const result = registry.applyFilters<{ title: string }>("pre_save_post", {
+      title: "Hello",
+    });
+
+    // If duplicates were registered, title would be "[DEMO] [DEMO] Hello".
+    // With idempotency, it's "[DEMO] Hello".
+    expect(result.title).toBe("[DEMO] Hello");
+  });
+
+  it("is idempotent after explicit cleanup: removeAllByPlugin + re-register works", () => {
+    registerDemoHooks(registry);
+    registry.removeAllByPlugin(DEMO_PLUGIN_ID);
+    registerDemoHooks(registry);
+
+    const result = registry.applyFilters<{ title: string }>("pre_save_post", {
+      title: "Hello",
+    });
+
+    expect(result.title).toBe("[DEMO] Hello");
+    expect(registry.hasFilter("the_content")).toBe(true);
+  });
+
+  it("preserves other plugins' hooks when demo-plugin re-registers", () => {
+    // Register a custom filter under a different plugin ID.
+    registry.addFilter("pre_save_post", {
+      type: "filter",
+      pluginId: "other-plugin",
+      priority: 20,
+      fn: (postData) => ({
+        ...(postData as object),
+        title: `[OTHER] ${(postData as { title: string }).title}`,
+      }),
+    });
+
+    registerDemoHooks(registry);
+    registerDemoHooks(registry);
+
+    const result = registry.applyFilters<{ title: string }>("pre_save_post", {
+      title: "Hello",
+    });
+
+    // Both filters run: [OTHER] first (priority 20), then [DEMO] (priority 10).
+    // Result: "[DEMO] [OTHER] Hello"
+    expect(result.title).toContain("[DEMO]");
+    expect(result.title).toContain("[OTHER]");
+  });
 });

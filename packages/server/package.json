@@ -11,6 +11,7 @@
     "dev": "tsx --watch src/index.ts"
   },
   "dependencies": {
+    "@fastify/cors": "11.1.0",
     "@nodepress/core": "*",
     "@nodepress/db": "*",
     "dotenv": "16.4.5",

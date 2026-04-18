@@ -12,7 +12,8 @@
     "drizzle:generate": "NODE_OPTIONS=\"--import tsx\" drizzle-kit generate",
     "drizzle:push": "NODE_OPTIONS=\"--import tsx\" drizzle-kit push",
     "drizzle:status": "NODE_OPTIONS=\"--import tsx\" drizzle-kit status",
-    "seed": "tsx src/seeds/index.ts"
+    "seed": "tsx src/seeds/index.ts",
+    "reset": "tsx src/seeds/reset.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.40.0",

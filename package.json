@@ -24,6 +24,7 @@
     "typecheck": "tsc --build",
     "db:migrate": "npm run migrate --workspace=packages/db",
     "db:seed": "npm run seed --workspace=packages/db",
+    "db:reset": "npm run reset --workspace=packages/db",
     "db:drizzle:generate": "npm run drizzle:generate --workspace=packages/db",
     "db:drizzle:push": "npm run drizzle:push --workspace=packages/db",
     "db:drizzle:status": "npm run drizzle:status --workspace=packages/db",
@@ -33,6 +34,7 @@
     "test:integration": "DOCKER_AVAILABLE=true vitest run --root packages/server --config vitest.integration.config.ts && DOCKER_AVAILABLE=true vitest run --root packages/db --config vitest.integration.config.ts",
     "smoke:fresh-clone": "tsx scripts/smoke-fresh-clone.ts",
     "prepare": "husky",
+    "demo:reset": "npm run db:reset",
     "demo:video": "cd admin && npx playwright test --config=playwright.demo.config.ts"
   },
   "devDependencies": {

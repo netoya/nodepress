@@ -45,8 +45,9 @@ test.describe("NodePress 30-04 Demo Flow", () => {
     ).toBeVisible();
     await page.waitForTimeout(800);
 
-    // ── 5. Fill form ──────────────────────────────────────────────────────────
-    await page.getByLabel(/title/i).fill("Hello from demo");
+    // ── 5. Fill form (timestamped title avoids slug collision on reruns) ──────
+    const demoTitle = `Hello from demo ${Date.now()}`;
+    await page.getByLabel(/title/i).fill(demoTitle);
     await page.getByLabel(/content/i).fill("This content will get a footer.");
     await page.waitForTimeout(500);
 
@@ -57,37 +58,27 @@ test.describe("NodePress 30-04 Demo Flow", () => {
     await expect(page.getByText(/post created/i)).toBeVisible();
     await page.waitForTimeout(800);
 
-    // ── 8. Navigate back to Posts list ────────────────────────────────────────
-    // After create, App redirects to #posts/:id/edit (edit mode).
-    // Navigate back to list to see the mutated title.
-    await page.goto("/#posts");
-    await expect(page.getByRole("heading", { name: /^posts$/i })).toBeVisible();
-    await page.waitForTimeout(500);
-
-    // ── 9. Verify hook mutation: title has [DEMO] prefix ──────────────────────
-    // pre_save_post filter mutates "Hello from demo" → "[DEMO] Hello from demo"
-    await expect(page.getByText(/\[DEMO\] Hello from demo/i)).toBeVisible();
-    await page.waitForTimeout(1200);
-
-    // ── 10. Open the new post to view content ─────────────────────────────────
-    // Click the Edit button for the new post (PostsTable renders an Edit button per row)
-    const demoRow = page
-      .locator("tr", { hasText: /\[DEMO\] Hello from demo/i })
-      .first();
-    await demoRow
-      .getByRole("button", { name: /edit post.*hello from demo/i })
-      .click();
-    await expect(
-      page.getByRole("heading", { name: /edit post/i }),
-    ).toBeVisible();
+    // ── 8. Editor auto-redirects to #posts/:id/edit on create success ─────────
+    // PostEditorPage handles success with window.location.hash = "posts/:id/edit".
+    // Wait for the URL + heading to stabilize.
+    await page.waitForURL(/#posts\/\d+\/edit/, { timeout: 5000 });
     await page.waitForTimeout(800);
 
-    // ── 11. Content shows footer from the_content hook ────────────────────────
+    // ── 9. Verify hook mutation: title input has [DEMO] prefix ────────────────
+    // pre_save_post filter mutates "Hello from demo" → "[DEMO] Hello from demo"
+    await expect(page.getByLabel(/title/i)).toHaveValue(
+      new RegExp(`\\[DEMO\\] ${demoTitle}`, "i"),
+      { timeout: 5000 },
+    );
+    await page.waitForTimeout(1200);
+
+    // ── 10. Verify content shows footer from the_content hook ─────────────────
     // the_content filter appends <footer>Powered by NodePress</footer>
     // The PostEditorPage pre-fills content from GET /wp/v2/posts/:id
-    await expect(page.getByLabel(/content/i)).toContainText(
+    await expect(page.getByLabel(/content/i)).toHaveValue(
       /Powered by NodePress/i,
+      { timeout: 5000 },
     );
-    await page.waitForTimeout(1500); // let viewer see it
+    await page.waitForTimeout(1500); // let viewer see the final state
   });
 });

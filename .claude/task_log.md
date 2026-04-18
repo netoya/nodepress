@@ -71,3 +71,7 @@
 | 2026-04-18 | roman           | demo hooks boot script + NODEPRESS_DEMO_MODE flag + docs                                                            | 5 files   | pending | ✅     |
 | 2026-04-18 | lucas           | VITE_USE_MSW + VITE_API_URL flags admin (gap demo 3/3) — api.ts, .env.example, 6 hooks, README, 2 new tests (88/88) | 11 files  | pending | ✅     |
 | 2026-04-18 | lucas           | Playwright video demo (config + spec + record script) — acción meet #10                                             | 5 files   | pending | ✅     |
+| 2026-04-18 | raul            | registerDemoHooks idempotente + 3 tests aislamiento (fix whack-a-mole demo)                                         | 2 files   | pending | ✅     |
+| 2026-04-18 | marta           | #31 demo:reset script + integración record-demo-video + tests (fix whack-a-mole demo)                               | 6 files   | pending | ✅     |
+| 2026-04-18 | roman           | ADR-016 Demo Lifecycle Contract (Proposed)                                                                          | 1 file    | pending | ✅     |
+| 2026-04-18 | carmen          | #21 slug auto-sufijo WP-style en POST/PUT (fix whack-a-mole demo, deriveSlug + findAvailableSlug, 142/142 tests ✅) | 6 files   | pending | ✅     |

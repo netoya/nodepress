@@ -29,17 +29,24 @@ import { DEFAULT_HOOK_PRIORITY } from "@nodepress/core";
 export const DEMO_PLUGIN_ID = "demo-plugin";
 
 /**
- * Register the two demo filters against `registry`.
+ * Registers the demo hooks on the provided registry.
  *
- * Idempotency is NOT guaranteed: calling this function twice on the same
- * registry registers the filters twice. Production code must call it exactly
- * once (at boot) or call `registry.removeAllByPlugin(DEMO_PLUGIN_ID)` between
- * invocations.
+ * Idempotent: calling multiple times does not duplicate filters.
+ * Before registering, all hooks owned by `demo-plugin` are removed —
+ * so a second call refreshes the registration (useful for hot-reload).
+ * Other plugins' hooks are untouched.
+ *
+ * Hooks registered:
+ * - pre_save_post: prepend [DEMO] to title.
+ * - the_content: append <footer>Powered by NodePress</footer>.
  *
  * @param registry Target registry. Typically `server.hooks` at boot time, or
  *                 a fresh instance from `createHookRegistry()` in tests.
  */
 export function registerDemoHooks(registry: HookRegistry): void {
+  // Idempotent: always clean demo-plugin hooks first (no-op if none exist),
+  // then re-register. Allows safe hot-reload and recovery after bugs.
+  registry.removeAllByPlugin(DEMO_PLUGIN_ID);
   // pre_save_post: prepend [DEMO] to the title field of the post payload.
   // The payload shape is intentionally loose — we only touch `title` and
   // spread the rest to preserve any additional fields set upstream.

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { AppShell } from "./components/layout/AppShell";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
 import { PostsListPage } from "./features/posts/PostsListPage";
@@ -40,7 +41,17 @@ function resolveRoute(hash: string): { page: string; postId: number | null } {
 }
 
 export function App() {
-  const { page, postId } = resolveRoute(window.location.hash);
+  const [hash, setHash] = useState<string>(
+    typeof window !== "undefined" ? window.location.hash : "",
+  );
+
+  useEffect(() => {
+    const onHashChange = () => setHash(window.location.hash);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
+
+  const { page, postId } = resolveRoute(hash);
 
   return (
     <AppShell>

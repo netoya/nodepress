@@ -59,3 +59,12 @@
 - **ADR-008 transición:** Status `Proposed (Revised 2026-04-18)` → `Accepted 2026-04-19`. Añadida sección "Empirical Day 3 Results" con benchmark + memory + extension coverage + verdict. Lección aprendida: mandatory empirical validation para capability matrices futuras. **Date:** 2026-04-19
 - **Tiempo spike:** ~50 min day 1 + ~2.5 hrs day 2 + ~90 min day 3 = ~4.5 hrs total (dentro budget 5 hrs). **Date:** 2026-04-19
 - **Next:** Awaiting approval Román/Ingrid para Sprint 2 Tier 2 plugin integration. Hard stop 2026-04-19 met. **Date:** 2026-04-19
+
+## Sprint 1 día 4 — #23 registerDemoHooks idempotencia (2026-04-18)
+
+- **Bug diagnosticado:** `registerDemoHooks` llamado 2 veces → filtros duplicados → `[DEMO] [DEMO] Hello`. Latente en hot-reload dev. **Date:** 2026-04-18
+- **Solución aplicada:** Opción B (clean + re-register). Añadida `registry.removeAllByPlugin(DEMO_PLUGIN_ID)` al principio. Idempotent + permite hot-reload seguro. **Date:** 2026-04-18
+- **Tests nuevos:** 3 casos: (1) idempotencia simple (2 calls == 1 effect), (2) cleanup + re-register (funciona normal), (3) aislamiento pluginId (otros plugins no borrados). Total: 4 existentes + 3 nuevos = 7 PASS. **Date:** 2026-04-18
+- **JSDoc actualizado:** Documenta idempotencia, semántica cleanup, hooks registrados. Claro para futuros devs. **Date:** 2026-04-18
+- **TS strict:** 0 errors. ESLint: 0 errors. Prettier: applied. **Date:** 2026-04-18
+- **Cambios:** `packages/server/src/demo/register-demo-hooks.ts` (idempotencia + JSDoc), `packages/server/src/demo/__tests__/register-demo-hooks.test.ts` (3 tests nuevos). **Date:** 2026-04-18

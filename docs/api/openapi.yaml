@@ -187,7 +187,11 @@ components:
           example: "A short intro."
         slug:
           type: string
-          description: URL-friendly identifier. Auto-generated from title if omitted.
+          description: |
+            URL-friendly identifier.
+            If omitted or empty, auto-derived from title (kebab-case, lowercase, alphanumeric + hyphens only).
+            If the derived slug already exists, automatically suffixed: -2, -3, etc. until a unique slug is found.
+            If an explicit slug is provided and conflicts with an existing post, returns 409 Conflict (no auto-suffix).
 
     PostUpdateBody:
       type: object
@@ -301,6 +305,12 @@ paths:
       description: |
         Creates a new post. Requires admin authentication.
 
+        **Slug Handling (WordPress-compatible):**
+        - If `slug` is omitted or empty: auto-derives from `title` (kebab-case, lowercase).
+        - If derived slug collides with existing post: appends -2, -3, etc. until unique.
+        - If explicit `slug` provided and collides: returns 409 Conflict (no auto-suffix).
+        - If 100+ collision attempts made: returns 400 (provide explicit unique slug).
+
         **Hooks applied (server-side, sync):**
         - `pre_save_post` filter: applied to the full post payload immediately before
           the DB insert. Signature: `(postData: PostPayload, meta: { action: 'create'; userId?: string }) => PostPayload`.
@@ -324,13 +334,19 @@ paths:
               schema:
                 $ref: "#/components/schemas/Post"
         "400":
-          description: Invalid request body.
+          description: Invalid request body (e.g., missing required fields, no unique slug available after 100 collision attempts).
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Explicit slug conflict. The provided slug already exists and auto-suffix was not applied (caller provided explicit slug).
           content:
             application/json:
               schema:
@@ -375,7 +391,13 @@ paths:
     put:
       operationId: updatePost
       summary: Update a post
-      description: Updates a post. Partial updates allowed — omitted fields are unchanged. Requires admin.
+      description: |
+        Updates a post. Partial updates allowed — omitted fields are unchanged. Requires admin.
+
+        **Slug Handling:**
+        - If `title` is updated without explicit `slug`: re-derives slug from new title and applies auto-suffix if collision.
+        - If explicit `slug` provided: uses that slug directly; returns 409 if it conflicts with another post.
+        - If no `title` or `slug` in request: post slug remains unchanged.
       tags:
         - Posts
       security:
@@ -394,7 +416,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Post"
         "400":
-          description: Invalid request body.
+          description: Invalid request body or no fields provided.
           content:
             application/json:
               schema:
@@ -407,6 +429,12 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Post not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Explicit slug conflict (provided slug already exists on another post).
           content:
             application/json:
               schema:

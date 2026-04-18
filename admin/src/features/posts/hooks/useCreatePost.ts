@@ -10,11 +10,27 @@ export interface CreatePostPayload {
   status: string;
 }
 
+/**
+ * Strip empty optional fields so the backend derives defaults
+ * (e.g. slug from title). Required fields (title, content, status)
+ * are always sent.
+ */
+function toServerBody(payload: CreatePostPayload): Record<string, string> {
+  const body: Record<string, string> = {
+    title: payload.title,
+    content: payload.content,
+    status: payload.status,
+  };
+  if (payload.slug.trim() !== "") body["slug"] = payload.slug;
+  if (payload.excerpt.trim() !== "") body["excerpt"] = payload.excerpt;
+  return body;
+}
+
 async function createPost(payload: CreatePostPayload): Promise<WpPost> {
   const response = await fetch(apiUrl("/wp/v2/posts"), {
     method: "POST",
     headers: authHeaders(),
-    body: JSON.stringify(payload),
+    body: JSON.stringify(toServerBody(payload)),
   });
   if (!response.ok) {
     throw new Error(`Failed to create post: ${response.status}`);

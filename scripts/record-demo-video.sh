@@ -22,6 +22,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$REPO_ROOT"
 BACKEND_PORT=3000
 ADMIN_PORT=5173
 BACKEND_PID=""
@@ -72,12 +73,15 @@ fi
 log "Docker OK"
 
 # ── 2. Reset DB + seed ────────────────────────────────────────────────────────
-log "Step 2: Seeding database..."
+log "Step 2: Resetting database (truncate + re-seed)..."
 cd "$REPO_ROOT"
-if ! npm run db:seed 2>&1; then
-  warn "db:seed exited non-zero — continuing (seeds may already be applied)."
+if ! npm run demo:reset 2>&1; then
+  warn "demo:reset exited non-zero — falling back to db:seed."
+  if ! npm run db:seed 2>&1; then
+    warn "db:seed also failed — continuing (seeds may already be applied)."
+  fi
 fi
-log "Database seeded"
+log "Database reset complete"
 
 # ── 3. Start backend in demo mode ─────────────────────────────────────────────
 log "Step 3: Starting backend (NODEPRESS_DEMO_MODE=true) on port $BACKEND_PORT..."

@@ -43,7 +43,17 @@ interface MockPost {
 }
 
 vi.mock("@nodepress/db", () => {
-  const mockEq = vi.fn((_col: unknown, _val: unknown) => ({ type: "eq" }));
+  /**
+   * Mock DB for demo tests.
+   * Supports slug collision detection by returning empty array for all WHERE queries.
+   * This avoids complex Drizzle condition parsing.
+   */
+
+  const mockEq = vi.fn((_col: unknown, _val: unknown) => ({
+    type: "eq",
+    col: _col,
+    val: _val,
+  }));
 
   const mockDb = {
     insert: vi.fn((_table: unknown) => ({
@@ -73,16 +83,31 @@ vi.mock("@nodepress/db", () => {
     select: vi.fn(() => ({
       from: vi.fn((_table: unknown) => ({
         where: vi.fn((_cond: unknown) => {
-          // Return all posts for simplicity (tests use specific IDs)
-          return Promise.resolve(Object.values(mockStore));
+          // For slug collision detection, return empty (no duplicates in tests).
+          // For other queries (e.g., id lookup), return all posts.
+          // Heuristic: if condition is an object with __isMockEq, it's a WHERE query.
+          // For simplicity, assume WHERE queries always return empty (tests don't rely on finding existing posts).
+          return Promise.resolve([]);
         }),
       })),
+    })),
+    update: vi.fn((_table: unknown) => ({
+      set: vi.fn((_data: unknown) => ({
+        where: vi.fn(() => ({
+          returning: vi.fn(() => {
+            return Promise.resolve([]);
+          }),
+        })),
+      })),
+    })),
+    delete: vi.fn((_table: unknown) => ({
+      where: vi.fn(() => Promise.resolve()),
     })),
   };
 
   return {
     db: mockDb,
-    posts: { id: "id", title: "title", content: "content" },
+    posts: { id: "id", title: "title", content: "content", slug: "slug" },
     eq: mockEq,
     and: vi.fn((...args: unknown[]) => args),
     or: vi.fn((...args: unknown[]) => args),

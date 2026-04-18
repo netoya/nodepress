@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { db, posts } from "@nodepress/db";
 import { eq, and, or, ilike } from "drizzle-orm";
 import { toWpPost } from "./serialize.js";
+import { deriveSlug, findAvailableSlug } from "./slug.js";
 // hooks.ts registers the `hooks` decorator — import side-effect ensures the
 // FastifyInstance type augmentation is in scope even though we access the
 // registry via request.server.hooks rather than a direct import.
@@ -79,6 +80,7 @@ export async function getPost(request: FastifyRequest, reply: FastifyReply) {
 /**
  * POST /wp/v2/posts — Create a new post.
  * Requires admin authentication.
+ * Implements WordPress-compatible slug auto-suffixing: if slug exists, tries -2, -3, etc.
  */
 export async function createPost(request: FastifyRequest, reply: FastifyReply) {
   const body = request.body as Record<string, unknown>;
@@ -87,7 +89,7 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
     content,
     status = "draft",
     excerpt = "",
-    slug,
+    slug: explicitSlug,
   } = {
     title: body["title"] as string,
     content: body["content"] as string,
@@ -95,10 +97,6 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
     excerpt: body["excerpt"] as string | undefined,
     slug: body["slug"] as string | undefined,
   };
-
-  // Auto-generate slug from title if not provided
-  const rawSlug =
-    slug || title.toLowerCase().replace(/\s+/g, "-").slice(0, 200);
 
   // For now, default authorId to 1 (admin user).
   // In production, this should come from the authenticated user context.
@@ -122,7 +120,7 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
     content,
     status,
     excerpt: excerpt ?? "",
-    slug: rawSlug,
+    slug: explicitSlug || deriveSlug(title),
     authorId,
   };
   const payload = request.server.hooks.applyFilters<PostPayload>(
@@ -130,10 +128,20 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
     rawPayload,
     { action: "create", userId: request.user?.id },
   );
-  // Recompute slug if title was mutated by a filter but no slug was provided
-  const finalSlug = slug
-    ? payload.slug
-    : payload.title.toLowerCase().replace(/\s+/g, "-").slice(0, 200);
+
+  // Determine final slug with collision handling
+  let finalSlug: string;
+  if (explicitSlug) {
+    // Caller provided explicit slug — use filter-mutated version, no auto-suffix
+    finalSlug = payload.slug;
+  } else {
+    // Auto-derived slug — apply auto-suffix if collision
+    const baseSlug = payload.slug;
+    finalSlug = await findAvailableSlug(baseSlug, async (s: string) => {
+      const existing = await db.select().from(posts).where(eq(posts.slug, s));
+      return existing.length > 0;
+    });
+  }
 
   try {
     const [created] = await db
@@ -150,11 +158,15 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
 
     return reply.status(201).send(toWpPost(created!, request.server.hooks));
   } catch (err: unknown) {
-    // Handle duplicate slug
+    // Handle explicit slug collision — 409 if caller was explicit
     if (err instanceof Error && err.message.includes("unique")) {
-      return reply.status(400).send({
-        code: "INVALID_REQUEST",
-        message: "Slug already exists.",
+      const statusCode = explicitSlug ? 409 : 400;
+      const message = explicitSlug
+        ? "Slug already exists (explicit slug collision)."
+        : "Slug collision (no available suffix found).";
+      return reply.status(statusCode).send({
+        code: explicitSlug ? "SLUG_COLLISION" : "INVALID_REQUEST",
+        message,
       });
     }
     throw err;
@@ -164,12 +176,19 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
 /**
  * PUT /wp/v2/posts/:id — Update a post (partial updates allowed).
  * Requires admin authentication.
+ * If title is updated without explicit slug, re-derives slug and applies auto-suffix if collision.
  */
 export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
   const params = request.params as Record<string, unknown>;
   const id = parseInt(params["id"] as string, 10);
   const body = request.body as Record<string, unknown>;
-  const { title, content, status, excerpt, slug } = {
+  const {
+    title,
+    content,
+    status,
+    excerpt,
+    slug: explicitSlug,
+  } = {
     title: body["title"] as string | undefined,
     content: body["content"] as string | undefined,
     status: body["status"] as string | undefined,
@@ -177,13 +196,42 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
     slug: body["slug"] as string | undefined,
   };
 
+  // Fetch current post to determine slug derivation
+  const [currentPost] = await db.select().from(posts).where(eq(posts.id, id));
+
+  if (!currentPost) {
+    return reply.status(404).send({
+      code: "NOT_FOUND",
+      message: `Post ${id} not found.`,
+    });
+  }
+
   // Build update object with only provided fields
   const updateData: Record<string, unknown> = {};
   if (title !== undefined) updateData["title"] = title;
   if (content !== undefined) updateData["content"] = content;
   if (status !== undefined) updateData["status"] = status;
   if (excerpt !== undefined) updateData["excerpt"] = excerpt;
-  if (slug !== undefined) updateData["slug"] = slug;
+
+  // Handle slug: if title changed and no explicit slug, re-derive and apply auto-suffix
+  let finalSlug: string | undefined;
+  if (explicitSlug !== undefined) {
+    finalSlug = explicitSlug;
+    updateData["slug"] = finalSlug;
+  } else if (title !== undefined) {
+    // Title is being updated without explicit slug — re-derive
+    const baseSlug = deriveSlug(title);
+    finalSlug = await findAvailableSlug(baseSlug, async (s: string) => {
+      // Only consider OTHER posts (not current post itself)
+      const allWithSlug = await db
+        .select()
+        .from(posts)
+        .where(eq(posts.slug, s));
+      // If only result is current post (same id), it's not a collision
+      return allWithSlug.length > 0 && !allWithSlug.some((p) => p.id === id);
+    });
+    updateData["slug"] = finalSlug;
+  }
 
   // Ensure at least one field is provided
   if (Object.keys(updateData).length === 0) {
@@ -221,11 +269,16 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
 
     return toWpPost(updated, request.server.hooks);
   } catch (err: unknown) {
-    // Handle duplicate slug
+    // Handle explicit slug collision — 409 if caller was explicit
     if (err instanceof Error && err.message.includes("unique")) {
-      return reply.status(400).send({
-        code: "INVALID_REQUEST",
-        message: "Slug already exists.",
+      const statusCode = explicitSlug !== undefined ? 409 : 400;
+      const message =
+        explicitSlug !== undefined
+          ? "Slug already exists (explicit slug collision)."
+          : "Slug collision (no available suffix found).";
+      return reply.status(statusCode).send({
+        code: explicitSlug !== undefined ? "SLUG_COLLISION" : "INVALID_REQUEST",
+        message,
       });
     }
     throw err;

@@ -24,7 +24,25 @@ The script is idempotent — running it multiple times does not duplicate data (
 
 ## Reset to clean state
 
-If you want to wipe the database and re-seed from scratch:
+### Destructive reset (development only)
+
+To truncate all tables and re-seed in one operation:
+
+```bash
+npm run demo:reset
+```
+
+This truncates the 7 tables in FK-safe order (`comments`, `term_relationships`, `posts`, `terms`, `options`, `plugin_registry`, `users`) and then runs the seed. Useful before:
+
+- Recording demo video (prevents slug collisions)
+- Manual testing that requires a clean DB
+- Reproducing bugs from a known state
+
+**Safety:** The script refuses to run with `NODE_ENV=production`.
+
+### Full schema reset
+
+If you want to wipe the database schema and re-seed from scratch:
 
 ```bash
 npm run db:drizzle:push && npm run db:seed

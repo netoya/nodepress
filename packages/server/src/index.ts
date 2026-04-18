@@ -7,11 +7,20 @@ const __dirname = fileURLToPath(new URL(".", import.meta.url));
 config({ path: resolve(__dirname, "../../../.env") });
 
 import Fastify from "fastify";
+import fastifyCors from "@fastify/cors";
 import { registerBearerAuth } from "./auth/index.js";
 import { registerHooks } from "./hooks.js";
 import postsPlugin from "./routes/posts/index.js";
 
 const server = Fastify({ logger: true });
+
+// CORS — allow admin dev server (same-host, different port) + expose headers
+// the WP REST clients rely on (X-WP-Total, X-WP-TotalPages).
+await server.register(fastifyCors, {
+  origin: true, // reflect request origin (dev-friendly; tighten in prod)
+  credentials: true,
+  exposedHeaders: ["X-WP-Total", "X-WP-TotalPages"],
+});
 
 // Register the bearer auth decorator.
 // Routes that require admin should use:  { preHandler: [server.requireAdmin] }

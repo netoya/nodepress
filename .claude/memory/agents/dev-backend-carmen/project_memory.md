@@ -6,7 +6,7 @@ type: project
 
 ## Sprint 1 día 1 — #15 + #16 Posts REST endpoints (2026-04-17)
 
-- **5 endpoints WP-compat v2 en `packages/server/src/routes/posts/`:** index.ts (plugin), handlers.ts (lógica), serialize.ts (`toWpPost`), schemas.ts (Fastify JSON schemas), __tests__/posts.integration.test.ts (14/14 green). **Date:** 2026-04-17
+- **5 endpoints WP-compat v2 en `packages/server/src/routes/posts/`:** index.ts (plugin), handlers.ts (lógica), serialize.ts (`toWpPost`), schemas.ts (Fastify JSON schemas), **tests**/posts.integration.test.ts (14/14 green). **Date:** 2026-04-17
 - **`toWpPost()` mapea Drizzle → WP shape con divergencias OpenAPI aplicadas:** DIV-001 omite `_gmt` variants, DIV-002 envuelve title/content/excerpt en `{rendered, raw, protected:false}`, DIV-005 expone `type`/`parent_id`/`menu_order`/`meta` bajo `_nodepress`. **Date:** 2026-04-17
 - **`requireAdmin` de Ingrid integrado como preHandler:** POST/PUT/DELETE requieren auth. GET public. **Date:** 2026-04-17
 - **Dependencies añadidas a `packages/server/package.json`:** `@nodepress/db` (workspace), `drizzle-orm`, `fastify-plugin`. **Date:** 2026-04-17
@@ -22,3 +22,15 @@ type: project
 - **ADR-009 creado:** Documenta decisión de diferir context param a Sprint 2. Rationale: Sprint 1 no tiene consumidor edit-context; implementación completa agrega ~50 líneas + complexity en routing. Rollback trivial si business demand surge. **Date:** 2026-04-18
 - **Tests:** 43/43 verde (14 Carmen posts integration + 26 Ingrid conformance + 3 bearer auth). Fixtures Ingrid ya omitían `raw`; fix es 100% compatible. **Date:** 2026-04-18
 - **Ficheros:** serialize.ts (cambio principal), post.contract.test.ts (TS strict type fix pre-existente), vitest.workspace.ts (fix config admin ref), ADR-009 creado. **Date:** 2026-04-18
+
+## Sprint 1 día 2 — #21 slug auto-sufijo WP-style (2026-04-18)
+
+- **Problema:** POST `/wp/v2/posts` devolvía 400 cuando slug derivado ya existía (ej: `[demo]-hello-from-demo`). WP devuelve 201 + auto-sufija a `-2`, `-3`, etc. Bloqueaba demo (no podía re-crear post con mismo título). **Date:** 2026-04-18
+- **Solución:** Nuevo fichero `packages/server/src/routes/posts/slug.ts` con funciones puras: `deriveSlug(title)` → kebab-case, `findAvailableSlug(baseSlug, exists)` → auto-sufija hasta `-100`. inyectable `exists` callback para testability. **Date:** 2026-04-18
+- **Integración POST handler:** Si `slug` explícito → sin auto-sufijo (409 si colisión). Si auto-derivado → auto-sufija. Límite defensivo: 100 intentos → 500 + error "too many duplicates". **Date:** 2026-04-18
+- **Integración PUT handler:** Si título actualizado sin slug explícito → re-deriva + auto-sufija. Si slug explícito → uso directo (409 si colisión). Si ninguno de ambos → slug sin cambios. **Date:** 2026-04-18
+- **Tests:** Nuevos `slug.test.ts` 13 tests (unit de derivación + colisiones). Integración: 2 tests en `posts.integration.test.ts` verifican flujo auth. Demo e2e: mock DB mejorado para soportar slug queries sin colisiones falsas. **Date:** 2026-04-18
+- **OpenAPI doc:** PostCreateBody y PUT actualizados con descripción detallada de slug handling. Respuesta 409 agregada a POST y PUT. **Date:** 2026-04-18
+- **Mock DB fix:** `demo-end-to-end.test.ts` vi.mock de `@nodepress/db` extendido: WHERE queries ahora retornan `[]` (sin colisiones) para evitar bucle infinito en `findAvailableSlug`. **Date:** 2026-04-18
+- **Tests:** 142/142 verde (139 passed + 1 skipped + 2 todo). Sin regressions en 14 posts integration + 26 WP conformance + 7 demo + 13 slug unit. **Date:** 2026-04-18
+- **Ficheros creados:** `slug.ts`, `slug.test.ts`. **Ficheros modificados:** `handlers.ts`, `posts.integration.test.ts`, `demo-end-to-end.test.ts`, `openapi.yaml`. **Date:** 2026-04-18

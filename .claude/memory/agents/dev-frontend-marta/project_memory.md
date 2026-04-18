@@ -28,3 +28,12 @@ type: project
 - **Toast arquitectura:** context-based (NO Zustand global). `ToastProvider` envuelve app en main.tsx. Hook `useToast()` expone `.show({ type, message })`. Max 3 toasts, auto-dismiss 5s. **Date:** 2026-04-18
 - **Toast.tsx simplificado:** Usaba Radix.Toast.Root pero requería Provider environment issues en tests. Reemplazado por divs simples con role="status"/"alert" + dismiss button. **Date:** 2026-04-18
 - **ESLint purity:** side effects (Math.random) reemplazados por module-level id counters (incremento seguro). **Date:** 2026-04-18
+
+## Sprint 1 sem 2 — #31 demo:reset script (2026-04-18)
+
+- **Script `packages/db/src/seeds/reset.ts` creado:** trunca 7 tablas en orden FK-seguro, luego re-seedea. NODE_ENV=production guard. **Date:** 2026-04-18
+- **Orden TRUNCATE:** comments → term_relationships → posts → terms → options → plugin_registry → users. Respeta FK constraints. **Date:** 2026-04-18
+- **npm scripts añadidos:** `npm run reset` (packages/db), `npm run db:reset` (root), `npm run demo:reset` (root alias). **Date:** 2026-04-18
+- **record-demo-video.sh integrado:** Step 2 reemplazado por `npm run demo:reset` con fallback a `db:seed`. **Date:** 2026-04-18
+- **Tests:** 2 unit tests en `reset.test.ts` verifican carga sin conexiones y exportación de `runSeed`. **Date:** 2026-04-18
+- **Docs actualizado:** `docs/guides/seeding.md` nuevo apartado "Reset para desarrollo (destructivo)". **Date:** 2026-04-18
