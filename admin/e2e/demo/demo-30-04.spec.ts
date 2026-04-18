@@ -75,10 +75,33 @@ test.describe("NodePress 30-04 Demo Flow", () => {
     // ── 10. Verify content shows footer from the_content hook ─────────────────
     // the_content filter appends <footer>Powered by NodePress</footer>
     // The PostEditorPage pre-fills content from GET /wp/v2/posts/:id
-    await expect(page.getByLabel(/content/i)).toHaveValue(
-      /Powered by NodePress/i,
-      { timeout: 5000 },
-    );
-    await page.waitForTimeout(1500); // let viewer see the final state
+    const contentTextarea = page.getByLabel(/content/i);
+    await expect(contentTextarea).toHaveValue(/Powered by NodePress/i, {
+      timeout: 5000,
+    });
+
+    // Make the footer visually obvious in the video:
+    // 1. Scroll the textarea into view.
+    // 2. Focus it and move the caret to the end so the <footer> tag is on screen.
+    // 3. Select the text "Powered by NodePress" so the viewer's eye catches it.
+    await contentTextarea.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    await contentTextarea.focus();
+    await page.keyboard.press("End"); // caret at end of current line
+    await page.keyboard.press("Meta+End"); // macOS: jump to end of textarea
+    await page.waitForTimeout(800);
+
+    // Programmatically select the "Powered by NodePress" substring inside the textarea
+    await contentTextarea.evaluate((el) => {
+      const ta = el as HTMLTextAreaElement;
+      const value = ta.value;
+      const idx = value.indexOf("Powered by NodePress");
+      if (idx >= 0) {
+        ta.setSelectionRange(idx, idx + "Powered by NodePress".length);
+      }
+    });
+
+    // Hold the final frame long enough for a viewer to read the footer.
+    await page.waitForTimeout(3500);
   });
 });
