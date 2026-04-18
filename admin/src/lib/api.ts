@@ -22,13 +22,15 @@ function resolveBase(): string {
   return "";
 }
 
+/** @deprecated use apiUrl() — reads live localStorage on every call */
 export const API_BASE_URL: string = resolveBase();
 
 /**
  * Build a full API URL from a path.
+ * Re-reads localStorage on every call so LoginPage changes take effect immediately.
  */
 export function apiUrl(path: string): string {
-  return `${API_BASE_URL}${path}`;
+  return `${resolveBase()}${path}`;
 }
 
 import type { WpTerm } from "../types/wp-post";
