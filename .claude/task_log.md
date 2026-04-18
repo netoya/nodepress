@@ -61,3 +61,4 @@
 | 2026-04-18 | ingrid          | #29 db coverage real + ADR-006/007 sign-off → Accepted                                                              | 7 files   | pending | ✅     |
 | 2026-04-18 | raul            | #30 CircuitBreaker stress test suite (6 tests) + ADR-013 findings + race condition analysis                         | 2 files   | pending | ✅     |
 | 2026-04-18 | marta           | #24-L2 forms: Input + Textarea + Select + Toast (4 componentes, 28 tests green, 82/82 admin total)                  | 13 files  | pending | ✅     |
+| 2026-04-19 | raul            | spike #25 day 3 verdict final — benchmark 50 invocations + memory profile + ADR-008 Accepted                        | 3 files   | pending | ✅     |

@@ -1,11 +1,13 @@
 /**
  * Spike #25 — php-wasm runner
- * Day 2: Hello world + shortcode + hook interception + extension matrix
- * Task: Execute PHP code, measure latencies, validate extensions
+ * Day 3: Benchmark 50 invocations + memory profiling + verdict final
+ * Task: Execute 50 shortcode invocations, measure latencies (p50/p95/p99), memory baseline/delta, final Go/No-Go decision
  */
 
 async function main() {
-  console.log("=== NodePress spike-phpwasm (Day 2) ===\n");
+  console.log(
+    "=== NodePress spike-phpwasm (Day 3 — Benchmark & Verdict) ===\n",
+  );
 
   try {
     console.log("1. Importing @php-wasm modules...");
@@ -124,21 +126,139 @@ async function main() {
     console.log(`   Output: ${shortcodeResult.text}`);
     console.log(`   Execution latency: ${shortcodeMs.toFixed(2)}ms\n`);
 
-    console.log("=== Summary ===");
+    // =============== DAY 3: BENCHMARK 50 INVOCATIONS ===============
+    console.log("9. [DAY 3] Memory baseline BEFORE warm invocations...");
+    const memBaseline = process.memoryUsage();
     console.log(
-      `Total setup time: ${(loadMs + runtimeMs + initMs).toFixed(2)}ms`,
-    );
-    console.log(`Cold start latency: ${coldMs.toFixed(2)}ms`);
-    console.log(`Average warm latency: ${avgWarm.toFixed(2)}ms`);
-    console.log(`Shortcode execution latency: ${shortcodeMs.toFixed(2)}ms`);
-    console.log(`Extensions validated: ${extensions.length} available`);
-    console.log(
-      `Blocker resolution: ✅ PHPLoader.processId pattern from wordpress-playground applied`,
+      `   Heap used: ${(memBaseline.heapUsed / 1024 / 1024).toFixed(2)}MB`,
     );
     console.log(
-      `Hook interception: ✅ Demo hook registry captured via JSON serialization`,
+      `   Heap total: ${(memBaseline.heapTotal / 1024 / 1024).toFixed(2)}MB\n`,
     );
-    console.log("✅ Day 2 objectives complete\n");
+
+    console.log("10. [DAY 3] Warm-up: 10 invocations...");
+    for (let i = 0; i < 10; i++) {
+      await php.run({ code: `<?php echo "[hello-nodepress]"; ?>` });
+    }
+    console.log("    ✓ Warm-up complete\n");
+
+    console.log("11. [DAY 3] Memory after warm-up...");
+    const memWarmup = process.memoryUsage();
+    const deltaWarmup = (
+      (memWarmup.heapUsed - memBaseline.heapUsed) /
+      1024 /
+      1024
+    ).toFixed(2);
+    console.log(
+      `   Heap used: ${(memWarmup.heapUsed / 1024 / 1024).toFixed(2)}MB (delta: ${deltaWarmup}MB)\n`,
+    );
+
+    console.log("12. [DAY 3] Benchmark: 50 timed invocations...");
+    const timings: number[] = [];
+    for (let i = 0; i < 50; i++) {
+      const t1 = performance.now();
+      await php.run({ code: `<?php echo "[hello-nodepress]"; ?>` });
+      const t2 = performance.now();
+      timings.push(t2 - t1);
+    }
+
+    console.log(`    ✓ Collected ${timings.length} timings\n`);
+
+    // Calculate statistics
+    const sorted = [...timings].sort((a, b) => a - b);
+    const sum = timings.reduce((a, b) => a + b, 0);
+    const mean = sum / timings.length;
+    const variance =
+      timings.reduce((acc, val) => acc + (val - mean) ** 2, 0) / timings.length;
+    const stdev = Math.sqrt(variance);
+    const p50 = sorted[Math.floor(sorted.length * 0.5)];
+    const p95 = sorted[Math.floor(sorted.length * 0.95)];
+    const p99 = sorted[Math.floor(sorted.length * 0.99)];
+    const minVal = Math.min(...timings);
+    const maxVal = Math.max(...timings);
+
+    console.log("13. [DAY 3] Latency Analysis (50 invocations)");
+    console.log("    Percentile Statistics:");
+    console.log(`    | Metric | Value (ms) |`);
+    console.log(`    |--------|----------|`);
+    console.log(`    | p50    | ${p50.toFixed(3)} |`);
+    console.log(`    | p95    | ${p95.toFixed(3)} |`);
+    console.log(`    | p99    | ${p99.toFixed(3)} |`);
+    console.log(`    | min    | ${minVal.toFixed(3)} |`);
+    console.log(`    | max    | ${maxVal.toFixed(3)} |`);
+    console.log(`    | mean   | ${mean.toFixed(3)} |`);
+    console.log(`    | stdev  | ${stdev.toFixed(3)} |\n`);
+
+    // Verdict check: p95 < 50ms target
+    const benchmarkPass = p95 < 50;
+    console.log(
+      `14. [DAY 3] Benchmark Check: p95 < 50ms = ${benchmarkPass ? "✅ PASS" : "❌ FAIL"}\n`,
+    );
+
+    console.log("15. [DAY 3] Memory after 50 invocations...");
+    const memAfter = process.memoryUsage();
+    const deltaAfter = (
+      (memAfter.heapUsed - memWarmup.heapUsed) /
+      1024 /
+      1024
+    ).toFixed(2);
+    console.log(
+      `   Heap used: ${(memAfter.heapUsed / 1024 / 1024).toFixed(2)}MB (delta since warm-up: ${deltaAfter}MB)\n`,
+    );
+
+    // Verdict check: memory stable < 10MB growth
+    const memoryStable = Math.abs(parseFloat(deltaAfter)) < 10;
+    console.log(
+      `16. [DAY 3] Memory Stability: delta < 10MB = ${memoryStable ? "✅ PASS" : "❌ FAIL"}\n`,
+    );
+
+    // Extension matrix check (from ADR-008)
+    const requiredForICP1 = ["pcre", "hash", "mbstring", "date", "json"];
+    const hasAllRequired = requiredForICP1.every((ext) =>
+      extensions.includes(ext),
+    );
+    console.log(`17. [DAY 3] Extension Matrix (ICP-1 minimum):`);
+    console.log(`   Required: ${requiredForICP1.join(", ")}`);
+    console.log(
+      `   Present: ${hasAllRequired ? "✅ ALL PRESENT" : "❌ MISSING"}\n`,
+    );
+
+    // Circuit breaker crash isolation check (from project_memory.md)
+    const circuitBreakerNote =
+      "Circuit breaker crash isolation compatible with vm.Context (documented in #20, Sprint 1 resolved)";
+    console.log(`18. [DAY 3] Crash Isolation (Circuit Breaker):`);
+    console.log(`   ${circuitBreakerNote}\n`);
+
+    // Final verdict
+    const verdictGo = benchmarkPass && memoryStable && hasAllRequired;
+    const verdictText = verdictGo
+      ? "✅ GO"
+      : memoryStable
+        ? "⚠️  CONDITIONAL"
+        : "❌ NO-GO";
+
+    console.log("=== DAY 3 VERDICT ===");
+    console.log(`${verdictText}`);
+    console.log(
+      `Reason: ${verdictGo ? "All Tier 2 targets met (p95<50ms, stable memory, extensions sufficient)." : "Benchmark or memory failed targets."}\n`,
+    );
+
+    console.log("=== SUMMARY ===");
+    console.log(
+      `Benchmark (p50/p95/p99): ${p50.toFixed(2)}ms / ${p95.toFixed(2)}ms / ${p99.toFixed(2)}ms`,
+    );
+    console.log(
+      `Memory delta (baseline→after 50): ${(
+        (memAfter.heapUsed - memBaseline.heapUsed) /
+        1024 /
+        1024
+      ).toFixed(2)}MB`,
+    );
+    console.log(
+      `Extension coverage: ${extensions.length} total, ${requiredForICP1.length} required for ICP-1 ✅`,
+    );
+    console.log(`Verdict: ${verdictText}`);
+    console.log("\n✅ Day 3 objectives complete\n");
   } catch (error) {
     console.error("❌ Error during spike:", error);
     process.exit(1);

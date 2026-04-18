@@ -5,9 +5,12 @@ import {
   CardContent,
   EmptyState,
   Spinner,
+  useToast,
 } from "../../components/ui";
 import { usePostsQuery } from "./hooks/usePostsQuery";
+import { useDeletePost } from "./hooks/useDeletePost";
 import { PostsTable } from "./components/PostsTable";
+import type { WpPost } from "../../types/wp-post";
 
 /**
  * PostsListPage — Posts management page.
@@ -21,9 +24,30 @@ import { PostsTable } from "./components/PostsTable";
 export const PostsListPage: FC = () => {
   const { data, isLoading, isError, error, refetch, isFetching } =
     usePostsQuery({ perPage: 20 });
+  const deleteMutation = useDeletePost();
+  const { show } = useToast();
 
   const handleAddNew = () => {
-    // TODO: navigate to create post — router added in Sprint 2
+    window.location.hash = "posts/new";
+  };
+
+  const handleEdit = (post: WpPost) => {
+    window.location.hash = `posts/${post.id}/edit`;
+  };
+
+  const handleDelete = (post: WpPost) => {
+    // v1: browser confirm() — no Modal component yet (flagged for Sprint 2)
+    const confirmed = window.confirm(`Move "${post.title.rendered}" to trash?`);
+    if (!confirmed) return;
+
+    deleteMutation.mutate(post.id, {
+      onSuccess: () => {
+        show({ type: "success", message: "Post moved to trash" });
+      },
+      onError: () => {
+        show({ type: "error", message: "Failed to delete post" });
+      },
+    });
   };
 
   return (
@@ -137,7 +161,11 @@ export const PostsListPage: FC = () => {
 
       {/* Data state */}
       {!isLoading && !isError && data && data.posts.length > 0 && (
-        <PostsTable posts={data.posts} />
+        <PostsTable
+          posts={data.posts}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
       )}
     </section>
   );

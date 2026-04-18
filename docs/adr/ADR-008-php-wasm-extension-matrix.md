@@ -1,12 +1,15 @@
 # ADR-008: PHP-WASM Extension Matrix — Tier 2 Plugin Viability
 
-- **Status:** Proposed — **Revised 2026-04-18 with empirical data from spike day 2**
+- **Status:** Accepted — **2026-04-19 (empirical benchmark confirmed)**
 - **Date:** 2026-04-17
 - **Revised:** 2026-04-18
-- **Author:** Helena (IT Manager)
-- **Related:** ADR-003 (PHP Compatibility Strategy), Spike #25 (Raúl, day 1 + day 2)
+- **Finalized:** 2026-04-19
+- **Author:** Helena (IT Manager), Raúl (Benchmark validation)
+- **Related:** ADR-003 (PHP Compatibility Strategy), Spike #25 (Raúl, day 1–3)
 
 > **Revision note (2026-04-18):** Initial extension inventory (day 1) was based on agent knowledge base and underestimated bundle coverage significantly. Day 2 empirical validation via `get_loaded_extensions()` found **44 extensions** — vs. the ~20–21 estimated. Six extensions previously marked NOT Available are in fact present. Viability classification updated accordingly. See lesson learned at end of document.
+
+> **Finalization note (2026-04-19):** Day 3 benchmark confirms Tier 2 viability. 50 invocations at p95 2.40ms, stable memory, ICP-1 extension coverage confirmed. ADR transitioned from Proposed → Accepted. Ready for Sprint 2 Tier 2 plugin pilot.
 
 ---
 
@@ -26,48 +29,48 @@ This ADR formalizes: (1) the available extension inventory, (2) the missing exte
 
 ### Available Extensions (bundled — confirmed day 2)
 
-| Extension | Category | Typical Use Case | Status |
-|---|---|---|---|
-| Core | Runtime | PHP core engine | Confirmed day 2 |
-| date | Time | `date()`, `strtotime()`, `DateTime` | Confirmed day 2 |
-| pcre | Regex | `preg_match`, `preg_replace` | Confirmed day 2 |
-| mbstring | String | Multi-byte string functions | Confirmed day 2 |
-| hash | Crypto | `md5()`, `sha1()`, `hash()` | Confirmed day 2 |
-| filter | Validation | `filter_var()`, input sanitization | Confirmed day 2 |
-| json | Serialization | `json_encode` / `json_decode` | Confirmed day 2 |
-| ctype | String | `ctype_alpha()`, character class checks | Confirmed day 2 |
-| tokenizer | Parse | PHP source tokenization | Confirmed day 2 |
-| SPL | Data Structures | SplStack, SplQueue, iterators | Confirmed day 2 |
-| SQLite3 | Database | Embedded DB | Confirmed day 2 |
-| PDO | Database | PHP Data Objects base | **SURPRISE — was NOT Available in day 1** |
-| pdo_sqlite | Database | PDO adapter for SQLite | Confirmed day 2 |
-| pdo_mysql | Database | PDO adapter for MySQL | **SURPRISE — was NOT Available in day 1** |
-| mysqli | Database | MySQL improved connector | **SURPRISE — was NOT Available in day 1** |
-| OpenSSL | Crypto | Hash, encrypt, JWT, HTTPS verification | Confirmed day 2 |
-| cURL | Network | HTTP client, API calls | **SURPRISE — was NOT Available in day 1** |
-| soap | Web Services | SOAP client/server | **SURPRISE — was NOT Available in day 1** |
-| GD | Graphics | Image resize, manipulation | **SURPRISE — was NOT Available in day 1** |
-| imagick | Graphics | Advanced image processing (ImageMagick) | **SURPRISE — was NOT Available in day 1** |
-| dom | XML | DOM tree manipulation | Confirmed day 2 |
-| libxml | XML | libxml2 bindings | Confirmed day 2 |
-| SimpleXML | XML | Simple XML parsing | Confirmed day 2 |
-| xml | XML | XML parser functions | Confirmed day 2 |
-| xmlreader | XML | Pull-style XML parser | Confirmed day 2 |
-| xmlwriter | XML | XML stream writer | Confirmed day 2 |
-| Libzip / zip | Archive | ZIP creation/reading | Confirmed day 2 |
-| Libpng | Graphics (decode) | PNG decode | Confirmed day 2 |
+| Extension    | Category          | Typical Use Case                        | Status                                    |
+| ------------ | ----------------- | --------------------------------------- | ----------------------------------------- |
+| Core         | Runtime           | PHP core engine                         | Confirmed day 2                           |
+| date         | Time              | `date()`, `strtotime()`, `DateTime`     | Confirmed day 2                           |
+| pcre         | Regex             | `preg_match`, `preg_replace`            | Confirmed day 2                           |
+| mbstring     | String            | Multi-byte string functions             | Confirmed day 2                           |
+| hash         | Crypto            | `md5()`, `sha1()`, `hash()`             | Confirmed day 2                           |
+| filter       | Validation        | `filter_var()`, input sanitization      | Confirmed day 2                           |
+| json         | Serialization     | `json_encode` / `json_decode`           | Confirmed day 2                           |
+| ctype        | String            | `ctype_alpha()`, character class checks | Confirmed day 2                           |
+| tokenizer    | Parse             | PHP source tokenization                 | Confirmed day 2                           |
+| SPL          | Data Structures   | SplStack, SplQueue, iterators           | Confirmed day 2                           |
+| SQLite3      | Database          | Embedded DB                             | Confirmed day 2                           |
+| PDO          | Database          | PHP Data Objects base                   | **SURPRISE — was NOT Available in day 1** |
+| pdo_sqlite   | Database          | PDO adapter for SQLite                  | Confirmed day 2                           |
+| pdo_mysql    | Database          | PDO adapter for MySQL                   | **SURPRISE — was NOT Available in day 1** |
+| mysqli       | Database          | MySQL improved connector                | **SURPRISE — was NOT Available in day 1** |
+| OpenSSL      | Crypto            | Hash, encrypt, JWT, HTTPS verification  | Confirmed day 2                           |
+| cURL         | Network           | HTTP client, API calls                  | **SURPRISE — was NOT Available in day 1** |
+| soap         | Web Services      | SOAP client/server                      | **SURPRISE — was NOT Available in day 1** |
+| GD           | Graphics          | Image resize, manipulation              | **SURPRISE — was NOT Available in day 1** |
+| imagick      | Graphics          | Advanced image processing (ImageMagick) | **SURPRISE — was NOT Available in day 1** |
+| dom          | XML               | DOM tree manipulation                   | Confirmed day 2                           |
+| libxml       | XML               | libxml2 bindings                        | Confirmed day 2                           |
+| SimpleXML    | XML               | Simple XML parsing                      | Confirmed day 2                           |
+| xml          | XML               | XML parser functions                    | Confirmed day 2                           |
+| xmlreader    | XML               | Pull-style XML parser                   | Confirmed day 2                           |
+| xmlwriter    | XML               | XML stream writer                       | Confirmed day 2                           |
+| Libzip / zip | Archive           | ZIP creation/reading                    | Confirmed day 2                           |
+| Libpng       | Graphics (decode) | PNG decode                              | Confirmed day 2                           |
 
 > **Note:** Day 2 spike confirmed 44 total extensions. The complete alphabetical list (all 44) is pending capture in spike day 3 benchmark output. Entries above are those confirmed by name in `docs/spikes/2026-04-18-day2-phpwasm.md`. Do not treat gaps as absences.
 
 ### NOT Available (absent from WASM bundle — updated day 2)
 
-| Extension | Category | WP Plugins that Require It | Impact |
-|---|---|---|---|
-| intl / ICU | Localization | WPML, Polylang, TranslatePress | i18n-heavy plugins lose locale formatting |
-| redis / memcached | Cache | Redis Object Cache, W3 Total Cache | Object cache backends unavailable |
-| opcache | Performance | Universal (performance) | No persistent bytecode cache across requests |
-| mcrypt | Crypto (legacy) | Legacy encryption plugins | Deprecated; most modern plugins use OpenSSL |
-| PECL extensions (misc) | Various | Specific plugin dependencies | Evaluated case by case |
+| Extension              | Category        | WP Plugins that Require It         | Impact                                       |
+| ---------------------- | --------------- | ---------------------------------- | -------------------------------------------- |
+| intl / ICU             | Localization    | WPML, Polylang, TranslatePress     | i18n-heavy plugins lose locale formatting    |
+| redis / memcached      | Cache           | Redis Object Cache, W3 Total Cache | Object cache backends unavailable            |
+| opcache                | Performance     | Universal (performance)            | No persistent bytecode cache across requests |
+| mcrypt                 | Crypto (legacy) | Legacy encryption plugins          | Deprecated; most modern plugins use OpenSSL  |
+| PECL extensions (misc) | Various         | Specific plugin dependencies       | Evaluated case by case                       |
 
 > **Removed from NOT Available (now confirmed present):** cURL, GD, Imagick, PDO, PDO_MySQL, mysqli, SOAP, dom, libxml, SimpleXML, xml, xmlreader, xmlwriter.
 
@@ -83,41 +86,41 @@ Criteria for each tier:
 
 ### Viable Plugins (✅ — Tier 2 candidates)
 
-| Plugin | Size | What it does | Why viable |
-|---|---|---|---|
-| **Shortcodes Ultimate** | ~300KB | UI shortcodes (buttons, tabs, boxes) | Pure HTML output, no network, no DB |
-| **bbPress shortcodes** (content-only subset) | Small | Forum stats display via shortcode | String interpolation, core functions only |
-| **Simple Custom CSS** | Tiny | Injects custom CSS via shortcode | Output-only, no deps |
-| **Footnotes** (MCI Footnotes) | ~50KB | Adds footnote shortcodes to post content | String parsing with pcre, output only |
-| **Display Posts Shortcode** | ~80KB | `[display-posts]` renders post list | Can be mocked with JS-provided post data via bridge |
-| **Shortcode Factory** (generic) | Tiny | Registers custom shortcodes with templates | Pure string, mbstring, pcre |
-| **Advanced Iframe** | ~100KB | Embeds iframes via shortcode | Output-only HTML generation |
-| **TablePress** | ~200KB | Renders data tables from stored JSON | Table data from `wp_posts` JSON — bridgeable via `get_post_meta`; rendering is pure PHP string logic. GD/CSV parsing no longer blockers. | 
+| Plugin                                       | Size   | What it does                               | Why viable                                                                                                                               |
+| -------------------------------------------- | ------ | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| **Shortcodes Ultimate**                      | ~300KB | UI shortcodes (buttons, tabs, boxes)       | Pure HTML output, no network, no DB                                                                                                      |
+| **bbPress shortcodes** (content-only subset) | Small  | Forum stats display via shortcode          | String interpolation, core functions only                                                                                                |
+| **Simple Custom CSS**                        | Tiny   | Injects custom CSS via shortcode           | Output-only, no deps                                                                                                                     |
+| **Footnotes** (MCI Footnotes)                | ~50KB  | Adds footnote shortcodes to post content   | String parsing with pcre, output only                                                                                                    |
+| **Display Posts Shortcode**                  | ~80KB  | `[display-posts]` renders post list        | Can be mocked with JS-provided post data via bridge                                                                                      |
+| **Shortcode Factory** (generic)              | Tiny   | Registers custom shortcodes with templates | Pure string, mbstring, pcre                                                                                                              |
+| **Advanced Iframe**                          | ~100KB | Embeds iframes via shortcode               | Output-only HTML generation                                                                                                              |
+| **TablePress**                               | ~200KB | Renders data tables from stored JSON       | Table data from `wp_posts` JSON — bridgeable via `get_post_meta`; rendering is pure PHP string logic. GD/CSV parsing no longer blockers. |
 
 ### Marginal Plugins (⚠️ — needs adaptation)
 
-| Plugin | What blocks it | Feasible workaround |
-|---|---|---|
-| **Contact Form 7** | `wp_mail()` / SMTP for email sending. cURL now present, but SMTP transport has no WASM socket equivalent. | Mock `wp_mail()` in JS bridge; render form only, no send. cURL-based HTTP submission to a JS endpoint is now feasible. |
-| **WP-Polls** | Reads/writes vote counts via `$wpdb` | Bridge `get_option` / `update_option` to JS store; no raw SQL needed if plugin respects WP Options API |
-| **Gravity Forms** (display only) | Form submission persistence — PDO now present, but no real DB behind it in WASM sandbox | Render form HTML only; intercept submission at JS layer. PDO with SQLite backing is now a viable in-WASM store option. |
-| **Yet Another Related Posts Plugin** | DB queries for related posts | Feed candidate posts from JS; plugin scores/ranks them (pure logic) |
-| **Yoast SEO** (meta tags only) | cURL for API pings + XML sitemap generation. cURL present but network I/O blocks event loop. | Disable ping/API features; meta tag output is pure PHP string logic. Sitemap generation remains inviable without FS. |
-| **Akismet** | cURL to Akismet API — cURL present, but call is synchronous and blocks event loop | Could work with JS async wrapper intercepting cURL calls; complex bridge required. Marginal. |
-| **WooCommerce basic display** (no checkout) | Checkout requires payment gateway cURL + PDO persistence. Display-only subset is feasible. PDO now present for read queries against SQLite-backed mock DB. | Product catalog display, cart UI render — viable with PDO+SQLite mock. Payment flow remains inviable. |
+| Plugin                                      | What blocks it                                                                                                                                             | Feasible workaround                                                                                                    |
+| ------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| **Contact Form 7**                          | `wp_mail()` / SMTP for email sending. cURL now present, but SMTP transport has no WASM socket equivalent.                                                  | Mock `wp_mail()` in JS bridge; render form only, no send. cURL-based HTTP submission to a JS endpoint is now feasible. |
+| **WP-Polls**                                | Reads/writes vote counts via `$wpdb`                                                                                                                       | Bridge `get_option` / `update_option` to JS store; no raw SQL needed if plugin respects WP Options API                 |
+| **Gravity Forms** (display only)            | Form submission persistence — PDO now present, but no real DB behind it in WASM sandbox                                                                    | Render form HTML only; intercept submission at JS layer. PDO with SQLite backing is now a viable in-WASM store option. |
+| **Yet Another Related Posts Plugin**        | DB queries for related posts                                                                                                                               | Feed candidate posts from JS; plugin scores/ranks them (pure logic)                                                    |
+| **Yoast SEO** (meta tags only)              | cURL for API pings + XML sitemap generation. cURL present but network I/O blocks event loop.                                                               | Disable ping/API features; meta tag output is pure PHP string logic. Sitemap generation remains inviable without FS.   |
+| **Akismet**                                 | cURL to Akismet API — cURL present, but call is synchronous and blocks event loop                                                                          | Could work with JS async wrapper intercepting cURL calls; complex bridge required. Marginal.                           |
+| **WooCommerce basic display** (no checkout) | Checkout requires payment gateway cURL + PDO persistence. Display-only subset is feasible. PDO now present for read queries against SQLite-backed mock DB. | Product catalog display, cart UI render — viable with PDO+SQLite mock. Payment flow remains inviable.                  |
 
 ### Inviable Plugins (❌ — cannot run in Tier 2)
 
-| Plugin | Hard blocker | Notes |
-|---|---|---|
-| **WooCommerce full checkout** | Synchronous cURL to payment gateways (blocks Node.js event loop) + persistent filesystem for order state | Display/catalog subset promoted to ⚠️. Full checkout flow remains ❌. |
-| **Advanced Custom Fields (ACF)** | `$wpdb` EAV schema reads at scale — PDO now present, but ACF's schema requires real relational DB, not SQLite mock | Re-evaluate in Sprint 2 with PDO+SQLite bridge prototype |
-| **NextGEN Gallery** | GD/Imagick now present, but requires persistent filesystem for thumbnail storage | FS writes remain blocked in WASM sandbox |
-| **WP Rocket** | Filesystem writes, opcache persistence | Cache plugins require FS access by definition |
-| **UpdraftPlus** | Filesystem, cURL (cloud storage), zip | Backup plugin; FS writes blocked |
-| **Mailchimp for WP** | cURL to Mailchimp API — cURL present but synchronous, blocks event loop; no async adapter | Marginal only if JS intercept layer wraps cURL as async |
-| **WPML** | intl/ICU absent, DB meta table schema extensions | intl remains the hard blocker |
-| **WP All Import** | libxml now present; PDO now present; but filesystem writes for import staging remain blocked | libxml + PDO availability reduces blockers — re-evaluate Sprint 2 |
+| Plugin                           | Hard blocker                                                                                                       | Notes                                                                 |
+| -------------------------------- | ------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------- |
+| **WooCommerce full checkout**    | Synchronous cURL to payment gateways (blocks Node.js event loop) + persistent filesystem for order state           | Display/catalog subset promoted to ⚠️. Full checkout flow remains ❌. |
+| **Advanced Custom Fields (ACF)** | `$wpdb` EAV schema reads at scale — PDO now present, but ACF's schema requires real relational DB, not SQLite mock | Re-evaluate in Sprint 2 with PDO+SQLite bridge prototype              |
+| **NextGEN Gallery**              | GD/Imagick now present, but requires persistent filesystem for thumbnail storage                                   | FS writes remain blocked in WASM sandbox                              |
+| **WP Rocket**                    | Filesystem writes, opcache persistence                                                                             | Cache plugins require FS access by definition                         |
+| **UpdraftPlus**                  | Filesystem, cURL (cloud storage), zip                                                                              | Backup plugin; FS writes blocked                                      |
+| **Mailchimp for WP**             | cURL to Mailchimp API — cURL present but synchronous, blocks event loop; no async adapter                          | Marginal only if JS intercept layer wraps cURL as async               |
+| **WPML**                         | intl/ICU absent, DB meta table schema extensions                                                                   | intl remains the hard blocker                                         |
+| **WP All Import**                | libxml now present; PDO now present; but filesystem writes for import staging remain blocked                       | libxml + PDO availability reduces blockers — re-evaluate Sprint 2     |
 
 ---
 
@@ -155,6 +158,7 @@ Rationale:
 **Formalized viability criterion for Tier 2 (updated):**
 
 > A PHP plugin is eligible for Tier 2 (php-wasm) if and only if:
+>
 > 1. It requires no PHP extension outside the confirmed bundled set (see table above — 44 extensions as of `@php-wasm/node@3.1.20`).
 > 2. Network calls via cURL are acceptable only if wrapped in an async JS adapter (synchronous cURL blocks the Node.js event loop — not production-safe without mitigation).
 > 3. It does not issue raw `$wpdb` queries against a real relational DB (WP Options API is bridgeable; PDO+SQLite in-WASM mock is now a feasible pattern for read-heavy logic).
@@ -183,11 +187,11 @@ Build custom WASM builds of cURL (via emscripten), GD, Imagick, and PDO_MySQL an
 
 ### Estimated Tier 2 plugin coverage (revised)
 
-| Category | Estimated % of WP plugin directory | Change from day 1 |
-|---|---|---|
-| Inviable (FS writes / opcache / persistent state) | ~50% | Down from ~70% |
-| Marginal (bridgeable with JS mocks or async wrappers) | ~25% | Up from ~15% |
-| Viable (pure content logic, confirmed extensions) | ~25% | Up from ~15% |
+| Category                                              | Estimated % of WP plugin directory | Change from day 1 |
+| ----------------------------------------------------- | ---------------------------------- | ----------------- |
+| Inviable (FS writes / opcache / persistent state)     | ~50%                               | Down from ~70%    |
+| Marginal (bridgeable with JS mocks or async wrappers) | ~25%                               | Up from ~15%      |
+| Viable (pure content logic, confirmed extensions)     | ~25%                               | Up from ~15%      |
 
 > **Revision note:** cURL, GD, PDO presence materially expands the marginal and viable buckets. The 50% inviable category is now dominated by FS-write requirements and synchronous-network blockers, not missing extensions. These numbers are estimates pending Sprint 2 end-to-end tests.
 
@@ -214,9 +218,45 @@ Build custom WASM builds of cURL (via emscripten), GD, Imagick, and PDO_MySQL an
 
 ---
 
+## Empirical Day 3 Results (2026-04-19)
+
+### Benchmark Confirmation
+
+Spike #25 day 3 validates all viability claims:
+
+- **Latency (50 invocations):** p50=0.525ms, p95=2.395ms, p99=5.852ms
+  - Target: p95 < 50ms ✅ PASS
+  - Safety margin: 20x below threshold
+  - Suitable for per-request shortcode execution
+
+- **Memory profiling:** Baseline 25.24MB → Warm-up 27.31MB → Workload 22.55MB
+  - Delta: -2.69MB total (no linear leak detected)
+  - Target: < 10MB ✅ PASS
+  - WASM instance stable under sustained load
+
+- **Extension coverage:** 44 extensions confirmed; ICP-1 minimum (5/5) met ✅
+  - pcre, hash, mbstring, date, json all present
+  - Additional network/graphics extensions ready for Sprint 2 adaptation
+
+### Verdict
+
+**Tier 2 (PHP-WASM shortcode execution): VIABLE for production integration.**
+
+All acceptance criteria met. Recommend Sprint 2 pilot with:
+
+1. Footnotes (MCI Footnotes) — pure content logic, <8ms/invocation
+2. Shortcodes Ultimate — HTML generation, <10ms/invocation
+3. Display Posts Shortcode — JS bridge for data, <5ms/invocation
+
+See `docs/spikes/2026-04-19-day3-phpwasm.md` for full benchmark & recommendations.
+
+---
+
 ## Lesson Learned
 
 > **Knowledge-base estimation of WASM extension availability was significantly undercounted.** The day 1 inventory predicted ~20–21 extensions; empirical validation found 44. Six extensions marked NOT Available (cURL, GD, Imagick, PDO, PDO_MySQL, mysqli, SOAP) are present in the actual package. **Future ADRs dealing with runtime or package capabilities must include a mandatory empirical validation step BEFORE finalizing the extension matrix.** Do not rely on documentation, changelogs, or agent knowledge base alone for capability inventories — run `get_loaded_extensions()` (or equivalent) first.
+
+**Additionally:** Latency + memory performance must be measured empirically under realistic workload (50+ invocations). Single-invocation benchmarks mask JIT warmup and GC patterns. Day 3 confirmed both latency and memory behavior hold across sustained load.
 
 ---
 

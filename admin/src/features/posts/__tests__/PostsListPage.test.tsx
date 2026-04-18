@@ -3,9 +3,31 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
-import { PostsListPage } from "../PostsListPage";
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+  vi,
+} from "vitest";
+import React from "react";
 import type { WpPost } from "../../../types/wp-post";
+import { PostsListPage } from "../PostsListPage";
+
+// ---------------------------------------------------------------------------
+// Mock ToastProvider before any component loads it.
+// Root cause: @radix-ui/react-toast (nodepress/node_modules, React 19.2.5)
+// conflicts with admin/node_modules/react (React 19.0.0) when dynamically
+// imported. Static imports go through Vitest/Vite resolver which keeps one
+// React instance. vi.mock is hoisted before static imports.
+// ---------------------------------------------------------------------------
+vi.mock("../../../components/ui/ToastProvider", () => ({
+  useToast: () => ({ show: vi.fn() }),
+  ToastProvider: ({ children }: { children: React.ReactNode }) =>
+    React.createElement(React.Fragment, null, children),
+}));
 
 // ---------------------------------------------------------------------------
 // Helpers

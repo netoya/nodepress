@@ -48,3 +48,14 @@
 - **Resultado:** 17/17 CircuitBreaker tests (11 unit + 6 stress) PASS. 62 total tests across hooks suite (no regressions). TS strict, ESLint 0 errors. **Date:** 2026-04-18
 - **Cambios CircuitBreaker.ts:** Ninguno. Implementación original es correcta bajo carga concurrente. **Date:** 2026-04-18
 - **Next:** Merge #30. Spike day 3 (2026-04-19) no impactado — #30 cierra hoy. **Date:** 2026-04-18
+
+## Sprint 1 día 3 — spike #25 php-wasm verdict final (2026-04-19)
+
+- **Benchmark 50 invocaciones:** Ejecutadas en `packages/spike-phpwasm/src/runner.ts`. 10 warm-up + 50 timed. Resultados: p50=0.525ms, p95=2.395ms, p99=5.852ms, stdev=0.930ms. **Target p95<50ms: PASS.** **Date:** 2026-04-19
+- **Memory profiling:** Baseline (antes warm-up) 25.24MB → after warm-up 27.31MB (delta +2.07MB) → after 50 invocations 22.55MB (delta -4.75MB desde warm-up). Total delta baseline→final: -2.69MB. **No leak lineal detectado. Target <10MB: PASS.** **Date:** 2026-04-19
+- **Extension matrix día 3:** 44 extensiones confirmadas (equivalente a day 2). ICP-1 mínimo cubierto: pcre, hash, mbstring, date, json. **PASS.** **Date:** 2026-04-19
+- **Verdict final:** ✅ **GO para Tier 2.** Todos criterios acceptación cumplidos. Tier 2 viable para sprint 2 producción. **Date:** 2026-04-19
+- **Spike doc:** `docs/spikes/2026-04-19-day3-phpwasm.md` creado. Contiene: executive, benchmark tabla (p50/p95/p99/min/max/mean/stdev), memory profile 4 fases, verdict criteria checklist, extension matrix, conocidas limitaciones, plugin recomendaciones (Footnotes, Shortcodes Ultimate, Display Posts Shortcode como high confidence; Contact Form 7 + WP-Polls como conditional; WooCommerce/ACF/WP Rocket/WPML como inviable). Sprint 2+ acciones listadas. **Date:** 2026-04-19
+- **ADR-008 transición:** Status `Proposed (Revised 2026-04-18)` → `Accepted 2026-04-19`. Añadida sección "Empirical Day 3 Results" con benchmark + memory + extension coverage + verdict. Lección aprendida: mandatory empirical validation para capability matrices futuras. **Date:** 2026-04-19
+- **Tiempo spike:** ~50 min day 1 + ~2.5 hrs day 2 + ~90 min day 3 = ~4.5 hrs total (dentro budget 5 hrs). **Date:** 2026-04-19
+- **Next:** Awaiting approval Román/Ingrid para Sprint 2 Tier 2 plugin integration. Hard stop 2026-04-19 met. **Date:** 2026-04-19
