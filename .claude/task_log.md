@@ -28,3 +28,5 @@
 | 2026-04-17 | roman           | #14 HookRegistry impl + tests (17/17 green) | 2 files  | pending | ✅     |
 | 2026-04-17 | raul            | spike #25 day 1 — php-wasm setup + ecosystem scan | 6 files  | pending | ✅     |
 | 2026-04-17 | marta           | #24 design system: 6 components + 46 tests green + jest-dom setup | 17 files | pending | ✅     |
+| 2026-04-17 | roman           | commit Wave 2 Sprint 1 día 1 (4 agents delivery) | 22+ files | 21eccf6 | ✅     |
+| 2026-04-17 | raul            | push main (21eccf6)                        | —        | —       | ✅     |
