@@ -127,3 +127,17 @@
 - **Gotcha — demo spec en main config:** `playwright.config.ts` sin `testIgnore` también recogía `e2e/demo/`. Fix: `testIgnore: ["**/demo/**"]`. **Date:** 2026-04-18
 - **Selectores demo spec:** sidebar usa `href="/posts"` (pathname), no hash — navegación via `page.goto("/#posts")`. PostsTable Edit button tiene `aria-label="Edit post: <title>"`. **Date:** 2026-04-18
 - **No regresiones:** 8 Playwright existentes + 119 Vitest todos verdes. **Date:** 2026-04-18
+
+## Sprint 4 — #59 Theme engine HTML improvements (2026-04-18)
+
+- **`renderSinglePost` mejorado:** añade `<meta name="viewport">`, `<nav>` con enlace ← Back to home, envuelve en `<main>`, `<footer>` con "Powered by NodePress". **Date:** 2026-04-18
+- **`renderArchive` mejorado:** `<header>` con `<h1>NodePress</h1>` + tagline, `<footer>` con "Powered by NodePress", cada item incluye `<time datetime>` si `post.date` está en context, empty state muestra "No posts yet." (ya no `<ul></ul>`). **Date:** 2026-04-18
+- **Tests ajustados:** aserciones actualizadas para nuevo HTML — `<h1>Posts</h1>` → `<h1>NodePress</h1>`, `<ul></ul>` → "No posts yet.", 3 tests nuevos (archive date, single nav/main/footer, single viewport meta). Total theme-engine: 8 tests verdes. **Date:** 2026-04-18
+- **TypeCheck + ESLint:** 0 errores en packages/theme-engine. **Date:** 2026-04-18
+
+## Sprint 4 — #65 Dashboard refinement (2026-04-18)
+
+- **Indicador "Actualizado:"** añadido en DashboardPage sobre PostsList cuando hay datos. Usa `dataUpdatedAt` de React Query (timestamp) formateado con `toLocaleTimeString("es-ES")`. `aria-label="Last updated"` para a11y. **Date:** 2026-04-18
+- **Texto en español:** el label de último update usa "Actualizado:" — primer texto en español deliberado en el dashboard (contexto: producto en español para la demo). **Date:** 2026-04-18
+- **4 estados intactos:** no se tocó DashboardSkeleton, DashboardError, DashboardEmpty, PostsList — estructura preservada. **Date:** 2026-04-18
+- **95/95 tests admin verdes.** TypeCheck + ESLint 0 errores. **Date:** 2026-04-18

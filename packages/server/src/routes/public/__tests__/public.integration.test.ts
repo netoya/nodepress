@@ -74,7 +74,7 @@ describe("Public HTML Routes", () => {
     expect(response.statusCode).toBe(200);
     expect(response.headers["content-type"]).toMatch(/text\/html/);
     expect(response.body).toContain("<!DOCTYPE html>");
-    expect(response.body).toContain("<h1>Posts</h1>");
+    expect(response.body).toContain("<h1>NodePress</h1>");
     expect(response.body).toContain("<ul>");
     expect(response.body).toContain('<a href="/p/');
   });

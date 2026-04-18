@@ -14,9 +14,15 @@ import { DashboardError } from "./components/DashboardError";
  * Current scaffold is functional, not final-design.
  */
 export const DashboardPage: FC = () => {
-  const { data, isLoading, isError, error, refetch, isFetching } = usePostsList(
-    { perPage: 10, status: "publish" },
-  );
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    isFetching,
+    dataUpdatedAt,
+  } = usePostsList({ perPage: 10, status: "publish" });
 
   const handleCreatePost = () => {
     // TODO: navigate to create post — router added in Sprint 2
@@ -44,7 +50,23 @@ export const DashboardPage: FC = () => {
       )}
 
       {!isLoading && !isError && data && data.posts.length > 0 && (
-        <PostsList posts={data.posts} />
+        <>
+          <p
+            aria-label="Last updated"
+            style={{
+              fontSize: "var(--font-size-xs, 0.75rem)",
+              color: "var(--color-neutral-400)",
+              margin: "0 0 var(--space-3)",
+              textAlign: "right",
+            }}
+          >
+            Actualizado:{" "}
+            {dataUpdatedAt
+              ? new Date(dataUpdatedAt).toLocaleTimeString("es-ES")
+              : "—"}
+          </p>
+          <PostsList posts={data.posts} />
+        </>
       )}
     </section>
   );

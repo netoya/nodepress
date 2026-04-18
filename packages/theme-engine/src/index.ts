@@ -79,27 +79,62 @@ function renderSinglePost(ctx: Record<string, unknown>): string {
   const content = (ctx["content"] as string) ?? "";
   return `<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>${title} — NodePress</title></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title} — NodePress</title>
+</head>
 <body>
+<nav><a href="/">← Back to home</a></nav>
+<main>
 <article>
   <h1>${title}</h1>
   <div class="content">${content}</div>
 </article>
+</main>
+<footer><p>Powered by NodePress</p></footer>
 </body>
 </html>`;
 }
 
 function renderArchive(ctx: Record<string, unknown>): string {
-  const posts = (ctx["posts"] as Array<{ title: string; slug: string }>) ?? [];
-  const items = posts
-    .map((p) => `<li><a href="/p/${p.slug}">${p.title}</a></li>`)
-    .join("\n");
+  const posts =
+    (ctx["posts"] as Array<{ title: string; slug: string; date?: string }>) ??
+    [];
+
+  let items: string;
+  if (posts.length === 0) {
+    items = "<p>No posts yet.</p>";
+  } else {
+    items =
+      "<ul>" +
+      posts
+        .map((p) => {
+          const datePart = p.date
+            ? ` <time datetime="${p.date}">${new Date(p.date).toLocaleDateString("en-GB")}</time>`
+            : "";
+          return `<li><a href="/p/${p.slug}">${p.title}</a>${datePart}</li>`;
+        })
+        .join("\n") +
+      "</ul>";
+  }
+
   return `<!DOCTYPE html>
 <html lang="en">
-<head><meta charset="UTF-8"><title>Posts — NodePress</title></head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Posts — NodePress</title>
+</head>
 <body>
-<h1>Posts</h1>
-<ul>${items}</ul>
+<header>
+  <h1>NodePress</h1>
+  <p>Open-source WordPress-compatible CMS</p>
+</header>
+<main>
+${items}
+</main>
+<footer><p>Powered by NodePress</p></footer>
 </body>
 </html>`;
 }

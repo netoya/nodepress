@@ -31,15 +31,38 @@ describe("InlineThemeEngine", () => {
       ],
     });
 
-    expect(html).toContain("<h1>Posts</h1>");
+    expect(html).toContain("<h1>NodePress</h1>");
     expect(html).toContain('<li><a href="/p/first-post">First post</a></li>');
     expect(html).toContain('<li><a href="/p/second-post">Second post</a></li>');
+    expect(html).toContain("Powered by NodePress");
   });
 
-  it("render('archive', { posts: [] }) renders an empty list", async () => {
+  it("render('archive', { posts: [] }) shows 'No posts yet.' message", async () => {
     const html = await engine.render("archive", { posts: [] });
 
-    expect(html).toContain("<ul></ul>");
+    expect(html).toContain("No posts yet.");
+  });
+
+  it("render('archive', {...}) includes date when post.date is provided", async () => {
+    const html = await engine.render("archive", {
+      posts: [{ title: "Dated post", slug: "dated-post", date: "2026-04-15" }],
+    });
+
+    expect(html).toContain('<time datetime="2026-04-15">');
+    expect(html).toContain("Dated post");
+  });
+
+  it("render('single', {...}) includes nav, main, footer and viewport meta", async () => {
+    const html = await engine.render("single", {
+      title: "Full page test",
+      content: "<p>Body.</p>",
+    });
+
+    expect(html).toContain('<meta name="viewport"');
+    expect(html).toContain("<nav>");
+    expect(html).toContain("<main>");
+    expect(html).toContain("<article>");
+    expect(html).toContain("Powered by NodePress");
   });
 
   it("render('unknown-template', {...}) returns JSON fallback wrapped in <pre>", async () => {
