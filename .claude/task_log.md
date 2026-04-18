@@ -30,5 +30,6 @@
 | 2026-04-17 | marta           | #24 design system: 6 components + 46 tests green + jest-dom setup                                                   | 17 files  | pending | ✅     |
 | 2026-04-17 | roman           | commit Wave 2 Sprint 1 día 1 (4 agents delivery)                                                                    | 22+ files | 21eccf6 | ✅     |
 | 2026-04-17 | raul            | push main (21eccf6)                                                                                                 | —         | —       | ✅     |
-| 2026-04-17 | helena          | tooling: ESLint flat config + vitest coverage-v8                                                                    | 5 files   | pending | ✅     |
-| 2026-04-17 | carmen          | #15 + #16 — 5 posts REST endpoints + integration tests (14/14 green)                                                | 7 files   | pending | ✅     |
+| 2026-04-17 | helena          | tooling: ESLint flat config + vitest coverage-v8                                                                    | 5 files   | bb3e442 | ✅     |
+| 2026-04-17 | carmen          | #15 + #16 — 5 posts REST endpoints + integration tests (14/14 green)                                                | 7 files   | bb3e442 | ✅     |
+| 2026-04-17 | roman           | commit Wave 3 (Helena tooling + Carmen endpoints)                                                                   | 33 files  | bb3e442 | ✅     |
