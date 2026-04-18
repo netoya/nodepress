@@ -79,6 +79,27 @@ components:
           description: Whether the field is password-protected.
           default: false
 
+    RenderedFieldEdit:
+      type: object
+      description: |
+        WP-style wrapper for rendered string content in context=edit mode.
+        Extends RenderedField by adding the `raw` field (unrendered source).
+        Only present when the request includes ?context=edit (requires admin auth).
+      required:
+        - rendered
+        - raw
+      properties:
+        rendered:
+          type: string
+          description: The rendered (HTML) version of the field.
+        raw:
+          type: string
+          description: The unrendered source content (shortcodes, raw HTML). Gated to context=edit.
+        protected:
+          type: boolean
+          description: Whether the field is password-protected.
+          default: false
+
     Post:
       type: object
       description: |
@@ -280,6 +301,19 @@ paths:
               - private
               - trash
             default: publish
+        - name: context
+          in: query
+          description: |
+            Scope of the request — controls which fields are returned (ADR-009).
+            - `view` (default): public shape. title/content/excerpt omit `raw`.
+            - `edit`: admin shape. title/content/excerpt include `raw` (unrendered source).
+              Requires `Authorization: Bearer <token>`. Returns 401 if absent or invalid.
+          schema:
+            type: string
+            enum:
+              - view
+              - edit
+            default: view
       responses:
         "200":
           description: A list of posts.
@@ -298,6 +332,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Post"
+        "401":
+          description: Missing or invalid Bearer token (only when context=edit).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 
     post:
       operationId: createPost
@@ -365,15 +405,30 @@ paths:
       operationId: getPost
       summary: Retrieve a post
       description: |
-        Retrieves a single post by ID. Public endpoint.
+        Retrieves a single post by ID. Public endpoint by default.
 
         **Hooks applied at serialize time (sync):**
         - `the_content` filter: applied to `content.rendered` when building the response.
           Signature: `(content: string, post: Post) => string`.
           Plugins can transform HTML content (e.g. shortcode expansion, syntax highlighting).
           If the filter throws, the circuit breaker contains the error and the raw DB content is returned.
+
+        **context=edit:** Returns `raw` fields and requires admin authentication (ADR-009).
       tags:
         - Posts
+      parameters:
+        - name: context
+          in: query
+          description: |
+            Scope of the request (ADR-009).
+            - `view` (default): public shape — no `raw` fields.
+            - `edit`: admin shape — includes `raw` (unrendered source). Requires Bearer token.
+          schema:
+            type: string
+            enum:
+              - view
+              - edit
+            default: view
       responses:
         "200":
           description: Post found.
@@ -381,6 +436,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Post"
+        "401":
+          description: Missing or invalid Bearer token (only when context=edit).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Post not found.
           content:
