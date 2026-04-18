@@ -125,6 +125,50 @@ Bring to team retro before implementing — hooks affect all devs and need conse
 
 ---
 
+## WP Conformance Harness
+
+### What it does
+
+Validates that every post response from the NodePress API conforms to the WP REST API v2 **contract** — shape, field types, divergence boundaries, and pagination headers. This is a layer above Carmen's routing/auth tests: those verify that endpoints exist and return correct HTTP codes; the harness verifies that the JSON payload is WP-compatible.
+
+The harness is built around three pure validator functions (`contract.ts`) that throw descriptive errors (`Missing field \`date\` in post response`) rather than opaque matcher diffs. Any regression in `serialize.ts` or a new endpoint that omits a required field will surface here.
+
+Divergences covered:
+
+| ID      | What is checked |
+|---------|----------------|
+| DIV-001 | `date_gmt` and `modified_gmt` must NOT appear in responses (ADR-006) |
+| DIV-002 | `title`, `content`, `excerpt` must be `{rendered: string, protected: boolean}` objects — never plain strings |
+| DIV-003 | `featured_media`, `comment_status`, `ping_status`, `format`, `sticky`, `template` must be absent (ADR-007) |
+| DIV-005 | `_nodepress` namespace must be present with `type`, `menu_order`, `parent_id`, `meta` sub-fields |
+
+### When it runs
+
+Integrated into the default `npm test` / `npx vitest run` at the project root.
+It lives in `packages/server/src/__tests__/wp-conformance/` and is picked up by the root vitest workspace config automatically.
+
+To run only the conformance harness:
+
+```sh
+npx vitest run packages/server/src/__tests__/wp-conformance/
+```
+
+To add a script alias in `package.json`:
+
+```json
+"test:conformance": "vitest run packages/server/src/__tests__/wp-conformance/"
+```
+
+### How to add a new endpoint to the harness
+
+1. Add a fixture (or reuse one) from `fixtures.ts` that represents the full expected WP response shape.
+2. Register a mock route in `post.contract.test.ts` `beforeAll` that returns the fixture.
+3. Write a test using `assertPostShape` or a new `assertXxxShape` function in `contract.ts`.
+4. If the new endpoint introduces a documented divergence, add a regression test block with the DIV id in the test name.
+5. If the shape differs from `WpPost` (e.g., a different resource type), extend `contract.ts` with a new validator function following the same pattern: pure function, descriptive error messages, no Jest matchers.
+
+---
+
 ## ESLint config extension
 
 Config file is `eslint.config.mjs` (renamed from `.js` on 2026-04-17). Root `package.json` has no `"type": "module"` on purpose — keeping it absent avoids flipping the default for any future root-level `.js` tooling script. The `.mjs` extension is explicit and surgical: ESLint auto-detects flat config from `.mjs`, and Node stops emitting `MODULE_TYPELESS_PACKAGE_JSON` on lint runs.

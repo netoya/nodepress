@@ -37,6 +37,15 @@
 - **Q3 — `addHook` en PluginContext:** Mantenido. ADR-005 lo documenta explícitamente como soporte para plugins portados. Alias tipado, coste mínimo, win de compatibilidad real. **Date:** 2026-04-17
 - **DisposableRegistry creada en context.ts:** `register(dispose)` + `disposeAll(): Promise<void>`. `PluginContext extends DisposableRegistry`. Re-exportada desde hooks/index.ts. Typecheck verde. **Date:** 2026-04-17
 
+## Sprint 1 día 1 — #17 WP conformance harness
+
+- **Harness location:** `packages/server/src/__tests__/wp-conformance/` — 3 files: `fixtures.ts`, `contract.ts`, `post.contract.test.ts`. **Date:** 2026-04-17
+- **contract.ts design:** Pure functions only, no Jest matchers. `assertPostShape`, `assertListShape`, `assertHeaders` — each throws descriptive error (`Missing field \`date\` in post response`). Exportable — can be used by any future test without importing Vitest. **Date:** 2026-04-17
+- **Divergence regression coverage:** DIV-001 (no date_gmt/modified_gmt), DIV-002 (rendered objects not plain strings), DIV-003 (absent WP v1 fields), DIV-005 (_nodepress namespace required). DIV-004 (taxonomies) deferred — no endpoints yet. **Date:** 2026-04-17
+- **26 tests, 26 green.** Typecheck clean, ESLint 0 errors, Prettier applied. **Date:** 2026-04-17
+- **Bug flag in serialize.ts (Carmen):** `excerpt` field serialized with `raw` key (`{rendered, raw, protected}`) but the OpenAPI spec RenderedField schema only declares `rendered` and `protected` — `raw` is an undocumented extra field. Not a breaking issue but diverges from spec schema. Flagged, NOT fixed — Carmen's ownership. **Date:** 2026-04-17
+- **quality-gates.md updated:** Section "## WP Conformance Harness" added to `docs/tooling/quality-gates.md`. **Date:** 2026-04-17
+
 ## Session Todos
 
 - move-migrations-to-drizzle: done

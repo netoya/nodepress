@@ -16,3 +16,14 @@ type: project
 - **Flag admin tests desde root:** fallan con "Cannot find module 'react'". Funcionan desde `admin/`. Pre-existente, Lucas/Marta. **Date:** 2026-04-17
 - **Pre-commit hooks (husky):** NO configurados. Decisión Sprint 2 tras retro Sprint 1. **Date:** 2026-04-17
 - **doc `docs/tooling/quality-gates.md`:** fuente canónica del sistema de calidad del proyecto. **Date:** 2026-04-17
+
+## Sprint 1 — PHP-WASM Extension Matrix (2026-04-17) — #27
+
+- **ADR-008 creado:** `docs/adr/ADR-008-php-wasm-extension-matrix.md`. Status: Proposed. Complementa ADR-003 Tier 2.
+- **Extensions bundled en `@php-wasm/node@3.1.20` (15 totales):** SQLite, Libzip, Libpng, OpenSSL, MySQL(legacy), CLI + core PHP: JSON, mbstring, pcre, SPL, date, hash, filter, ctype, tokenizer.
+- **Extensiones ausentes críticas (9):** cURL, GD, Imagick, PDO/PDO_MySQL, intl, xml/libxml/SimpleXML, soap, redis/memcached, opcache.
+- **Viabilidad estimada Tier 2:** ~15% viable, ~15% marginal, ~70% inviable.
+- **Bloqueo principal (~70% inviable):** cURL para APIs externas + GD/Imagick para imágenes + PDO para DB-heavy plugins.
+- **Recomendación POC Raúl día 2:** plugin `Footnotes` (MCI Footnotes, ~50KB, pcre+string only) o bespoke `[hello-nodepress]` 20 líneas. NO usar Contact Form 7 (cURL en submit).
+- **Criterio de viabilidad formalizado en ADR-008:** sin extensión fuera del bundle, sin cURL/network, sin `$wpdb` raw SQL, sin FS writes, sin loops proporcionales a datos.
+- **Fuente:** knowledge base + spike day 1 Raúl. Pendiente validación empírica día 2.

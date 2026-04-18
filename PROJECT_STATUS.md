@@ -161,4 +161,26 @@
 
 ---
 
+## Sprint 1 día 1 — health check (2026-04-17)
+
+### Progreso tickets
+
+- **DONE hoy:** #14 (HookRegistry + tests), #15 (posts CRUD), #16 (5 endpoints REST), #18 (auth Bearer), #19 (PluginContext/DisposableRegistry), #22 (admin shell), #24 (design system base) + tooling extra (ESLint flat config, vitest coverage-v8)
+- **En curso:** #25 (spike php-wasm — día 1/3, hard stop 2026-04-19)
+- **TODO:** #17 (test harness — pendiente Ingrid), #20 (bloqueado hasta spike #25/#26), #23 (semana 2 — pendiente wireframes Sofía), #26 (parte del spike), #27 (Helena — pendiente hoy)
+
+### Calidad
+
+- Tests nuevos día 1: ~80 verdes
+- Coverage core: HookRegistry 93.8%, context.ts 100%
+- ADRs nuevas: 005, 006, 007 (todas Proposed) — 008 pendiente Helena hoy
+
+### Proceso
+
+- Retro Sprint 0 async lanzada: `docs/process/retros/sprint-0-retro.md` — cierre viernes 2026-04-18 12:00
+- Ping Sofía wireframes dashboard: `docs/process/pings/2026-04-17-sofia-wireframes-dashboard.md` — deadline viernes EOD
+- Daily async activo en GitHub Discussions (formato 3 líneas)
+
+---
+
 _Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-17_
