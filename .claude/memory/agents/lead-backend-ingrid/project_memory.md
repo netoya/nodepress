@@ -74,6 +74,17 @@
 - **Test:** `packages/db/src/seeds/__tests__/seeds.test.ts` — import guard (1 green) + Testcontainers idempotency (skipIf !DOCKER_AVAILABLE). **Date:** 2026-04-18
 - **Docs:** `docs/guides/seeding.md` created — contents, run command, reset procedure. **Date:** 2026-04-18
 
+## Sprint 1 día 2 — Tier 2 Bridge ADR-017 (2026-04-18)
+
+- **Bridge module created:** `packages/server/src/bridge/index.ts` — singleton PHP-WASM runtime, input validation, bootstrap with ADR-018 security stubs (exec/shell/curl/mail/wp*mail/file_put_contents/fwrite + wp_remote*\* stubs), shortcode engine (add_shortcode/do_shortcode/shortcode_atts), WP Options API (get_option/update_option via pluginConfig), WP Posts API (get_post/get_posts via candidatePosts). **Date:** 2026-04-18
+- **Observability (ADR-019):** `emitSpan` with `BridgeSpan` shape (event, trace_id, invocation_id, plugin_id, shortcode_tag, duration_ms, input_size_bytes, output_size_bytes, error_code, warnings_count, timestamp) + level field. console.log(JSON.stringify) in Sprint 2. **Date:** 2026-04-18
+- **Singleton pattern:** `getPhpInstance()` lazy init, `destroyBridge()` teardown, `@php-wasm/node` loaded via dynamic import with `emscriptenOptions: { processId: process.pid }`. If init fails → BRIDGE_INIT_FAILED + passthrough. **Date:** 2026-04-18
+- **registerBridgeHooks:** registers a sync no-op FilterEntry for `the_content` at priority 9 under BRIDGE_PLUGIN_ID="tier2-bridge". Heavy async PHP work done OUTSIDE applyFilters (ADR-005 intact). **Date:** 2026-04-18
+- **Tests:** 8 tests in `packages/server/src/bridge/__tests__/bridge.test.ts`. All 156 project tests green. @php-wasm/node and @php-wasm/universal mocked with vi.mock. **Date:** 2026-04-18
+- **ADR-017 → Accepted:** Co-signed by Ingrid. Status updated in `docs/adr/ADR-017-tier2-bridge-surface.md`. **Date:** 2026-04-18
+- **Key pattern for timeout test:** Don't use fake timers with hanging promises. Instead, have mockRunFn throw `new Error("BRIDGE_TIMEOUT")` to exercise the catch branch that maps to the error code. **Date:** 2026-04-18
+- **PHP bootstrap escaping:** postContent escaped for PHP double-quoted strings (backslash, quote, dollar, CR, LF). candidatePosts and pluginConfig serialized as JSON injected into PHP code. **Date:** 2026-04-18
+
 ## Session Todos
 
 - move-migrations-to-drizzle: done

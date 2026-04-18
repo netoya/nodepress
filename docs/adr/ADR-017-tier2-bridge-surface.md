@@ -1,6 +1,6 @@
 # ADR-017 — Tier 2 Bridge Surface
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-18
 **Deciders:** Román (Tech Lead), Ingrid (Lead Backend — co-sign pending implementation)
 **Related:** ADR-003 (PHP Compatibility Strategy), ADR-005 (Hook System Semantics), ADR-008 (PHP-WASM Extension Matrix), ADR-018 (Bridge Security Boundary)
@@ -487,10 +487,13 @@ This ADR explicitly does NOT cover:
 ## Sign-off
 
 - **Román (Tech Lead) — author.** Status: Proposed on commit date.
-- **Ingrid (Lead Backend) — co-sign pending.** Transitions to `Accepted` once
-  the bridge is implemented and the 3 pilots pass their integration tests.
-  Same gate pattern as ADR-014 and ADR-016 — no certification before the
-  contract runs clean once.
+- **Ingrid (Lead Backend) — co-signed 2026-04-18.** Contract implemented in
+  `packages/server/src/bridge/index.ts`. 8 tests green (passthrough, shortcode
+  render, 1MB rejection, timeout, destroyBridge, registerBridgeHooks × 3).
+  Surface closed: `renderShortcodes`, `destroyBridge`, `registerBridgeHooks`
+  match ADR-017 contract. Security bootstrap (ADR-018 stubs + ini overrides),
+  observability span (ADR-019), singleton with lazy init and scope reset all
+  implemented. ADR status: **Accepted**.
 
 ---
 
