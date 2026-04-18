@@ -84,3 +84,16 @@
 - **Hash routing sin React Router:** `window.location.hash` → 'dashboard' | 'posts'. Sprint 2 añade React Router. **Date:** 2026-04-18
 - **MSW handlers extendidos:** +2 posts dummy (status draft, pending) para demo realista. **Date:** 2026-04-18
 - **Tests totales admin:** 54/54 verdes (4 nuevos + 50 previos sin regresiones). **Date:** 2026-04-18
+
+## Sprint 1 sem 2 — Playwright demo video config + spec (2026-04-18)
+
+- **`admin/playwright.demo.config.ts`** creado: config separada para grabación de video. `video: on`, `trace: on`, `fullyParallel: false`, `workers: 1`, `testDir: ./e2e/demo`. NO arranca webServer — requiere stack real corriendo. **Date:** 2026-04-18
+- **`admin/e2e/demo/demo-30-04.spec.ts`** creado: flujo CTO completo — dashboard → posts list → create post → [DEMO] prefix en lista → footer en editor. Pacing relajado con waitForTimeout para video. **Date:** 2026-04-18
+- **`playwright.config.ts` actualizado:** `testIgnore: ["**/demo/**"]` para que los 8 tests existentes no sean afectados por el directorio demo. **Date:** 2026-04-18
+- **`scripts/record-demo-video.sh`** creado: script bash one-shot con Docker check, DB seed, backend + admin en bg, poll readiness, Playwright run, cleanup trap, reporte de ruta del video. **Date:** 2026-04-18
+- **`docs/process/demo-30-04-plan.md`** actualizado: sección "Recorded video" con narración para outreach y tabla 3 momentos clave. **Date:** 2026-04-18
+- **`admin/README.md`** actualizado: sección "Recording the demo video" con one-shot y manual (2 terminales). **Date:** 2026-04-18
+- **`.gitignore`** actualizado: `playwright-report-demo/` añadido. **Date:** 2026-04-18
+- **Gotcha — demo spec en main config:** `playwright.config.ts` sin `testIgnore` también recogía `e2e/demo/`. Fix: `testIgnore: ["**/demo/**"]`. **Date:** 2026-04-18
+- **Selectores demo spec:** sidebar usa `href="/posts"` (pathname), no hash — navegación via `page.goto("/#posts")`. PostsTable Edit button tiene `aria-label="Edit post: <title>"`. **Date:** 2026-04-18
+- **No regresiones:** 8 Playwright existentes + 119 Vitest todos verdes. **Date:** 2026-04-18

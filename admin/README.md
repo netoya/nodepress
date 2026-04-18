@@ -49,3 +49,30 @@ npm run test:e2e
 
 MSW handlers are active by default in Vitest. Playwright uses `page.route` mocks
 and blocks the MSW service worker (`serviceWorkers: 'block'`).
+
+## Recording the demo video
+
+To record the end-to-end demo for outreach (720p, ~30–60 s):
+
+```bash
+# One-shot (handles stack startup + recording + cleanup)
+./scripts/record-demo-video.sh
+```
+
+Or manually (two terminals required):
+
+```bash
+# Terminal 1 — repo root
+NODEPRESS_DEMO_MODE=true npm run dev
+
+# Terminal 2 — admin
+cd admin
+VITE_USE_MSW=false VITE_API_URL=http://localhost:3000 npm run dev
+
+# Terminal 3 — once both are up
+npm run demo:video        # from repo root
+# or: cd admin && npx playwright test --config=playwright.demo.config.ts
+```
+
+Output: `admin/test-results/<spec-dir>/video.webm`
+HTML trace: `admin/playwright-report-demo/index.html`

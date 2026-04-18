@@ -32,7 +32,8 @@
     "test:coverage": "vitest run --coverage",
     "test:integration": "DOCKER_AVAILABLE=true vitest run --root packages/server --config vitest.integration.config.ts && DOCKER_AVAILABLE=true vitest run --root packages/db --config vitest.integration.config.ts",
     "smoke:fresh-clone": "tsx scripts/smoke-fresh-clone.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "demo:video": "cd admin && npx playwright test --config=playwright.demo.config.ts"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "^11.14.0",

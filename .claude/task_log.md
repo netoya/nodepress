@@ -70,3 +70,4 @@
 | 2026-04-18 | ingrid          | db seeds (1 admin user + 5 posts + 3 options) idempotente + test                                                    | 3 files   | pending | ✅     |
 | 2026-04-18 | roman           | demo hooks boot script + NODEPRESS_DEMO_MODE flag + docs                                                            | 5 files   | pending | ✅     |
 | 2026-04-18 | lucas           | VITE_USE_MSW + VITE_API_URL flags admin (gap demo 3/3) — api.ts, .env.example, 6 hooks, README, 2 new tests (88/88) | 11 files  | pending | ✅     |
+| 2026-04-18 | lucas           | Playwright video demo (config + spec + record script) — acción meet #10                                             | 5 files   | pending | ✅     |

@@ -88,3 +88,42 @@ All three must be visible simultaneously in either the automated test run or the
 ## Fallback
 
 If the admin panel is not ready by 2026-04-30, assertions 1–3 can be demonstrated via the automated test output and curl session. The test file is the canonical proof of integration.
+
+## Recorded video
+
+The demo can be captured end-to-end with:
+
+```bash
+./scripts/record-demo-video.sh
+```
+
+Output: `admin/test-results/demo-30-04-<timestamp>/video.webm` (~720p, ~30–60 s).
+Also generates an HTML trace at `admin/playwright-report-demo/` for reviewers.
+
+The script handles: DB seed, backend startup (demo mode), admin startup, readiness polling,
+Playwright recording, and process cleanup. Requires Docker + Postgres running.
+
+To run only the Playwright pass (stack already up):
+
+```bash
+cd admin && npx playwright test --config=playwright.demo.config.ts
+```
+
+### For outreach
+
+Send the `.webm` + a one-paragraph narration:
+
+> "This is NodePress, a modern CMS compatible with the WordPress REST API,
+> rewritten in TypeScript. What you're seeing is a fresh install — 5 sample
+> posts, a writer's dashboard, and live demonstration of our plugin system
+> via the [DEMO] prefix and the footer you'll see at the end. A plugin
+> registered at server startup intercepts every post save and every content
+> render. No PHP. Written in ~2500 lines of TypeScript."
+
+### Three key moments captured
+
+| #   | Moment                                           | Assertion                      |
+| --- | ------------------------------------------------ | ------------------------------ |
+| 1   | Dashboard renders with 5 seeded posts            | `Welcome to NodePress` visible |
+| 2   | Post saved with `[DEMO]` prefix                  | `pre_save_post` filter proof   |
+| 3   | Content view shows `Powered by NodePress` footer | `the_content` filter proof     |
