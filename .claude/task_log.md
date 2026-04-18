@@ -78,3 +78,12 @@
 | 2026-04-18 | lucas           | extender video spec con public home + post page (6 pasos más)                                                                 | 1 file    | pending | ✅     |
 | 2026-04-18 | carmen          | #22 public HTML renderer MVP (GET / + GET /p/:slug, hook the_content wiring, 6 tests green, 145/148 total)                    | 4 files   | pending | ✅     |
 | 2026-04-18 | ingrid          | Tier 2 bridge ADR-017 — renderShortcodes + destroyBridge + registerBridgeHooks (8 tests green, 156 total, ADR-017 → Accepted) | 3 files   | pending | ✅     |
+| 2026-04-18 | ingrid          | #S2 bridge harness — renderShortcodes + singleton PHP-WASM + BridgeInput/Output contract                                      | 2 files   | done    | ✅     |
+| 2026-04-18 | raul            | #S2 Footnotes pilot — pcre+string transform, 13 tests                                                                         | 2 files   | done    | ✅     |
+| 2026-04-18 | raul            | #S2 Shortcodes Ultimate pilot — su_button/su_box/su_note, 16 tests                                                            | 2 files   | done    | ✅     |
+| 2026-04-18 | carmen          | #S2 Display Posts pilot — candidatePosts injection, 17 tests                                                                  | 2 files   | done    | ✅     |
+| 2026-04-18 | ingrid          | #S2 wire bridge+pilots into server boot + ADR-019 Accepted                                                                    | 2 files   | done    | ✅     |
+| 2026-04-18 | roman           | #S2 ADR-013→Accepted + ADR-015 + ADR-017 Tier2 Bridge Surface                                                                 | 3 files   | done    | ✅     |
+| 2026-04-18 | helena          | #S2 ADR-018→Accepted + ADR-019 Proposed + CI coverage/PR-lint/audit workflows                                                 | 5 files   | done    | ✅     |
+| 2026-04-18 | carmen          | #18 drizzle:generate+migrate con journal comiteado                                                                            | 5 files   | done    | ✅     |
+| 2026-04-18 | raul            | #19 GC stale entries CircuitBreaker — 3 tests, 148→156 total                                                                  | 3 files   | done    | ✅     |
