@@ -67,10 +67,11 @@ async function main() {
     console.log(`   ✓ Concept works\n`);
 
     console.log("=== Summary ===");
-    console.log(`Total setup time: ${(loadMs + runtimeMs + initMs).toFixed(2)}ms`);
+    console.log(
+      `Total setup time: ${(loadMs + runtimeMs + initMs).toFixed(2)}ms`,
+    );
     console.log(`Per-execution overhead: ${execMs.toFixed(2)}ms`);
     console.log("✅ Day 1 baseline achieved\n");
-
   } catch (error) {
     console.error("❌ Error during spike:", error);
     process.exit(1);

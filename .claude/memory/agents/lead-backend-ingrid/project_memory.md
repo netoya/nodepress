@@ -38,6 +38,7 @@
 - **DisposableRegistry creada en context.ts:** `register(dispose)` + `disposeAll(): Promise<void>`. `PluginContext extends DisposableRegistry`. Re-exportada desde hooks/index.ts. Typecheck verde. **Date:** 2026-04-17
 
 ## Session Todos
+
 - move-migrations-to-drizzle: done
 - clean-duplicate-migrations: done
 

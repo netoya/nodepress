@@ -1,4 +1,5 @@
 # Brief — Design System Components Base
+
 **Asignado a:** Marta (dev-frontend)
 **Creado por:** Lucas (lead-frontend)
 **Fecha:** 2026-04-17
@@ -34,22 +35,22 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 ### Variants de estilo
 
-| Variant | Background | Foreground | Border |
-|---|---|---|---|
-| `primary` | `--color-primary-500` | `--color-neutral-0` | none |
-| `secondary` | `--color-neutral-100` | `--color-neutral-800` | `1px solid --color-neutral-300` |
-| `ghost` | transparent | `--color-neutral-700` | none |
-| `destructive` | `--color-danger-500` | `--color-neutral-0` | none |
+| Variant       | Background            | Foreground            | Border                          |
+| ------------- | --------------------- | --------------------- | ------------------------------- |
+| `primary`     | `--color-primary-500` | `--color-neutral-0`   | none                            |
+| `secondary`   | `--color-neutral-100` | `--color-neutral-800` | `1px solid --color-neutral-300` |
+| `ghost`       | transparent           | `--color-neutral-700` | none                            |
+| `destructive` | `--color-danger-500`  | `--color-neutral-0`   | none                            |
 
 Hover: oscurecer 1 step (ej. `primary-600`). Active: `primary-700`. Disabled: opacity 0.4, cursor not-allowed. Focus: `box-shadow: var(--shadow-focus)` (destructive usa `--shadow-focus-danger`).
 
 ### Sizes
 
-| Size | Padding | Font size | Height |
-|---|---|---|---|
-| `sm` | `--space-2` / `--space-3` | `--font-size-sm` | 32px |
-| `md` | `--space-3` / `--space-4` | `--font-size-base` | 40px |
-| `lg` | `--space-4` / `--space-6` | `--font-size-md` | 48px |
+| Size | Padding                   | Font size          | Height |
+| ---- | ------------------------- | ------------------ | ------ |
+| `sm` | `--space-2` / `--space-3` | `--font-size-sm`   | 32px   |
+| `md` | `--space-3` / `--space-4` | `--font-size-base` | 40px   |
+| `lg` | `--space-4` / `--space-6` | `--font-size-md`   | 48px   |
 
 ### asChild
 
@@ -92,13 +93,13 @@ interface BadgeProps {
 
 ### Variants de estilo
 
-| Variant | Background | Foreground |
-|---|---|---|
+| Variant   | Background            | Foreground            |
+| --------- | --------------------- | --------------------- |
 | `default` | `--color-neutral-100` | `--color-neutral-700` |
 | `success` | `--color-success-100` | `--color-success-700` |
 | `warning` | `--color-warning-100` | `--color-warning-700` |
-| `danger` | `--color-danger-100` | `--color-danger-700` |
-| `info` | `--color-info-100` | `--color-info-700` |
+| `danger`  | `--color-danger-100`  | `--color-danger-700`  |
+| `info`    | `--color-info-100`    | `--color-info-700`    |
 
 Font size: `--font-size-xs`. Font weight: `--font-weight-semibold`. Padding: `--space-1` / `--space-2`. Border-radius: `--radius-full`.
 
@@ -120,12 +121,8 @@ Font size: `--font-size-xs`. Font weight: `--font-weight-semibold`. Padding: `--
   <CardHeader>
     <CardTitle>Título</CardTitle>
   </CardHeader>
-  <CardContent>
-    contenido
-  </CardContent>
-  <CardFooter>
-    acciones
-  </CardFooter>
+  <CardContent>contenido</CardContent>
+  <CardFooter>acciones</CardFooter>
 </Card>
 ```
 
@@ -177,10 +174,10 @@ interface SpinnerProps {
 Elemento `<span role="status" aria-label={label}>` con animación CSS `@keyframes spin`. Sin SVG externo — usa `border` CSS (técnica border-top transparent).
 
 | Size | Dimensiones | Border width |
-|---|---|---|
-| `sm` | 16×16px | 2px |
-| `md` | 24×24px | 2px |
-| `lg` | 32×32px | 3px |
+| ---- | ----------- | ------------ |
+| `sm` | 16×16px     | 2px          |
+| `md` | 24×24px     | 2px          |
+| `lg` | 32×32px     | 3px          |
 
 Color del spinner: `--color-primary-500`. Track color: `--color-neutral-200`.
 
@@ -272,6 +269,7 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
 ### Fallback UI por defecto
 
 Cuando `hasError === true` y no hay `fallback` prop:
+
 - Container centrado, padding `--space-8`.
 - Título: "Algo salió mal" (`--font-size-lg`, `--color-danger-700`).
 - Descripción: el mensaje del error (`error.message`), `--font-size-sm`, `--color-neutral-500`.

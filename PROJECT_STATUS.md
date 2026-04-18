@@ -17,12 +17,12 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado         | Objetivo                                          |
-| ------------ | ----------------------- | -------------- | ------------------------------------------------- |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO     | Scaffolding: monorepo, CI, docker, packages init  |
-| Sprint 1     | 2026-04-17 → 2026-04-30 | 🟢 EN CURSO    | Hook system + CRUD posts REST + Admin shell       |
-| Sprint 2     | 2026-05-01 → 2026-05-14 | ⚪ BACKLOG     | Roles/capabilities + taxonomías + CLI port-plugin |
-| Sprint 3     | 2026-05-15 → 2026-05-28 | ⚪ BACKLOG     | Plugin API + vm.Context + primer plugin ejemplo   |
+| Sprint       | Fechas                  | Estado      | Objetivo                                          |
+| ------------ | ----------------------- | ----------- | ------------------------------------------------- |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init  |
+| Sprint 1     | 2026-04-17 → 2026-04-30 | 🟢 EN CURSO | Hook system + CRUD posts REST + Admin shell       |
+| Sprint 2     | 2026-05-01 → 2026-05-14 | ⚪ BACKLOG  | Roles/capabilities + taxonomías + CLI port-plugin |
+| Sprint 3     | 2026-05-15 → 2026-05-28 | ⚪ BACKLOG  | Plugin API + vm.Context + primer plugin ejemplo   |
 
 ---
 
@@ -55,15 +55,15 @@
 
 ### Backend
 
-| #   | Tarea                                              | Responsable     | Estado  | Notas             |
-| --- | -------------------------------------------------- | --------------- | ------- | ----------------- |
-| 14  | HookRegistry + removeAllByPlugin + tests 100%      | Román           | ⬜ TODO | Pieza más crítica |
-| 15  | Content engine posts CRUD                          | Ingrid + Carmen | ⬜ TODO |                   |
-| 16  | 5 endpoints REST WP-compatible (posts)             | Ingrid + Carmen | ⬜ TODO |                   |
-| 17  | Test harness WP API conformance                    | Ingrid          | ⬜ TODO |                   |
-| 18  | Auth simplificado (Bearer = admin)                 | Ingrid          | ⬜ TODO | Roles en Sprint 2 |
-| 19  | PluginContext + DisposableRegistry (types)         | Ingrid          | ⬜ TODO | Semana 1          |
-| 20  | wrapSyncFilter + wrapAsyncAction + circuit breaker | Raúl            | ⬜ TODO |                   |
+| #   | Tarea                                              | Responsable     | Estado  | Notas                                                       |
+| --- | -------------------------------------------------- | --------------- | ------- | ----------------------------------------------------------- |
+| 14  | HookRegistry + removeAllByPlugin + tests 100%      | Román           | ⬜ TODO | Pieza más crítica                                           |
+| 15  | Content engine posts CRUD                          | Ingrid + Carmen | ⬜ TODO |                                                             |
+| 16  | 5 endpoints REST WP-compatible (posts)             | Ingrid + Carmen | ⬜ TODO |                                                             |
+| 17  | Test harness WP API conformance                    | Ingrid          | ⬜ TODO |                                                             |
+| 18  | Auth simplificado (Bearer = admin)                 | Ingrid          | ⬜ TODO | Roles en Sprint 2                                           |
+| 19  | PluginContext + DisposableRegistry (types)         | Ingrid          | ⬜ TODO | Semana 1                                                    |
+| 20  | wrapSyncFilter + wrapAsyncAction + circuit breaker | Raúl            | ⬜ TODO |                                                             |
 | 21  | Schema plugin_registry table                       | Ingrid          | ✅ DONE | migration consolidated in packages/db/drizzle/ post-cleanup |
 
 ### Frontend

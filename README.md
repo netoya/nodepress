@@ -110,23 +110,23 @@ reported by Vite (typically `http://localhost:5173`).
 
 Top-level scripts (see [`package.json`](package.json) for the full list):
 
-| Script                      | Purpose                                          |
-| --------------------------- | ------------------------------------------------ |
-| `npm run dev`               | Start the Fastify server in watch mode           |
-| `npm run dev:admin`         | Start the React admin SPA (Vite)                 |
-| `npm run build`             | Build every workspace                            |
-| `npm run test`              | Run the full Vitest suite once                   |
-| `npm run test:watch`        | Vitest in watch mode                             |
-| `npm run lint`              | ESLint over `.ts` / `.tsx`                       |
-| `npm run lint:fix`          | ESLint with auto-fix                             |
-| `npm run format`            | Prettier over TS / TSX / JSON / MD               |
-| `npm run typecheck`         | `tsc --build` across the monorepo                |
-| `npm run db:migrate`        | Apply Drizzle migrations                         |
-| `npm run db:seed`           | Run seeds from `packages/db/src/seeds`           |
+| Script                        | Purpose                                        |
+| ----------------------------- | ---------------------------------------------- |
+| `npm run dev`                 | Start the Fastify server in watch mode         |
+| `npm run dev:admin`           | Start the React admin SPA (Vite)               |
+| `npm run build`               | Build every workspace                          |
+| `npm run test`                | Run the full Vitest suite once                 |
+| `npm run test:watch`          | Vitest in watch mode                           |
+| `npm run lint`                | ESLint over `.ts` / `.tsx`                     |
+| `npm run lint:fix`            | ESLint with auto-fix                           |
+| `npm run format`              | Prettier over TS / TSX / JSON / MD             |
+| `npm run typecheck`           | `tsc --build` across the monorepo              |
+| `npm run db:migrate`          | Apply Drizzle migrations                       |
+| `npm run db:seed`             | Run seeds from `packages/db/src/seeds`         |
 | `npm run db:drizzle:generate` | Generate new Drizzle migration files           |
-| `npm run db:drizzle:push`   | Push schema changes to the database (dev only)   |
-| `npm run db:drizzle:status` | Show Drizzle migration status                    |
-| `npm run cli -- <command>`  | Run the `nodepress` CLI from source              |
+| `npm run db:drizzle:push`     | Push schema changes to the database (dev only) |
+| `npm run db:drizzle:status`   | Show Drizzle migration status                  |
+| `npm run cli -- <command>`    | Run the `nodepress` CLI from source            |
 
 ---
 

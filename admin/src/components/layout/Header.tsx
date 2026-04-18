@@ -38,7 +38,14 @@ export const Header: FC<HeaderProps> = ({ userSlot }) => {
       </span>
 
       {userSlot != null && (
-        <div aria-label="User menu" style={{ display: "flex", alignItems: "center", gap: "var(--space-3)" }}>
+        <div
+          aria-label="User menu"
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "var(--space-3)",
+          }}
+        >
           {userSlot}
         </div>
       )}

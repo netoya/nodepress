@@ -89,7 +89,7 @@
 
 ## Sprint 1 día 1 — HookRegistry implementation (2026-04-17)
 
-- **Estructura de datos HookRegistry:** 2 Map<string, Entry[]> separados (filters/actions). Listas ordenadas por priority asc con **inserción estable FIFO** en add*. Hot path itera data pre-ordenada. **Date:** 2026-04-17
+- **Estructura de datos HookRegistry:** 2 Map<string, Entry[]> separados (filters/actions). Listas ordenadas por priority asc con **inserción estable FIFO** en add\*. Hot path itera data pre-ordenada. **Date:** 2026-04-17
 - **Error handling actual = try/catch + console.warn:** un filter/action que lanza no rompe el pipeline. Es placeholder. **Why:** resilience mínima; wrapSyncFilter + wrapAsyncAction + circuit breaker completo llegan con #20 (Raúl). **Date:** 2026-04-17
 - **Logger inyectable pendiente:** `console.warn` hoy; abstraer en Sprint 2. TODO inline. **Date:** 2026-04-17
 - **Tests 17/17 verdes:** 10 escenarios del brief + variantes (ordering, removeAllByPlugin, idempotencia manual 5 ciclos). `fast-check` no disponible — sustituido por bucle manual. **Date:** 2026-04-17

@@ -1,14 +1,18 @@
-## Meet 2026-04-09 — Compatibilidad plugins PHP WordPress
+---
+name: it-manager-helena-nodepress
+description: Project memory for Helena (IT Manager) in NodePress
+type: project
+---
 
-- **php-wasm preferido sobre php-fpm:** Sandbox WASM, sin segundo proceso, +70MB vs +400MB Docker. **Date:** 2026-04-09
-- **Extensiones PHP en WASM:** Parciales (mbstring parcial, curl no, gd/imagick no). Matriz a documentar en Sprint 1. **Date:** 2026-04-09
-- **Acción Helena:** Elaborar matriz de extensiones PHP disponibles en php-wasm. Sprint 1, paralelo al spike. **Date:** 2026-04-09
-- **Condición:** ADR-003 con limitaciones documentadas antes de cualquier compromiso público de compatibilidad PHP. **Date:** 2026-04-09
-- **CVE dual-stack:** Si PHP entra, necesita pipeline de seguridad separado. **Date:** 2026-04-09
+## Sprint 1 día 1 — Tooling quality gates (2026-04-17)
 
-## Meet 2026-04-09 — nodepress-wp-plugin-server
-
-- **Plugin-server aceptado como Tier 3 Future.** No en desarrollo activo. **Date:** 2026-04-09
-- **5 servicios en prod requieren K8s.** DR con dos DBs necesita snapshots coordinados. **Date:** 2026-04-09
-- **Coste infra:** +70-120€/mes base sobre stack actual. **Date:** 2026-04-09
-- **4 condiciones pre-requisito (no negociables):** ADR nuevo, threat model, DR coordinado, CVE pipeline PHP. **Date:** 2026-04-09
+- **ESLint v9 flat config en `eslint.config.js` (root).** Stack: typescript-eslint@8.58.2, eslint-config-prettier@10.1.8, eslint-plugin-react-hooks@7.1.1, eslint-plugin-react@7.37.5 — todo pinned. **Date:** 2026-04-17
+- **Rule `no-explicit-any = warn` en source, `off` en tests:** equilibrio pragmático para patrones WP-compat. **Date:** 2026-04-17
+- **`projectService` (type-aware rules) NO activada:** monorepo con tsconfigs independientes bloquea el glob `**`. Decisión Sprint 2: crear tsconfig raíz que incluya todo. **Date:** 2026-04-17
+- **`packages/spike-phpwasm/` ignorado permanentemente en ESLint + coverage.** **Why:** spike, no production code. **Date:** 2026-04-17
+- **`@vitest/coverage-v8@3.2.4` pinned (alineado con vitest@3.x).** Reporter: text, html, json-summary. Coverage threshold activo solo en `packages/core` (90% en 4 métricas). **Date:** 2026-04-17
+- **Coverage baseline Sprint 1 día 1:** core/HookRegistry 93.8%/97.5%/100%/93.8% (stmts/branches/funcs/lines). `core/context.ts` en 0% — Ingrid debe añadir tests. **Date:** 2026-04-17
+- **Flag MODULE_TYPELESS_PACKAGE_JSON:** root `package.json` sin `"type": "module"`. ESLint funciona con warning de parseo. Solución: renombrar a `eslint.config.mjs` o añadir `"type": "module"` al root — decisión Román porque afecta todos los packages. **Date:** 2026-04-17
+- **Flag admin tests desde root:** fallan con "Cannot find module 'react'". Funcionan desde `admin/`. Pre-existente, Lucas/Marta. **Date:** 2026-04-17
+- **Pre-commit hooks (husky):** NO configurados. Decisión Sprint 2 tras retro Sprint 1. **Date:** 2026-04-17
+- **doc `docs/tooling/quality-gates.md`:** fuente canónica del sistema de calidad del proyecto. **Date:** 2026-04-17

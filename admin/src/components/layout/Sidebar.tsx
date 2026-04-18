@@ -54,11 +54,11 @@ export const Sidebar: FC = () => {
       </div>
 
       {/* Navigation */}
-      <nav aria-label="Main navigation" style={{ flex: 1, padding: "var(--space-4) 0" }}>
-        <ul
-          role="list"
-          style={{ listStyle: "none", margin: 0, padding: 0 }}
-        >
+      <nav
+        aria-label="Main navigation"
+        style={{ flex: 1, padding: "var(--space-4) 0" }}
+      >
+        <ul role="list" style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {NAV_ITEMS.map((item) => (
             <li key={item.href}>
               <a
@@ -72,7 +72,8 @@ export const Sidebar: FC = () => {
                   fontWeight: "var(--font-weight-medium)",
                   borderRadius: "var(--radius-md)",
                   margin: "0 var(--space-2)",
-                  transition: "background var(--transition-fast), color var(--transition-fast)",
+                  transition:
+                    "background var(--transition-fast), color var(--transition-fast)",
                 }}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.background =
@@ -81,7 +82,8 @@ export const Sidebar: FC = () => {
                     "var(--shell-sidebar-fg-active)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                  (e.currentTarget as HTMLAnchorElement).style.background =
+                    "transparent";
                   (e.currentTarget as HTMLAnchorElement).style.color =
                     "var(--shell-sidebar-fg)";
                 }}

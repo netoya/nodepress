@@ -9,6 +9,7 @@
 ## Preparación Individual
 
 ### Tomás (Scrum Master)
+
 - Cierre formal de Sprint 0 pendiente: PROJECT_STATUS.md dice "EN CURSO" y task log tiene commits "pending"
 - Rama `ci/db-migrations-cleanup` no mergeada a main — deuda inmediata antes de arrancar Sprint 1
 - No hay retro de Sprint 0 registrada. Aunque fue infra, es el primer sprint del equipo
@@ -16,6 +17,7 @@
 - Velocity desconocida — Sprint 0 fue de 1 semana, el de 2 semanas arranca a ciegas
 
 ### Alejandro (CEO)
+
 - Sprint 0 cerrado limpio, el tono está puesto. Dual License y 3 ICPs firmados
 - Prioridad innegociable: HookRegistry (#14). Sin eso, el plugin system es humo
 - Demo objetivo Sprint 1 (30-04): `POST /wp/v2/posts` + hook mutando payload + render en admin
@@ -23,6 +25,7 @@
 - Riesgo "todo o nada": PoC con 13 roles es caro, necesita win visible el 30-04
 
 ### Román (Tech Lead)
+
 - Merge `ci/db-migrations-cleanup` → main antes de arrancar. Él lo hace, 15 min
 - Contrato de `HookEntry` y `PluginContext.addHook()` congelado hoy — sesión 30 min con Ingrid tras el kickoff
 - Raúl bloqueado por #14+#19; mientras, arranca spike php-wasm (#25) primeros 2-3 días
@@ -30,6 +33,7 @@
 - Testing bar: 100% coverage, ordering por prioridad, `removeAllByPlugin`, property-based test de idempotencia
 
 ### Ingrid (Lead Backend)
+
 - Orden: #19 PluginContext types → #18 Auth → #15+#16 CRUD+REST (Carmen) → #17 Test harness en paralelo
 - Spec OpenAPI antes de que Carmen toque código (Carmen es Haiku — specs quirúrgicas)
 - Test harness debe correr ANTES de marcar endpoints "completos", no después
@@ -37,6 +41,7 @@
 - D-006 no negociable: core no importa de db. Cualquier PR que lo viole, bloqueo
 
 ### Lucas (Lead Frontend)
+
 - Arranca hoy, sin dependencia del backend: #22 shell + MSW contra spec WP
 - `admin/src/` está limpio (App, main, tokens.css) — canvas sin deuda
 - Marta (Haiku) con brief cerrado de 6 componentes: Button, Badge, Card, Spinner, EmptyState, ErrorBoundary
@@ -44,6 +49,7 @@
 - Instalar Radix UI, Zustand, React Query, MSW — lo hace él, bloqueo cero
 
 ### Martín (Ops)
+
 - 13 tickets TODO en 14 días, capacity ~9 días efectivos por persona con 15% buffer
 - Mapping GitHub Issues ↔ tickets PROJECT_STATUS: confirmar numeración 1-a-1
 - Spikes #25-27 sin hard stop: si día 3 no hay resultado, se congela
@@ -166,28 +172,28 @@
 
 ## Acciones
 
-| #   | Acción                                                                                  | Responsable       | Plazo                   |
-| --- | --------------------------------------------------------------------------------------- | ----------------- | ----------------------- |
-| 1   | Merge `ci/db-migrations-cleanup` → main (squash)                                        | Román             | Hoy (2026-04-17) ~13h   |
-| 2   | Actualizar PROJECT_STATUS.md: Sprint 0 ✅ CERRADO + corregir ruta migración #21          | Tomás             | Hoy, tras merge         |
-| 3   | Sesión de diseño `HookEntry` + `PluginContext.addHook()` (firma + semántica)             | Román + Ingrid    | Hoy, tras kickoff       |
-| 4   | ADR-005: semántica filters sync vs actions async                                         | Román             | Viernes 2026-04-24      |
-| 5   | Retro Sprint 0 async (qué funcionó / qué frenó / qué probamos Sprint 1)                  | Tomás             | Cierre viernes 18 a mediodía |
-| 6   | Revisar y corregir mapping tickets #14-#27 ↔ GitHub Issues                               | Martín            | Hoy mediodía            |
-| 7   | Arrancar #14 HookRegistry en `packages/core/src/hooks/`                                  | Román             | Desde hoy               |
-| 8   | Arrancar #19 PluginContext + DisposableRegistry types                                    | Ingrid            | Desde hoy               |
-| 9   | Spike #25 php-wasm (timeboxed 3 días, hard stop)                                         | Raúl (sup. Román) | 2026-04-17 → 2026-04-21 |
-| 10  | Spike #27 matriz extensiones PHP (timeboxed 3 días, hard stop)                           | Helena            | Sprint 1 semana 1       |
-| 11  | Auth simplificado Bearer=admin (#18)                                                     | Ingrid            | Semana 1                |
-| 12  | Spec OpenAPI 5 endpoints posts REST (antes de que Carmen toque código)                   | Ingrid            | Día 2-3                 |
-| 13  | Content engine + REST (#15, #16) contra spec                                             | Carmen (rev. Ingrid) | Semana 1-2            |
-| 14  | Test harness WP API conformance (#17) corriendo desde día 3                              | Ingrid            | Semana 1                |
-| 15  | Montar daily async en GitHub Discussions (pinned Sprint 1, formato 3 líneas)             | Martín            | Hoy                     |
-| 16  | Admin shell #22 + instalación Radix UI/Zustand/React Query/MSW pinned                    | Lucas             | Desde hoy               |
-| 17  | Brief cerrado design system atómico (6 componentes) para Marta                           | Lucas             | Hoy EOD                 |
-| 18  | Confirmar wireframes dashboard detallado                                                 | Sofía (vía Tomás) | Antes viernes 2026-04-18|
-| 19  | Reporte unificado cierre Sprint 0 + arranque Sprint 1                                    | Martín            | Hoy                     |
-| 20  | Circuit breaker: decidir política de fallos que desactivan plugin (al atacar #20)        | Raúl + Ingrid     | Cuando arranque #20     |
+| #   | Acción                                                                            | Responsable          | Plazo                        |
+| --- | --------------------------------------------------------------------------------- | -------------------- | ---------------------------- |
+| 1   | Merge `ci/db-migrations-cleanup` → main (squash)                                  | Román                | Hoy (2026-04-17) ~13h        |
+| 2   | Actualizar PROJECT_STATUS.md: Sprint 0 ✅ CERRADO + corregir ruta migración #21   | Tomás                | Hoy, tras merge              |
+| 3   | Sesión de diseño `HookEntry` + `PluginContext.addHook()` (firma + semántica)      | Román + Ingrid       | Hoy, tras kickoff            |
+| 4   | ADR-005: semántica filters sync vs actions async                                  | Román                | Viernes 2026-04-24           |
+| 5   | Retro Sprint 0 async (qué funcionó / qué frenó / qué probamos Sprint 1)           | Tomás                | Cierre viernes 18 a mediodía |
+| 6   | Revisar y corregir mapping tickets #14-#27 ↔ GitHub Issues                        | Martín               | Hoy mediodía                 |
+| 7   | Arrancar #14 HookRegistry en `packages/core/src/hooks/`                           | Román                | Desde hoy                    |
+| 8   | Arrancar #19 PluginContext + DisposableRegistry types                             | Ingrid               | Desde hoy                    |
+| 9   | Spike #25 php-wasm (timeboxed 3 días, hard stop)                                  | Raúl (sup. Román)    | 2026-04-17 → 2026-04-21      |
+| 10  | Spike #27 matriz extensiones PHP (timeboxed 3 días, hard stop)                    | Helena               | Sprint 1 semana 1            |
+| 11  | Auth simplificado Bearer=admin (#18)                                              | Ingrid               | Semana 1                     |
+| 12  | Spec OpenAPI 5 endpoints posts REST (antes de que Carmen toque código)            | Ingrid               | Día 2-3                      |
+| 13  | Content engine + REST (#15, #16) contra spec                                      | Carmen (rev. Ingrid) | Semana 1-2                   |
+| 14  | Test harness WP API conformance (#17) corriendo desde día 3                       | Ingrid               | Semana 1                     |
+| 15  | Montar daily async en GitHub Discussions (pinned Sprint 1, formato 3 líneas)      | Martín               | Hoy                          |
+| 16  | Admin shell #22 + instalación Radix UI/Zustand/React Query/MSW pinned             | Lucas                | Desde hoy                    |
+| 17  | Brief cerrado design system atómico (6 componentes) para Marta                    | Lucas                | Hoy EOD                      |
+| 18  | Confirmar wireframes dashboard detallado                                          | Sofía (vía Tomás)    | Antes viernes 2026-04-18     |
+| 19  | Reporte unificado cierre Sprint 0 + arranque Sprint 1                             | Martín               | Hoy                          |
+| 20  | Circuit breaker: decidir política de fallos que desactivan plugin (al atacar #20) | Raúl + Ingrid        | Cuando arranque #20          |
 
 ---
 

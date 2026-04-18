@@ -22,6 +22,7 @@ npm run dev
 ```
 
 Expected output:
+
 - PHP 8.3 runtime loads in ~100–500ms (first time includes WASM decode)
 - "Hello from PHP-WASM!" prints
 - Hook simulation works
