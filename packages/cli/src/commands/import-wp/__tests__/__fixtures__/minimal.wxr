@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:excerpt="http://purl.org/rss/1.0/modules/excerpt/"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:wp="http://wordpress.org/export/1.2/">
+<channel>
+  <title>Test Blog</title>
+  <link>http://example.com</link>
+  <description>Test WordPress Export</description>
+
+  <wp:author>
+    <wp:author_id>1</wp:author_id>
+    <wp:author_login>admin</wp:author_login>
+    <wp:author_email>admin@example.com</wp:author_email>
+    <wp:author_display_name>Administrator</wp:author_display_name>
+  </wp:author>
+
+  <wp:category>
+    <wp:term_id>1</wp:term_id>
+    <wp:cat_name>General</wp:cat_name>
+    <wp:category_nicename>general</wp:category_nicename>
+  </wp:category>
+
+  <wp:tag>
+    <wp:term_id>2</wp:term_id>
+    <wp:tag_name>Test Tag</wp:tag_name>
+    <wp:tag_slug>test-tag</wp:tag_slug>
+  </wp:tag>
+
+  <item>
+    <wp:post_id>10</wp:post_id>
+    <title>Hello World</title>
+    <wp:post_name>hello-world</wp:post_name>
+    <wp:post_type>post</wp:post_type>
+    <wp:status>publish</wp:status>
+    <pubDate>2023-01-15 10:00:00</pubDate>
+    <dc:creator>admin</dc:creator>
+    <content:encoded><![CDATA[Welcome to our blog!]]></content:encoded>
+    <excerpt:encoded><![CDATA[A brief excerpt]]></excerpt:encoded>
+  </item>
+
+  <item>
+    <wp:post_id>11</wp:post_id>
+    <title>Draft Post</title>
+    <wp:post_name>draft-post</wp:post_name>
+    <wp:post_type>post</wp:post_type>
+    <wp:status>draft</wp:status>
+    <pubDate>2023-01-16 11:00:00</pubDate>
+    <dc:creator>admin</dc:creator>
+    <content:encoded><![CDATA[This is a draft]]></content:encoded>
+    <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+  </item>
+
+  <item>
+    <wp:post_id>12</wp:post_id>
+    <title>Test Page</title>
+    <wp:post_name>test-page</wp:post_name>
+    <wp:post_type>page</wp:post_type>
+    <wp:status>publish</wp:status>
+    <pubDate>2023-01-17 12:00:00</pubDate>
+    <dc:creator>admin</dc:creator>
+    <content:encoded><![CDATA[Page content]]></content:encoded>
+    <excerpt:encoded><![CDATA[]]></excerpt:encoded>
+  </item>
+
+  <item>
+    <wp:post_id>13</wp:post_id>
+    <title>Image Attachment</title>
+    <wp:post_name>image-attachment</wp:post_name>
+    <wp:post_type>attachment</wp:post_type>
+    <wp:status>publish</wp:status>
+    <pubDate>2023-01-18 13:00:00</pubDate>
+    <dc:creator>admin</dc:creator>
+    <content:encoded><![CDATA[]]></content:encoded>
+  </item>
+
+</channel>
+</rss>

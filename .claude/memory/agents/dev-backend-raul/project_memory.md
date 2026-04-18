@@ -239,3 +239,12 @@
 
 - **Estado final:** Loader + Sandbox operativos. El ciclo plugin es: descubrimiento → load → sandbox timeout → hooks registration. ADR-004 crash isolation avanzado (timeout + circuit breaker + wrappers).
 - **Pragma:** vm.Context full isolation documentado como future work (Worker Threads tier, no Sprint 4). Por ahora, timeout + try/catch suficiente.
+
+## Sprint 5 — #67 `nodepress plugin list` command (2026-04-18)
+
+- **CLI plugin subcommand:** Añadido `pluginCommand()` en `packages/cli/src/index.ts`. Router a subcommands: `list`, `--help`, unknown → error. **Date:** 2026-04-18
+- **listPlugins() implementation:** Archivo nuevo `packages/cli/src/commands/plugin/index.ts`. Lee `NODEPRESS_PLUGINS_DIR` (default `./plugins`). Escanea directorios con `package.json`. Tabula: nombre + versión + estado (siempre "active"). Valida directorio ausente + vacío con mensajes friendly. **Date:** 2026-04-18
+- **Output format:** Tabla ASCII con separadores `─`. Columnas: Plugin (20 chars), Version (10 chars), Status. Footer: count singular/plural "X plugin/s installed". Empty → "No plugins installed." **Date:** 2026-04-18
+- **Tests:** 7 nuevos en `packages/cli/src/__tests__/cli.test.ts`: plugin --help, empty dir, missing dir, single plugin, multiple plugins, unknown subcommand, no subcommand. Todos PASS. 300 total tests suite green. **Date:** 2026-04-18
+- **Integration:** `nodepress plugin list` con `NODEPRESS_PLUGINS_DIR=packages/plugins` lista `@nodepress/plugin-hello-world 0.1.0 active`. Sin dependencias nuevas (solo `fs`, `path` builtins). **Date:** 2026-04-18
+- **TS strict:** 0 errors. ESLint: 0 errors. Prettier: applied. **Date:** 2026-04-18

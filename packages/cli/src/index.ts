@@ -128,7 +128,8 @@ NodePress ${version}
 Usage:
   nodepress serve           Start the Fastify server (default port 3000)
   nodepress migrate         Run database migrations
-  nodepress import-wp       Import WordPress content (stub, coming in Sprint 5)
+  nodepress import-wp       Import WordPress content
+  nodepress plugin          Manage plugins
   nodepress --help          Show this message
   nodepress --version       Show version
 
@@ -137,6 +138,7 @@ Environment Variables:
   DATABASE_URL          Database connection string
   NODEPRESS_DEMO_MODE   Enable demo mode (true/false)
   NODEPRESS_TIER2       Enable Tier 2 bridge (true/false)
+  NODEPRESS_PLUGINS_DIR Plugins directory (default: ./plugins)
 `);
 }
 
@@ -145,6 +147,37 @@ function showVersion(): void {
 }
 
 // ---
+
+async function pluginCommand(argv: string[]): Promise<void> {
+  const subcommand = argv[0];
+
+  if (!subcommand || subcommand === "--help" || subcommand === "-h") {
+    showPluginHelp();
+    process.exit(0);
+  }
+
+  if (subcommand === "list") {
+    const { listPlugins } = await import("./commands/plugin/index.js");
+    await listPlugins();
+  } else {
+    console.error(`Unknown plugin subcommand: ${subcommand}`);
+    showPluginHelp();
+    process.exit(1);
+  }
+}
+
+function showPluginHelp(): void {
+  console.log(`
+NodePress plugin — Manage NodePress plugins
+
+Usage:
+  nodepress plugin list         List installed plugins
+  nodepress plugin --help       Show this message
+
+Environment Variables:
+  NODEPRESS_PLUGINS_DIR        Plugins directory (default: ./plugins)
+`);
+}
 
 async function main(): Promise<void> {
   if (!command || command === "--help" || command === "-h") {
@@ -163,6 +196,8 @@ async function main(): Promise<void> {
     await migrateCommand();
   } else if (command === "import-wp") {
     importWpCommand(args.slice(1));
+  } else if (command === "plugin") {
+    await pluginCommand(args.slice(1));
   } else {
     console.error(`Unknown command: ${command}`);
     showHelp();
