@@ -1,6 +1,6 @@
 # ADR-019 — Bridge Observability
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-18
 **Deciders:** Helena (IT Manager)
 **Related:** ADR-017 (Tier 2 Bridge Surface), ADR-018 (Bridge Security Boundary)
@@ -307,3 +307,10 @@ additive (no breaking changes to callers).
 - ADR-018: Bridge Security Boundary (§6 logging requirements, §What Is Not Traced alignment)
 - `packages/bridge/src/index.ts` — entry point where span emission is implemented
 - `packages/bridge/src/observability.ts` — `BridgeSpan` interface + `emitSpan` function
+
+---
+
+## Sign-off
+
+- **Ingrid** (Lead Backend) — 2026-04-18: Implementation verified. `emitSpan` + `resolveLevel` + `emitSpanFor` implemented in `packages/server/src/bridge/index.ts`. Every invocation path (happy, BRIDGE_FATAL parse error, catch block) emits a span before returning. Privacy constraints from §What Is Not Traced are honoured — no content, attributes, or warning text in the span.
+- **Helena** (IT Manager) — 2026-04-18: ADR accepted. Span shape matches the defined interface. OTel migration path confirmed additive. Alert conditions table implemented as specified.

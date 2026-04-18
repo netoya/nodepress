@@ -12,6 +12,10 @@ import { registerBearerAuth } from "./auth/index.js";
 import { registerHooks } from "./hooks.js";
 import postsPlugin from "./routes/posts/index.js";
 import publicPlugin from "./routes/public/index.js";
+import { registerBridgeHooks } from "./bridge/index.js";
+import { registerFootnotesPlugin } from "./bridge/pilots/footnotes.js";
+import { registerShortcodesUltimatePlugin } from "./bridge/pilots/shortcodes-ultimate.js";
+import { registerDisplayPostsPlugin } from "./bridge/pilots/display-posts.js";
 
 const server = Fastify({ logger: true });
 
@@ -31,6 +35,23 @@ await registerBearerAuth(server);
 // Register the hook registry decorator before route plugins so handlers can
 // access app.hooks at definition time.
 await registerHooks(server);
+
+// Tier 2 bridge + pilots — opt-in via NODEPRESS_TIER2=true.
+// Registers the PHP-WASM bridge hook anchor and the three content pilots
+// (Footnotes, Shortcodes Ultimate, Display Posts). Not loaded in demo mode
+// to avoid conflicts between demo hooks and Tier 2 pilot hooks.
+if (
+  process.env["NODEPRESS_TIER2"] === "true" &&
+  process.env["NODEPRESS_DEMO_MODE"] !== "true"
+) {
+  registerBridgeHooks(server.hooks);
+  registerFootnotesPlugin(server.hooks);
+  registerShortcodesUltimatePlugin(server.hooks);
+  registerDisplayPostsPlugin(server.hooks);
+  server.log.info(
+    "Tier 2 bridge registered (bridge + footnotes + shortcodes-ultimate + display-posts).",
+  );
+}
 
 // Demo hooks — opt-in via NODEPRESS_DEMO_MODE=true. Dynamic import keeps the
 // demo module out of the hot path when the flag is off. See
