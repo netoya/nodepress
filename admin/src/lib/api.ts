@@ -10,6 +10,11 @@
  * by default, so MSW node handlers still match.
  */
 function resolveBase(): string {
+  // Runtime override stored by LoginPage takes precedence
+  if (typeof window !== "undefined") {
+    const stored = localStorage.getItem("nodepress_api_base");
+    if (stored) return stored;
+  }
   const envBase = (import.meta.env["VITE_API_URL"] as string | undefined) ?? "";
   if (envBase) return envBase;
   // Relative-to-origin: works in browser + jsdom tests
@@ -51,16 +56,48 @@ export async function fetchTags(): Promise<WpTerm[]> {
 }
 
 /**
+ * Read the admin token.
+ * Priority: localStorage → VITE_ADMIN_TOKEN env → empty string.
+ */
+export function getToken(): string {
+  return (
+    localStorage.getItem("nodepress_admin_token") ??
+    (import.meta.env["VITE_ADMIN_TOKEN"] as string | undefined) ??
+    ""
+  );
+}
+
+/** Persist token to localStorage. */
+export function setToken(token: string): void {
+  localStorage.setItem("nodepress_admin_token", token);
+}
+
+/** Remove token from localStorage. */
+export function clearToken(): void {
+  localStorage.removeItem("nodepress_admin_token");
+}
+
+/** Returns true if a token is present. */
+export function isAuthenticated(): boolean {
+  return Boolean(getToken());
+}
+
+/**
  * Auth headers for write operations.
  * MSW handlers accept any token.
  * Real backend validates against NODEPRESS_ADMIN_TOKEN.
  */
 export function authHeaders(): Record<string, string> {
-  const token =
-    (import.meta.env["VITE_ADMIN_TOKEN"] as string | undefined) ??
-    "dev-admin-token";
   return {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
+    Authorization: `Bearer ${getToken()}`,
   };
+}
+
+/**
+ * Override the API base URL at runtime (used by LoginPage).
+ * Stored in localStorage so it survives page reloads.
+ */
+export function setApiBase(url: string): void {
+  localStorage.setItem("nodepress_api_base", url);
 }

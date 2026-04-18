@@ -1,5 +1,6 @@
 import type { FC } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import { clearToken } from "../../lib/api";
 
 interface NavItem {
   label: string;
@@ -20,6 +21,13 @@ const NAV_ITEMS: NavItem[] = [
  * Uses NavLink from react-router-dom for active-state highlighting.
  */
 export const Sidebar: FC = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    clearToken();
+    void navigate("/login");
+  };
+
   return (
     <aside
       className="app-shell__sidebar"
@@ -107,6 +115,49 @@ export const Sidebar: FC = () => {
           ))}
         </ul>
       </nav>
+
+      {/* Logout footer */}
+      <div
+        style={{
+          padding: "var(--space-4) var(--space-6)",
+          borderTop: "1px solid var(--shell-sidebar-border)",
+          flexShrink: 0,
+        }}
+      >
+        <button
+          type="button"
+          onClick={handleLogout}
+          style={{
+            display: "block",
+            width: "100%",
+            padding: "var(--space-3) var(--space-2)",
+            background: "transparent",
+            border: "none",
+            borderRadius: "var(--radius-md)",
+            color: "var(--shell-sidebar-fg)",
+            fontSize: "var(--font-size-sm)",
+            fontWeight: "var(--font-weight-medium)",
+            cursor: "pointer",
+            textAlign: "left",
+            transition:
+              "background var(--transition-fast), color var(--transition-fast)",
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background =
+              "var(--color-danger-50, #fef2f2)";
+            (e.currentTarget as HTMLButtonElement).style.color =
+              "var(--color-danger-600, #dc2626)";
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background =
+              "transparent";
+            (e.currentTarget as HTMLButtonElement).style.color =
+              "var(--shell-sidebar-fg)";
+          }}
+        >
+          Logout
+        </button>
+      </div>
     </aside>
   );
 };

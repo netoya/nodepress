@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { useNavigate } from "react-router-dom";
 import { usePostsList } from "./hooks/usePostsList";
 import { DashboardHeader } from "./components/DashboardHeader";
 import { PostsList } from "./components/PostsList";
@@ -24,9 +25,10 @@ export const DashboardPage: FC = () => {
     dataUpdatedAt,
   } = usePostsList({ perPage: 10, status: "publish" });
 
+  const navigate = useNavigate();
+
   const handleCreatePost = () => {
-    // TODO: #GH-frontend-debt — replace with React Router navigation once D-035 migration lands
-    // Intentional no-op until React Router v7 migration (Sprint 5)
+    void navigate("/posts/new");
   };
 
   return (

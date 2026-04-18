@@ -1,5 +1,6 @@
 import type { FC } from "react";
 import { Card, CardContent, Button } from "../../../components/ui";
+import { API_BASE_URL } from "../../../lib/api";
 
 interface DashboardErrorProps {
   error: Error;
@@ -39,7 +40,9 @@ export const DashboardError: FC<DashboardErrorProps> = ({ error, onRetry }) => (
               margin: 0,
             }}
           >
-            {error.message}
+            {error.message === "Failed to fetch"
+              ? `Cannot connect to NodePress backend. Check that the server is running at ${API_BASE_URL}.`
+              : error.message}
           </p>
         </div>
         <Button

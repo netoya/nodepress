@@ -3,9 +3,22 @@ import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
-import { describe, it, expect, beforeAll, afterAll, afterEach } from "vitest";
+import {
+  describe,
+  it,
+  expect,
+  beforeAll,
+  afterAll,
+  afterEach,
+  vi,
+} from "vitest";
 import { DashboardPage } from "../DashboardPage";
 import type { WpPost } from "../../../types/wp-post";
+
+const mockNavigate = vi.fn();
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => mockNavigate,
+}));
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -65,7 +78,10 @@ const mockPosts: WpPost[] = [
 const server = setupServer();
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  mockNavigate.mockClear();
+});
 afterAll(() => server.close());
 
 // ---------------------------------------------------------------------------
