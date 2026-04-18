@@ -105,6 +105,17 @@
 - **Messaging A/B test parqueado** a cierre Sprint — un frente abierto cada vez. **Date:** 2026-04-18
 - **Temperature check equipo: sin señales burnout hoy** — Tomás sondea cada 3-4 días, no asume que flow = sostenible. **Date:** 2026-04-18
 
+## Sprint 1 día 2 — #29 db coverage real + ADR sign-off (2026-04-18)
+
+- **Test file created:** `packages/db/src/__tests__/schema.real-db.test.ts` — 13 real-DB tests across 6 tables (posts × 4, users × 2, options × 2, plugin_registry × 2, comments × 1, terms × 1). All guarded by `DOCKER_AVAILABLE=true`. **Date:** 2026-04-18
+- **Inline helper pattern:** Testcontainers helpers duplicated inline (not cross-package import) with explicit `// TODO: extract to packages/shared-test-utils` comment. Extraction is out of scope for #29. **Date:** 2026-04-18
+- **Integration config for db package:** `packages/db/vitest.integration.config.ts` added. `packages/db/vitest.config.ts` gains `exclude: ["**/*.real-db.test.ts"]` so default run stays unaffected. **Date:** 2026-04-18
+- **Setup file:** `packages/db/src/__tests__/setup-integration.ts` sets dummy DATABASE_URL before module load. **Date:** 2026-04-18
+- **Root test:integration updated:** Now runs both `packages/server` AND `packages/db` integration configs sequentially. **Date:** 2026-04-18
+- **Coverage not measured this session** — Docker unavailable in current execution context. Tests are docker-guarded (`describe.skip` when `DOCKER_AVAILABLE !== "true"`). **Date:** 2026-04-18
+- **ADR-006 → Accepted:** Status updated, sign-off footer added + enforcement note on triage process for future plugin compatibility reports. **Date:** 2026-04-18
+- **ADR-007 → Accepted:** Status updated, sign-off footer added + reaffirmed rejection of alternative A (null columns before backing system exists). **Date:** 2026-04-18
+
 ## Sprint 1 día 2 — #28 Real-DB integration tests
 
 - **Decisión: Opción 1 (Testcontainers, `@testcontainers/postgresql`).** Docker-compose tiene una sola DB `nodepress` sin servicio de test DB separado. Opción 2 requeriría modificar docker-compose y gestionar lifecycle. Testcontainers da aislamiento perfecto sin estado persistente. **Date:** 2026-04-18

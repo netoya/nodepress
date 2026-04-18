@@ -1,6 +1,6 @@
 # ADR-007: WP Standard Post Fields Omitted in v1
 
-- **Status:** Proposed
+- **Status:** Accepted — 2026-04-18
 - **Date:** 2026-04-17
 - **Author:** Ingrid (Lead Backend)
 
@@ -9,14 +9,14 @@
 The WordPress REST API v2 post object includes the following fields that have
 no counterpart in the NodePress v1 schema or serializer:
 
-| WP field         | WP semantics                                                          | Missing reason                                             |
-| ---------------- | --------------------------------------------------------------------- | ---------------------------------------------------------- |
-| `featured_media` | ID of the attached Media post (0 = none)                              | Requires a `media` table. Not yet designed.                |
-| `comment_status` | `"open"` or `"closed"` — controls whether comments are accepted       | Requires an enum column on `posts`. No comment system yet. |
-| `ping_status`    | `"open"` or `"closed"` — controls trackback/pingback acceptance       | Same as `comment_status`; low-value feature for NodePress. |
-| `format`         | Post format: `standard`, `aside`, `chat`, `gallery`, …               | Niche feature; no demand signal. Omitted indefinitely.     |
-| `sticky`         | Boolean — whether the post is pinned to the top of the index          | Requires boolean column + ordering logic in list queries.  |
-| `template`       | Custom page template slug (theme-specific)                            | Requires mature theme engine. Not in scope v1.             |
+| WP field         | WP semantics                                                    | Missing reason                                             |
+| ---------------- | --------------------------------------------------------------- | ---------------------------------------------------------- |
+| `featured_media` | ID of the attached Media post (0 = none)                        | Requires a `media` table. Not yet designed.                |
+| `comment_status` | `"open"` or `"closed"` — controls whether comments are accepted | Requires an enum column on `posts`. No comment system yet. |
+| `ping_status`    | `"open"` or `"closed"` — controls trackback/pingback acceptance | Same as `comment_status`; low-value feature for NodePress. |
+| `format`         | Post format: `standard`, `aside`, `chat`, `gallery`, …          | Niche feature; no demand signal. Omitted indefinitely.     |
+| `sticky`         | Boolean — whether the post is pinned to the top of the index    | Requires boolean column + ordering logic in list queries.  |
+| `template`       | Custom page template slug (theme-specific)                      | Requires mature theme engine. Not in scope v1.             |
 
 These fields are documented as DIV-003 in `docs/api/openapi.yaml`. Alejandro's
 Sprint 1 rule mandates an ADR before merge for any WP semantics deviation.
@@ -29,14 +29,14 @@ candidates for re-evaluation at the Sprint 2 retrospective.
 
 Planned re-introduction milestones:
 
-| Field            | Target sprint | Blocking work                                |
-| ---------------- | ------------- | -------------------------------------------- |
-| `featured_media` | Sprint 3+     | Media upload system + `media` table          |
-| `comment_status` | Sprint 2      | Comment system schema + enum column          |
-| `ping_status`    | Sprint 2      | Same as `comment_status`                     |
-| `sticky`         | Sprint 2+     | Boolean column + list query ordering         |
-| `format`         | TBD           | No demand signal — re-evaluate in Sprint 2   |
-| `template`       | TBD           | Requires theme engine (Sprint 3+ roadmap)    |
+| Field            | Target sprint | Blocking work                              |
+| ---------------- | ------------- | ------------------------------------------ |
+| `featured_media` | Sprint 3+     | Media upload system + `media` table        |
+| `comment_status` | Sprint 2      | Comment system schema + enum column        |
+| `ping_status`    | Sprint 2      | Same as `comment_status`                   |
+| `sticky`         | Sprint 2+     | Boolean column + list query ordering       |
+| `format`         | TBD           | No demand signal — re-evaluate in Sprint 2 |
+| `template`       | TBD           | Requires theme engine (Sprint 3+ roadmap)  |
 
 ## Alternatives Considered
 
@@ -86,6 +86,12 @@ maintenance debt.
 Not applicable — fields are absent, not wrongly present. Adding them in a
 future sprint is additive and non-breaking for consumers that already guard
 against `undefined`.
+
+## Sign-off
+
+**Accepted by:** Ingrid (Lead Backend), 2026-04-18.
+
+The milestone table is binding: `comment_status` and `ping_status` enter Sprint 2 design only if the comment system schema lands. `featured_media` and `template` remain blocked on Media and Theme Engine respectively. No field gets a stub column until its backing system is ready — alternative A is explicitly rejected and this acceptance reaffirms that.
 
 ## References
 

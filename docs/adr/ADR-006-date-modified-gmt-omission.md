@@ -1,6 +1,6 @@
 # ADR-006: Omission of `date_gmt` and `modified_gmt` Fields in v1 REST API
 
-- **Status:** Proposed
+- **Status:** Accepted — 2026-04-18
 - **Date:** 2026-04-17
 - **Author:** Ingrid (Lead Backend)
 
@@ -8,12 +8,12 @@
 
 The WordPress REST API v2 post object exposes four timestamp fields:
 
-| WP field       | Semantics                                                    |
-| -------------- | ------------------------------------------------------------ |
-| `date`         | Post publication date in site timezone (ISO 8601)            |
-| `date_gmt`     | Post publication date in UTC                                 |
-| `modified`     | Last modification date in site timezone (ISO 8601)           |
-| `modified_gmt` | Last modification date in UTC                                |
+| WP field       | Semantics                                          |
+| -------------- | -------------------------------------------------- |
+| `date`         | Post publication date in site timezone (ISO 8601)  |
+| `date_gmt`     | Post publication date in UTC                       |
+| `modified`     | Last modification date in site timezone (ISO 8601) |
+| `modified_gmt` | Last modification date in UTC                      |
 
 The NodePress Drizzle schema (`packages/db/src/schema/posts.ts`) stores two
 timestamp columns:
@@ -94,6 +94,12 @@ If `_gmt` fields are later required:
 1. No schema migration needed — derive from existing `TIMESTAMPTZ` columns.
 2. Add derivation to `serialize.ts`: `date_gmt = createdAt.toISOString()`.
 3. Update OpenAPI spec and remove DIV-001 flag.
+
+## Sign-off
+
+**Accepted by:** Ingrid (Lead Backend), 2026-04-18.
+
+The decision stands as written. One enforcement note added for future reference: any plugin compatibility report citing `date_gmt` as required should be triaged against this ADR before reopening — the rollback path (one-line in `serialize.ts`) is already documented and the barrier is intentionally low.
 
 ## References
 

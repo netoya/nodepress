@@ -38,3 +38,13 @@
 - **Tests:** 11 para CircuitBreaker (threshold, auto-reset, aislamiento, reset manual, edge cases). 15 para wrappers (normal, Promise detection, throw/reject, breaker open). 16 HookRegistry existentes ajustados (mensajes de log). **Date:** 2026-04-18
 - **Resultado:** 56 tests passed, 0 failures. TS strict, ESLint 0 errors. Coverage: CircuitBreaker + wrappers + HookRegistry integration. **Date:** 2026-04-18
 - **TODOs eliminados:** 2x `TODO(#20 — Raúl)` en HookRegistry.ts (applyFilters + doAction). Arquitectura crash-isolation completada. **Date:** 2026-04-18
+
+## Sprint 1 día 2 — #30 CircuitBreaker stress test (2026-04-18)
+
+- **Stress test suite:** 6 nuevos tests en `packages/core/src/hooks/__tests__/CircuitBreaker.stress.test.ts`. Concurrent failure recording (50 hits), open threshold under load (100 hits), PluginId isolation (5 plugins x 10 failures), auto-reset mixed workload, HookRegistry integration (100 applyFilters), memory pressure (1000 pluginIds). **Date:** 2026-04-18
+- **Race condition analysis:** Ninguna encontrada en Node.js single-threaded event loop. `recordFailure` y `isOpen` son non-async, por lo que mutation de Map es atómica. Supuesto documentado en JSDoc. **Date:** 2026-04-18
+- **Limitaciones documentadas:** Unbounded Map growth (PoC-grade), no distributed consensus (multi-instance), fixed threshold (no customization per-plugin). Todas aceptables para Sprint 1. **Date:** 2026-04-18
+- **ADR-013:** `docs/adr/ADR-013-circuit-breaker-stress-findings.md`. Status: Proposed. Contiene: context, 6 findings (tests 1-6), known limitations, race conditions (none), future work (priorities 1-3), recommendations. **Date:** 2026-04-18
+- **Resultado:** 17/17 CircuitBreaker tests (11 unit + 6 stress) PASS. 62 total tests across hooks suite (no regressions). TS strict, ESLint 0 errors. **Date:** 2026-04-18
+- **Cambios CircuitBreaker.ts:** Ninguno. Implementación original es correcta bajo carga concurrente. **Date:** 2026-04-18
+- **Next:** Merge #30. Spike day 3 (2026-04-19) no impactado — #30 cierra hoy. **Date:** 2026-04-18

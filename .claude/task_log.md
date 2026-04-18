@@ -58,3 +58,6 @@
 | 2026-04-18 | lucas           | brief Marta forms L2 + /posts list scaffold (4 states, 4 tests)                                                     | 7 files   | pending | ✅     |
 | 2026-04-18 | roman           | ADR-005/009 → Accepted + skeleton cli/theme-engine/plugin-api + ADR-010/011/012 stubs                               | 11 files  | pending | ✅     |
 | 2026-04-18 | ingrid          | #28 integration tests REST + Postgres real (setup + 9 tests)                                                        | 6 files   | done    | ✅     |
+| 2026-04-18 | ingrid          | #29 db coverage real + ADR-006/007 sign-off → Accepted                                                              | 7 files   | pending | ✅     |
+| 2026-04-18 | raul            | #30 CircuitBreaker stress test suite (6 tests) + ADR-013 findings + race condition analysis                         | 2 files   | pending | ✅     |
+| 2026-04-18 | marta           | #24-L2 forms: Input + Textarea + Select + Toast (4 componentes, 28 tests green, 82/82 admin total)                  | 13 files  | pending | ✅     |

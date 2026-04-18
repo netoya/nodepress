@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { App } from "./App";
+import { ToastProvider } from "./components/ui";
 import "./styles/tokens.css";
 import { startMswWorker } from "./mocks/server";
 
@@ -23,7 +24,9 @@ if (!root) {
 startMswWorker().then(() => {
   createRoot(root).render(
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ToastProvider>
+        <App />
+      </ToastProvider>
     </QueryClientProvider>,
   );
 });

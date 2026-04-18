@@ -12,6 +12,8 @@ import { defineConfig } from "vitest/config";
 // Threshold: 75/75/70/75 (stmts/branches/funcs/lines) — conservative baseline.
 export default defineConfig({
   test: {
+    // Exclude real-DB tests from the default run — they require Docker.
+    exclude: ["**/*.real-db.test.ts", "**/node_modules/**", "**/dist/**"],
     coverage: {
       provider: "v8",
       include: ["src/**/*.ts"],
