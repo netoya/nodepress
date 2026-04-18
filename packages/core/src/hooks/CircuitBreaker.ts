@@ -9,8 +9,14 @@
  * - Threshold: 5 failures in a 60-second window.
  * - State: Tracking timestamps of recent failures per pluginId.
  * - Reset: Automatic after 60 seconds of zero failures (sliding window cutoff).
+ * - GC: Periodic cleanup of stale entries (configurable, default 60 seconds).
  *
- * Implementation: Naive Map<pluginId, timestamps[]>. PoC-grade, not optimized.
+ * Implementation: Map<pluginId, timestamps[]> with optional background GC.
+ *
+ * Thread safety (Node.js single-threaded): All methods are synchronous and
+ * non-blocking. No `await` or callbacks occur within critical sections, so
+ * mutations are atomic from the event loop's perspective. If async boundaries
+ * are introduced, explicit locking will be required.
  */
 
 /**
@@ -36,16 +42,65 @@ export interface CircuitBreaker {
    * If the pluginId is not tracked, this is a no-op.
    */
   reset(pluginId: string): void;
+
+  /**
+   * Destroy the breaker and cancel any pending timers.
+   * Call this on application shutdown to prevent memory leaks.
+   * After calling destroy(), the breaker must not be used.
+   */
+  destroy(): void;
 }
 
 /**
  * Implementation of CircuitBreaker using a simple timestamp-tracking map.
  * Each pluginId maps to an array of recent failure timestamps.
+ *
+ * Includes optional periodic GC that scans and removes stale entries to prevent
+ * unbounded memory growth (see ADR-013).
  */
 class CircuitBreakerImpl implements CircuitBreaker {
   readonly #failures = new Map<string, number[]>();
   readonly #windowMs = 60_000; // 60 seconds
   readonly #threshold = 5;
+  readonly #gcIntervalMs: number;
+  #gcTimer: NodeJS.Timeout | null = null;
+
+  constructor(gcIntervalMs: number = 60_000) {
+    this.#gcIntervalMs = gcIntervalMs;
+    this.#startGC();
+  }
+
+  #startGC(): void {
+    // Schedule periodic garbage collection of stale entries.
+    // This prevents unbounded Map growth from plugins that fail once and are
+    // never queried again (so their stale timestamps are never lazy-pruned).
+    if (this.#gcIntervalMs > 0) {
+      this.#gcTimer = setInterval(() => {
+        this.#collectGarbage();
+      }, this.#gcIntervalMs);
+
+      // Ensure the timer doesn't prevent process shutdown.
+      if (this.#gcTimer.unref) {
+        this.#gcTimer.unref();
+      }
+    }
+  }
+
+  #collectGarbage(): void {
+    const now = Date.now();
+    const cutoff = now - this.#windowMs;
+
+    // Scan all entries; delete those with only stale timestamps.
+    for (const [pluginId, timestamps] of this.#failures.entries()) {
+      const recent = timestamps.filter((t) => t > cutoff);
+      if (recent.length === 0) {
+        this.#failures.delete(pluginId);
+      } else if (recent.length < timestamps.length) {
+        // Prune old entries (in case some were pruned but not all).
+        this.#failures.set(pluginId, recent);
+      }
+    }
+  }
 
   recordFailure(pluginId: string): void {
     const now = Date.now();
@@ -86,13 +141,28 @@ class CircuitBreakerImpl implements CircuitBreaker {
   reset(pluginId: string): void {
     this.#failures.delete(pluginId);
   }
+
+  destroy(): void {
+    if (this.#gcTimer) {
+      clearInterval(this.#gcTimer);
+      this.#gcTimer = null;
+    }
+    // Clear all entries to free memory.
+    this.#failures.clear();
+  }
 }
 
 /**
  * Factory for creating a fresh CircuitBreaker instance.
  * Each application context should have one shared breaker for the entire
  * hook registry (injected at HookRegistry construction time).
+ *
+ * @param gcIntervalMs - Interval (in milliseconds) for periodic garbage collection
+ *                       of stale entries. Defaults to 60_000 (60 seconds).
+ *                       Set to 0 to disable automatic GC (useful for tests).
  */
-export function createCircuitBreaker(): CircuitBreaker {
-  return new CircuitBreakerImpl();
+export function createCircuitBreaker(
+  gcIntervalMs: number = 60_000,
+): CircuitBreaker {
+  return new CircuitBreakerImpl(gcIntervalMs);
 }

@@ -23,11 +23,14 @@ describe("CircuitBreaker Stress Tests", () => {
   let breaker: CircuitBreaker;
 
   beforeEach(() => {
-    breaker = createCircuitBreaker();
+    // Disable automatic GC (pass 0 as gcIntervalMs) to prevent background cleanup
+    // during stress tests. Each test manages its own time via fake timers.
+    breaker = createCircuitBreaker(0);
     vi.useFakeTimers();
   });
 
   afterEach(() => {
+    breaker.destroy();
     vi.restoreAllMocks();
   });
 
