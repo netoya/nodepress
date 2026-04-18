@@ -128,7 +128,12 @@ const mockPost: WpPost = {
 // MSW node server
 // ---------------------------------------------------------------------------
 
-const server = setupServer();
+const server = setupServer(
+  // TaxonomySelector fires these on mount — provide default empty handlers
+  // so the form renders without MSW warnings.
+  http.get(`${BASE}/wp/v2/categories`, () => HttpResponse.json([])),
+  http.get(`${BASE}/wp/v2/tags`, () => HttpResponse.json([])),
+);
 
 beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => {

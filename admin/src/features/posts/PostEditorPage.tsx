@@ -16,6 +16,8 @@ const EMPTY_FORM: PostFormValues = {
   content: "",
   excerpt: "",
   status: "draft",
+  categories: [],
+  tags: [],
 };
 
 /**
@@ -44,12 +46,27 @@ export const PostEditorPage: FC<PostEditorPageProps> = ({ postId }) => {
         content: post.content.rendered,
         excerpt: post.excerpt?.rendered ?? "",
         status: post.status,
+        // WP REST API returns categories/tags as arrays of IDs on the post.
+        // NodePress does not yet persist taxonomy assignments (backend TODO).
+        // We default to empty arrays so the form is functional for client-side
+        // selection; the IDs are sent in the payload and will be honoured once
+        // the backend stores taxonomy relationships.
+        categories: [],
+        tags: [],
       }
     : EMPTY_FORM;
 
   const [localEdits, setLocalEdits] = useState<Partial<PostFormValues>>({});
 
   const values: PostFormValues = { ...serverValues, ...localEdits };
+
+  const handleCategoriesChange = (ids: number[]) => {
+    setLocalEdits((prev) => ({ ...prev, categories: ids }));
+  };
+
+  const handleTagsChange = (ids: number[]) => {
+    setLocalEdits((prev) => ({ ...prev, tags: ids }));
+  };
 
   const createMutation = useCreatePost();
   const updateMutation = useUpdatePost(postId ?? 0);
@@ -129,6 +146,8 @@ export const PostEditorPage: FC<PostEditorPageProps> = ({ postId }) => {
             <PostForm
               values={values}
               onChange={handleChange}
+              onCategoriesChange={handleCategoriesChange}
+              onTagsChange={handleTagsChange}
               onSubmit={handleSubmit}
               isSubmitting={isSubmitting}
               mode={isEditMode ? "update" : "create"}

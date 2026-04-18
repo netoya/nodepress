@@ -92,6 +92,21 @@
 - **playwright.demo.config.ts:** `baseURL` stays `:5173` (admin). Steps 11-14 use absolute `http://localhost:3000/` URLs — valid in Playwright. No cross-origin restriction applies to `page.goto`. CORS is permissive (`origin: true`). **Date:** 2026-04-18
 - **Selector assumptions for Carmen's HTML:** home has `<h1>` with "NodePress", posts rendered as `<a>` links with title text, individual post has `<h1>` with full title. Adjust if Carmen's markup differs. **Date:** 2026-04-18
 
+## Sprint 3 — Taxonomy selector (categories + tags) in post editor (2026-04-18)
+
+- **WpTerm type added** to `admin/src/types/wp-post.ts`: `{ id, name, slug, taxonomy, count }`. **Date:** 2026-04-18
+- **`fetchCategories()` + `fetchTags()`** added to `admin/src/lib/api.ts`. Use `apiUrl()` to respect VITE_API_URL env flag. **Date:** 2026-04-18
+- **`TaxonomySelector.tsx`** created at `admin/src/components/TaxonomySelector.tsx`. Props: `taxonomy: "categories"|"tags"`, `selected: number[]`, `onChange: (ids: number[]) => void`, `disabled?: boolean`. React Query fetches terms; shows Spinner on load, "No X yet" empty state, checkbox list with count badges when loaded. Uses `<fieldset>/<legend>` for WCAG AA group semantics. **Date:** 2026-04-18
+- **PostFormValues extended:** added `categories: number[]` and `tags: number[]` fields. **Date:** 2026-04-18
+- **PostForm.tsx updated:** added `onCategoriesChange` and `onTagsChange` props; renders `<TaxonomySelector>` pair in a 2-col grid between Status and Content fields. **Date:** 2026-04-18
+- **PostEditorPage.tsx updated:** EMPTY_FORM and serverValues include `categories: []` and `tags: []`. Added `handleCategoriesChange`/`handleTagsChange` handlers that update `localEdits`. **Date:** 2026-04-18
+- **Backend TODO:** `POST /wp/v2/posts` and `PUT /wp/v2/posts/:id` do not persist categories/tags yet. Payload includes them but backend silently ignores. Documented in PostEditorPage serverValues comment. **Date:** 2026-04-18
+- **MSW handlers extended:** `GET /wp/v2/categories` and `GET /wp/v2/tags` added to `admin/src/mocks/handlers.ts` with realistic mock data. **Date:** 2026-04-18
+- **8 new tests** in `admin/src/components/__tests__/TaxonomySelector.test.tsx`: renders items, loading state, empty state (categories), onChange select, onChange deselect, tags render, tags empty state. **Date:** 2026-04-18
+- **PostEditorPage.test.tsx updated:** added default empty handlers for `/wp/v2/categories` and `/wp/v2/tags` to MSW server — avoids unhandled-request stderr noise. **Date:** 2026-04-18
+- **Tests: 95/95 green.** TypeCheck + ESLint: 0 errors. **Date:** 2026-04-18
+- **Gotcha — TaxonomySelector in PostEditorPage tests:** TaxonomySelector mounts and fires taxonomy queries. Any test that renders PostEditorPage needs handlers for both taxonomy endpoints in its MSW server. Pattern: add them as default handlers with `HttpResponse.json([])`. **Date:** 2026-04-18
+
 ## Sprint 1 sem 2 — Playwright demo video config + spec (2026-04-18)
 
 - **`admin/playwright.demo.config.ts`** creado: config separada para grabación de video. `video: on`, `trace: on`, `fullyParallel: false`, `workers: 1`, `testDir: ./e2e/demo`. NO arranca webServer — requiere stack real corriendo. **Date:** 2026-04-18

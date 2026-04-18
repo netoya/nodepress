@@ -26,6 +26,30 @@ export function apiUrl(path: string): string {
   return `${API_BASE_URL}${path}`;
 }
 
+import type { WpTerm } from "../types/wp-post";
+
+/**
+ * Fetch all categories from GET /wp/v2/categories.
+ */
+export async function fetchCategories(): Promise<WpTerm[]> {
+  const response = await fetch(apiUrl("/wp/v2/categories"));
+  if (!response.ok) {
+    throw new Error(`Failed to fetch categories: ${response.status}`);
+  }
+  return (await response.json()) as WpTerm[];
+}
+
+/**
+ * Fetch all tags from GET /wp/v2/tags.
+ */
+export async function fetchTags(): Promise<WpTerm[]> {
+  const response = await fetch(apiUrl("/wp/v2/tags"));
+  if (!response.ok) {
+    throw new Error(`Failed to fetch tags: ${response.status}`);
+  }
+  return (await response.json()) as WpTerm[];
+}
+
 /**
  * Auth headers for write operations.
  * MSW handlers accept any token.

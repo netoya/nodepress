@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import type { WpPost } from "../types/wp-post";
+import type { WpPost, WpTerm } from "../types/wp-post";
 
 const BASE_URL = "http://localhost:3000";
 
@@ -66,6 +66,43 @@ const mockPosts: WpPost[] = [
     author: 2,
     _nodepress: { type: "post", menu_order: 4, meta: {} },
   },
+];
+
+const mockCategories: WpTerm[] = [
+  {
+    id: 1,
+    name: "Uncategorized",
+    slug: "uncategorized",
+    taxonomy: "category",
+    count: 5,
+  },
+  {
+    id: 2,
+    name: "Tutorials",
+    slug: "tutorials",
+    taxonomy: "category",
+    count: 3,
+  },
+  { id: 3, name: "Releases", slug: "releases", taxonomy: "category", count: 2 },
+];
+
+const mockTags: WpTerm[] = [
+  { id: 10, name: "nodejs", slug: "nodejs", taxonomy: "post_tag", count: 4 },
+  {
+    id: 11,
+    name: "typescript",
+    slug: "typescript",
+    taxonomy: "post_tag",
+    count: 6,
+  },
+  {
+    id: 12,
+    name: "wordpress",
+    slug: "wordpress",
+    taxonomy: "post_tag",
+    count: 3,
+  },
+  { id: 13, name: "api", slug: "api", taxonomy: "post_tag", count: 2 },
 ];
 
 export const handlers = [
@@ -139,6 +176,26 @@ export const handlers = [
       modified: new Date().toISOString(),
     };
     return HttpResponse.json(updated);
+  }),
+
+  // GET /wp/v2/categories — list categories
+  http.get(`${BASE_URL}/wp/v2/categories`, () => {
+    return HttpResponse.json(mockCategories, {
+      headers: {
+        "X-WP-Total": String(mockCategories.length),
+        "X-WP-TotalPages": "1",
+      },
+    });
+  }),
+
+  // GET /wp/v2/tags — list tags
+  http.get(`${BASE_URL}/wp/v2/tags`, () => {
+    return HttpResponse.json(mockTags, {
+      headers: {
+        "X-WP-Total": String(mockTags.length),
+        "X-WP-TotalPages": "1",
+      },
+    });
   }),
 
   // DELETE /wp/v2/posts/:id — soft delete (trash) or hard delete

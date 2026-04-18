@@ -1,6 +1,7 @@
 import type { FC } from "react";
 import { Input, Textarea, Select, Button } from "../../../components/ui";
 import type { SelectOption } from "../../../components/ui";
+import { TaxonomySelector } from "../../../components/TaxonomySelector";
 
 const STATUS_OPTIONS: SelectOption[] = [
   { value: "publish", label: "Published" },
@@ -14,11 +15,17 @@ export interface PostFormValues {
   content: string;
   excerpt: string;
   status: string;
+  categories: number[];
+  tags: number[];
 }
 
 interface PostFormProps {
   values: PostFormValues;
   onChange: (field: keyof PostFormValues, value: string) => void;
+  /** Called when the user changes the selected category IDs. */
+  onCategoriesChange: (ids: number[]) => void;
+  /** Called when the user changes the selected tag IDs. */
+  onTagsChange: (ids: number[]) => void;
   onSubmit: () => void;
   isSubmitting: boolean;
   /** "create" shows "Create" button; "update" shows "Update" button */
@@ -34,6 +41,8 @@ interface PostFormProps {
 export const PostForm: FC<PostFormProps> = ({
   values,
   onChange,
+  onCategoriesChange,
+  onTagsChange,
   onSubmit,
   isSubmitting,
   mode,
@@ -81,6 +90,28 @@ export const PostForm: FC<PostFormProps> = ({
         onChange={(val) => onChange("status", val)}
         disabled={isSubmitting}
       />
+
+      {/* Taxonomy selectors */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "var(--space-4)",
+        }}
+      >
+        <TaxonomySelector
+          taxonomy="categories"
+          selected={values.categories}
+          onChange={onCategoriesChange}
+          disabled={isSubmitting}
+        />
+        <TaxonomySelector
+          taxonomy="tags"
+          selected={values.tags}
+          onChange={onTagsChange}
+          disabled={isSubmitting}
+        />
+      </div>
 
       <Textarea
         id="post-content"

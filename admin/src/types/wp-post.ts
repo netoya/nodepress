@@ -71,6 +71,18 @@ export interface WpPost {
 }
 
 /**
+ * WP REST API v2 — Taxonomy term (category or tag).
+ * Returned by GET /wp/v2/categories and GET /wp/v2/tags.
+ */
+export interface WpTerm {
+  id: number;
+  name: string;
+  slug: string;
+  taxonomy: string;
+  count: number;
+}
+
+/**
  * Pagination metadata extracted from WP REST API response headers.
  * X-WP-Total and X-WP-TotalPages.
  */
