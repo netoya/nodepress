@@ -53,3 +53,4 @@
 | 2026-04-18 | raul            | sync GitHub Issues + board con estado Sprint 1 día 2 (10 closed + 3 updated)                                        | 1 file    | pending | ✅     |
 | 2026-04-18 | lucas           | #23 dashboard 4 states (draft — MSW + React Query, pending Sofía wireframes)                                        | 11 files  | pending | ✅     |
 | 2026-04-18 | ingrid          | wire HookRegistry → REST handlers + demo end-to-end integration test                                                | 9 files   | pending | ✅     |
+| 2026-04-18 | lucas           | Playwright E2E Chrome visual — 5 specs, 8 tests, 4 dashboard states + a11y, 5 snapshots                             | 11 files  | pending | ✅     |

@@ -8,3 +8,8 @@ coverage
 
 # TypeScript build artifacts
 *.tsbuildinfo
+
+# Playwright
+test-results/
+playwright-report/
+.playwright/
