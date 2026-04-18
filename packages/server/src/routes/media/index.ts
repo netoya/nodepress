@@ -18,7 +18,7 @@ export default fp(async (app: FastifyInstance) => {
         },
       },
     },
-    async (request, reply) => {
+    async (_request, reply) => {
       reply.code(200).send([]);
     },
   );

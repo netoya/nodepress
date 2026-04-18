@@ -123,7 +123,7 @@ const INLINE_CSS = `
  * GET / — Home page with list of published posts.
  */
 export async function getHome(
-  request: FastifyRequest,
+  _request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<string> {
   // Fetch all posts and filter for published status

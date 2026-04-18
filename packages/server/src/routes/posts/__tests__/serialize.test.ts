@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Post } from "@nodepress/db";
 import { toWpPost, toWpPostAsync } from "../serialize.js";
-import type { BridgeOutput } from "../../../bridge/index.js";
 
 // Mock @nodepress/db to avoid DB access in tests
 vi.mock("@nodepress/db", () => ({
@@ -165,10 +164,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
     it("should pre-process content through bridge if provided", async () => {
       const post = createSamplePost();
       const mockBridge = {
-        renderShortcodes: vi.fn<
-          [{ postContent: string; context: any }],
-          Promise<BridgeOutput>
-        >(async () => ({
+        renderShortcodes: vi.fn(async () => ({
           html: "Rendered: Main content",
           warnings: [],
           error: null,
@@ -191,10 +187,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
     it("should pass bridge output to the_content filter", async () => {
       const post = createSamplePost();
       const mockBridge = {
-        renderShortcodes: vi.fn<
-          [{ postContent: string; context: any }],
-          Promise<BridgeOutput>
-        >(async () => ({
+        renderShortcodes: vi.fn(async () => ({
           html: "<p>Bridge output</p>",
           warnings: [],
           error: null,
@@ -225,10 +218,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
     it("should use original content if bridge returns error", async () => {
       const post = createSamplePost();
       const mockBridge = {
-        renderShortcodes: vi.fn<
-          [{ postContent: string; context: any }],
-          Promise<BridgeOutput>
-        >(async () => ({
+        renderShortcodes: vi.fn(async () => ({
           html: "", // html is ignored when error is set
           warnings: ["timeout"],
           error: "BRIDGE_TIMEOUT",
@@ -244,10 +234,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
     it("should handle bridge exception gracefully (passthrough)", async () => {
       const post = createSamplePost();
       const mockBridge = {
-        renderShortcodes: vi.fn<
-          [{ postContent: string; context: any }],
-          Promise<BridgeOutput>
-        >(async () => {
+        renderShortcodes: vi.fn(async () => {
           throw new Error("Bridge crashed");
         }),
       };
@@ -282,10 +269,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
     it("raw in context=edit reflects bridge input, not bridge output", async () => {
       const post = createSamplePost();
       const mockBridge = {
-        renderShortcodes: vi.fn<
-          [{ postContent: string; context: any }],
-          Promise<BridgeOutput>
-        >(async () => ({
+        renderShortcodes: vi.fn(async () => ({
           html: "Bridge says this",
           warnings: [],
           error: null,

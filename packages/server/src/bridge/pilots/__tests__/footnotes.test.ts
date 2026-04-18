@@ -37,7 +37,7 @@ function simulateBridgeWithFootnotes(content: string): {
   let n = 0;
 
   // Match ((text)) and replace with anchors
-  html = html.replace(/\(\((.+?)\)\)/g, (match: string, text: string) => {
+  html = html.replace(/\(\((.+?)\)\)/g, (_match: string, text: string) => {
     n++;
     footnotes.push(text);
     return `<sup id="fnref-${n}"><a href="#fn-${n}" class="footnote-ref">${n}</a></sup>`;

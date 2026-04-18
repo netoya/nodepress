@@ -29,7 +29,7 @@ vi.mock("@php-wasm/universal", () => ({
       // The bootstrap sets $postContent; we extract it from the code heuristically.
       const match = /\$postContent = "(.*)";/s.exec(opts.code);
       const raw = match
-        ? match[1]
+        ? (match[1] ?? "")
             .replace(/\\n/g, "\n")
             .replace(/\\r/g, "\r")
             .replace(/\\"/g, '"')

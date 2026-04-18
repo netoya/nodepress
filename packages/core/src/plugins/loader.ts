@@ -1,7 +1,7 @@
 import { readdir } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { existsSync } from "node:fs";
-import type { HookRegistry } from "../hooks/HookRegistry.js";
+import type { HookRegistry } from "../hooks/types.js";
 import type { PluginContext } from "../hooks/types.js";
 
 /**

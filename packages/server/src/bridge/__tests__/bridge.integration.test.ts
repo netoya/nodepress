@@ -37,7 +37,7 @@ vi.mock("@php-wasm/universal", () => ({
       // return it as-is (simulating do_shortcode with no registered shortcodes).
       const match = /\$postContent = "(.*)";/s.exec(opts.code);
       const raw = match
-        ? match[1]
+        ? (match[1] ?? "")
             .replace(/\\n/g, "\n")
             .replace(/\\r/g, "\r")
             .replace(/\\"/g, '"')
