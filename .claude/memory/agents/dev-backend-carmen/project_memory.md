@@ -101,3 +101,40 @@ type: project
 - **Ficheros nuevos:** serialize.test.ts refactored con DB mocks para cargas de términos.
 - **Tests:** 266/266 verdes (nuevo serialize.test.ts + 4 posts.real-db.test.ts + existentes). Sin regressions.
 - **Date:** 2026-04-18
+
+## Sprint 4 — #64: GET /wp/v2/users + #62: Plugin API docs (2026-04-18)
+
+### #64 GET /wp/v2/users (readonly endpoint)
+
+- **Funcionalidad:** Nuevo endpoint público GET /wp/v2/users que lista usuarios sin exponiendo sensibles. Paginación básica con `?page=1&per_page=10` (max 100 per_page, default 10).
+- **Implementación:**
+  1. **Estructura:** Fichero `packages/server/src/routes/users/index.ts` ya existía (solo `/me`). Añadido nuevo endpoint `/wp/v2/users` antes de `/me` en el mismo plugin.
+  2. **Serializers:** Dos funciones:
+     - `toWpUserPublic()`: Serializa fila DB a shape WP public (sin email, con avatar_urls vacíos, \_links). Solo id/name/slug/url/description/link/avatar_urls/\_links.
+     - `toWpUser()`: Serializa AuthenticatedUser o fila DB a shape full (con email). Overload para ambos tipos. Detecta `createdAt` con `in` check para backward compat.
+  3. **Handler listUsersHandler:** Parse page/per_page de query (casteo `request.query as Record<string, unknown>`), fetch todos usuarios sin WHERE, aplica slice en memory (PoC), retorna array WP-shaped. Headers `X-WP-Total`, `X-WP-TotalPages` (WP standard).
+  4. **Auth:** Endpoint público, sin preHandler.
+  5. **TS strict compliance:** Todos los tipos narrowed correctamente. Capabilities casteo a `Record<string, unknown>` con null-guard. Query params casteo a Record.
+- **Tests:** 4 nuevos en `users.test.ts` (del describe "GET /wp/v2/users"):
+  - GET /wp/v2/users → 200, array, 3 users (no email exposed)
+  - Headers X-WP-Total + X-WP-TotalPages
+  - Paginación page=1&per_page=2 → 2 users, page=2&per_page=2 → 1 user
+  - Email field undefined en public response
+  - Plus: test existente de GET /wp/v2/users/me refactorizado (compartir fixtures).
+  - **Mock DB actualizado:** `.select().from()` sin `.where()` es thenable, devuelve mockAllUserRows promise. Con `.where()` devuelve [mockAllUserRows[0]].
+- **Ficheros modificados:** `users/index.ts` (+84 líneas, +2 interfaces, +2 serializers, +1 handler), `users/__tests__/users.test.ts` (+4 test cases, mock refactored).
+- **Tests:** 7/7 verde (4 nuevos + 2 existentes /me + 1 sin auth). 291 tests suite total (sin regressions).
+- **Date:** 2026-04-18
+
+### #62 Plugin API docs
+
+- **Fichero creado:** `docs/guides/plugin-api.md` (60 líneas).
+- **Contenido:**
+  - Breve intro: plugins son módulos JS/TS que registran hooks en HookRegistry.
+  - Contrato de activación: default export function(hooks: HookRegistry, context: PluginContext): void | Promise<void>
+  - Tabla de Available Hooks: 3 filters (the_content, the_title, the_excerpt), 2 actions (pre_save_post, save_post).
+  - Configuration: env var NODEPRESS_PLUGINS_DIR (default ./plugins).
+  - Example Plugin: referencia a packages/plugins/hello-world/index.js.
+  - Sandbox: 5-second timeout guard (ADR-020).
+  - References: ADR-012, ADR-020.
+- **Date:** 2026-04-18
