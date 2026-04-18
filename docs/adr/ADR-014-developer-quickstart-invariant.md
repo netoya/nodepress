@@ -1,9 +1,13 @@
 # ADR-014: Developer Quickstart Invariant
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-04-18
 - **Author:** Román (Tech Lead)
 - **Related:** ADR-001 (Architecture Overview — NodeNext ESM), ADR-002 (Folder Structure — monorepo workspaces)
+
+## Sign-off
+
+- **2026-04-18 — Román (Tech Lead):** CI `smoke-fresh-clone` operativo en `main`, TTFA <5 min validado post-mortem. Invariante activo y verificable en todo commit futuro sobre `main`.
 
 ## Context
 

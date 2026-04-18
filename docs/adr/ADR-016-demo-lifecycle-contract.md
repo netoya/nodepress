@@ -1,9 +1,13 @@
 # ADR-016: Demo Lifecycle Contract
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-04-18
 - **Author:** Román (Tech Lead)
 - **Related:** ADR-005 (Hook System Semantics), ADR-014 (Developer Quickstart Invariant)
+
+## Sign-off
+
+- **2026-04-18 — Román (Tech Lead):** 3 invariants (reproducibility, idempotency, determinism) implementados; demo 30-04 grabada con éxito; `scripts/record-demo-video.sh` + `demo:reset` operativos en `main`. Contracts activos.
 
 ## Context
 
