@@ -239,6 +239,16 @@
 - **ADR-009 context=edit:** SerializeContext param en toWpPost/toWpPostAsync. raw fields en context=edit. 5 nuevos tests serialize. **Date:** 2026-04-18
 - **Estado Sprint 2:** 16/16 done. 231 tests verdes. 16 ADRs Accepted. **Date:** 2026-04-18
 
+## Sprint 3 — Taxonomías CRUD read-only + OpenAPI spec (2026-04-18)
+
+- **Spec OpenAPI completa:** `WpTerm` schema añadido a `docs/api/openapi.yaml`. 4 endpoints: `GET /wp/v2/categories`, `GET /wp/v2/categories/{id}`, `GET /wp/v2/tags`, `GET /wp/v2/tags/{id}`. Tag `Taxonomies` creado. **Date:** 2026-04-18
+- **Plugin Fastify:** `packages/server/src/routes/taxonomies/index.ts` — `listTerms(taxonomy, opts)` + `getTermById(taxonomy, id)` + `toWpTerm(row, taxonomy)`. Registrado en `server/src/index.ts`. **Date:** 2026-04-18
+- **Diseño count:** calculado como subquery correlacionada sobre `term_relationships`. No existe columna `count` en la tabla `terms`. **Date:** 2026-04-18
+- **Sprint 3 constraints aplicados:** `parent` siempre 0 (sin jerarquía). Solo `GET` (no POST/PUT/DELETE). **Date:** 2026-04-18
+- **Tests:** 9 tests en `taxonomies.test.ts`. Todos verdes. Suite global: 263 tests, 0 fallos. **Date:** 2026-04-18
+- **Mock pattern para drizzle fluent builder:** `makeQueryMock()` retorna un objeto donde `.select().from().where()` retorna un Promise que también tiene `.orderBy()` → cubre tanto listTerms (que usa `.orderBy()`) como getTermById (que desestructura el array del Promise). **Date:** 2026-04-18
+- **DIV-004 cerrado en sprint 3:** taxonomías ahora tienen endpoints. La nota en `x-nodepress-notes` sigue vigente indicando que `categories`/`tags` en el shape `Post` aún están ausentes (pendiente sprint 4 si se decide). **Date:** 2026-04-18
+
 ## Sprint 3 día 1 — #44 Auth reads user from DB + GET /wp/v2/users/me (2026-04-18)
 
 - **requireAdmin now queries DB:** `packages/server/src/auth/bearer.ts` — calls `db.select().from(users).where(eq(users.login, login)).limit(1)`. Returns 401 if user not found, 403 if roles array doesn't include 'administrator'. `NODEPRESS_ADMIN_USER` env var controls which login to resolve (default: "admin"). **Date:** 2026-04-18

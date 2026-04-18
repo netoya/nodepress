@@ -236,6 +236,59 @@ components:
         slug:
           type: string
 
+    WpTerm:
+      type: object
+      description: |
+        A taxonomy term (category or tag) following WP REST API v2 shape.
+        Sprint 3 constraints: parent is always 0 (flat, no hierarchy).
+        count is computed from term_relationships.
+      required:
+        - id
+        - count
+        - description
+        - link
+        - name
+        - slug
+        - taxonomy
+        - parent
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the term.
+          example: 1
+        count:
+          type: integer
+          description: Number of published posts associated with this term.
+          example: 3
+        description:
+          type: string
+          description: HTML description of the term.
+          example: ""
+        link:
+          type: string
+          description: URL of the term archive.
+          example: "/wp/v2/categories/1"
+        name:
+          type: string
+          description: HTML title for the term.
+          example: "Uncategorized"
+        slug:
+          type: string
+          description: An alphanumeric identifier for the term unique to its type.
+          example: "uncategorized"
+        taxonomy:
+          type: string
+          description: Type attribution for the term (category or post_tag).
+          enum:
+            - category
+            - post_tag
+          example: "category"
+        parent:
+          type: integer
+          description: |
+            The parent term ID. Always 0 in Sprint 3 (flat taxonomy, no hierarchy).
+          example: 0
+
     ErrorResponse:
       type: object
       required:
@@ -256,6 +309,194 @@ components:
               example: 401
 
 paths:
+  /wp/v2/categories:
+    get:
+      operationId: listCategories
+      summary: List categories
+      description: |
+        Returns a list of category terms (taxonomy=category). Public endpoint.
+        Mirrors WP REST API GET /wp/v2/categories behaviour.
+      tags:
+        - Taxonomies
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: search
+          in: query
+          description: Limit results to those matching a string (name or slug).
+          schema:
+            type: string
+        - name: order
+          in: query
+          description: Order terms ascending or descending.
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - name: orderby
+          in: query
+          description: Sort collection by term attribute.
+          schema:
+            type: string
+            enum:
+              - id
+              - name
+              - slug
+              - count
+            default: name
+      responses:
+        "200":
+          description: A list of categories.
+          headers:
+            X-WP-Total:
+              description: Total number of terms matching the query.
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WpTerm"
+
+  /wp/v2/categories/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique identifier for the term.
+        schema:
+          type: integer
+    get:
+      operationId: getCategory
+      summary: Retrieve a category
+      description: Retrieves a single category term by ID. Public endpoint.
+      tags:
+        - Taxonomies
+      responses:
+        "200":
+          description: Category found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WpTerm"
+        "404":
+          description: Category not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /wp/v2/tags:
+    get:
+      operationId: listTags
+      summary: List tags
+      description: |
+        Returns a list of tag terms (taxonomy=post_tag). Public endpoint.
+        Mirrors WP REST API GET /wp/v2/tags behaviour.
+      tags:
+        - Taxonomies
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: search
+          in: query
+          description: Limit results to those matching a string (name or slug).
+          schema:
+            type: string
+        - name: order
+          in: query
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+        - name: orderby
+          in: query
+          schema:
+            type: string
+            enum:
+              - id
+              - name
+              - slug
+              - count
+            default: name
+      responses:
+        "200":
+          description: A list of tags.
+          headers:
+            X-WP-Total:
+              description: Total number of terms matching the query.
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WpTerm"
+
+  /wp/v2/tags/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique identifier for the term.
+        schema:
+          type: integer
+    get:
+      operationId: getTag
+      summary: Retrieve a tag
+      description: Retrieves a single tag term by ID. Public endpoint.
+      tags:
+        - Taxonomies
+      responses:
+        "200":
+          description: Tag found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WpTerm"
+        "404":
+          description: Tag not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
   /wp/v2/posts:
     get:
       operationId: listPosts

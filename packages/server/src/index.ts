@@ -12,6 +12,7 @@ import { registerBearerAuth } from "./auth/index.js";
 import { registerHooks } from "./hooks.js";
 import postsPlugin from "./routes/posts/index.js";
 import usersPlugin from "./routes/users/index.js";
+import taxonomiesPlugin from "./routes/taxonomies/index.js";
 import mediaPlugin from "./routes/media/index.js";
 import publicPlugin from "./routes/public/index.js";
 import { registerBridgeHooks } from "./bridge/index.js";
@@ -74,6 +75,9 @@ export async function buildServer() {
 
   // Register the users plugin (GET /wp/v2/users/me)
   await server.register(usersPlugin);
+
+  // Register the taxonomies plugin (GET /wp/v2/categories, GET /wp/v2/tags)
+  await server.register(taxonomiesPlugin);
 
   // Register the media plugin
   await server.register(mediaPlugin);
