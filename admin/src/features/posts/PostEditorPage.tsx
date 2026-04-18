@@ -46,11 +46,12 @@ export const PostEditorPage: FC<PostEditorPageProps> = ({ postId }) => {
         content: post.content.rendered,
         excerpt: post.excerpt?.rendered ?? "",
         status: post.status,
-        // WP REST API returns categories/tags as arrays of IDs on the post.
-        // NodePress does not yet persist taxonomy assignments (backend TODO).
-        // We default to empty arrays so the form is functional for client-side
-        // selection; the IDs are sent in the payload and will be honoured once
-        // the backend stores taxonomy relationships.
+        // WP REST API returns categories/tags as arrays of term IDs on the post object.
+        // The backend persists taxonomy assignments (POST and PUT both write term_relationships).
+        // We default to empty arrays here because the GET /wp/v2/posts/:id response does not
+        // yet return the categories/tags arrays — that requires serialize.ts to load and embed
+        // term IDs in the WP-REST shape. Until that is done the form always starts empty in
+        // edit mode; selections made by the user are sent and persisted correctly on save.
         categories: [],
         tags: [],
       }

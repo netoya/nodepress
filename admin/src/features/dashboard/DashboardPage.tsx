@@ -25,8 +25,8 @@ export const DashboardPage: FC = () => {
   } = usePostsList({ perPage: 10, status: "publish" });
 
   const handleCreatePost = () => {
-    // TODO: navigate to create post — router added in Sprint 2
-    // Intentional no-op until Sprint 2 routing is wired
+    // TODO: #GH-frontend-debt — replace with React Router navigation once D-035 migration lands
+    // Intentional no-op until React Router v7 migration (Sprint 5)
   };
 
   return (

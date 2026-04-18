@@ -1,4 +1,4 @@
-import type { FC } from "react";
+import { useState, type FC } from "react";
 import {
   Button,
   Card,
@@ -27,6 +27,10 @@ export const PostsListPage: FC = () => {
   const deleteMutation = useDeletePost();
   const { show } = useToast();
 
+  // Inline confirmation state — tracks the post id pending deletion.
+  // null = no confirmation pending. Replaces window.confirm() for a11y + style.
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+
   const handleAddNew = () => {
     window.location.hash = "posts/new";
   };
@@ -36,10 +40,11 @@ export const PostsListPage: FC = () => {
   };
 
   const handleDelete = (post: WpPost) => {
-    // v1: browser confirm() — no Modal component yet (flagged for Sprint 2)
-    const confirmed = window.confirm(`Move "${post.title.rendered}" to trash?`);
-    if (!confirmed) return;
+    setPendingDeleteId(post.id);
+  };
 
+  const confirmDelete = (post: WpPost) => {
+    setPendingDeleteId(null);
     deleteMutation.mutate(post.id, {
       onSuccess: () => {
         show({ type: "success", message: "Post moved to trash" });
@@ -48,6 +53,10 @@ export const PostsListPage: FC = () => {
         show({ type: "error", message: "Failed to delete post" });
       },
     });
+  };
+
+  const cancelDelete = () => {
+    setPendingDeleteId(null);
   };
 
   return (
@@ -161,11 +170,98 @@ export const PostsListPage: FC = () => {
 
       {/* Data state */}
       {!isLoading && !isError && data && data.posts.length > 0 && (
-        <PostsTable
-          posts={data.posts}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
+        <>
+          <PostsTable
+            posts={data.posts}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+          />
+
+          {/* Inline delete confirmation — replaces window.confirm() for a11y */}
+          {pendingDeleteId !== null &&
+            (() => {
+              const pendingPost = data.posts.find(
+                (p) => p.id === pendingDeleteId,
+              );
+              if (!pendingPost) return null;
+              return (
+                <div
+                  role="alertdialog"
+                  aria-modal="true"
+                  aria-labelledby="confirm-delete-title"
+                  aria-describedby="confirm-delete-desc"
+                  style={{
+                    position: "fixed",
+                    inset: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "rgba(0,0,0,0.4)",
+                    zIndex: 100,
+                  }}
+                >
+                  <div
+                    style={{
+                      background: "var(--color-neutral-0, #fff)",
+                      borderRadius: "var(--radius-md, 8px)",
+                      padding: "var(--space-6)",
+                      maxWidth: "400px",
+                      width: "90%",
+                      boxShadow: "0 8px 32px rgba(0,0,0,0.18)",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "var(--space-4)",
+                    }}
+                  >
+                    <h2
+                      id="confirm-delete-title"
+                      style={{
+                        fontSize: "var(--font-size-base)",
+                        fontWeight: "var(--font-weight-semibold)",
+                        color: "var(--color-neutral-900)",
+                        margin: 0,
+                      }}
+                    >
+                      Move to trash?
+                    </h2>
+                    <p
+                      id="confirm-delete-desc"
+                      style={{
+                        fontSize: "var(--font-size-sm)",
+                        color: "var(--color-neutral-600)",
+                        margin: 0,
+                      }}
+                    >
+                      &ldquo;{pendingPost.title.rendered}&rdquo; will be moved
+                      to trash. You can restore it later from the trash view.
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "var(--space-3)",
+                        justifyContent: "flex-end",
+                      }}
+                    >
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={cancelDelete}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => confirmDelete(pendingPost)}
+                      >
+                        Move to trash
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+        </>
       )}
     </section>
   );
