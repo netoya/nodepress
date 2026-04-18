@@ -43,7 +43,10 @@ describe("wrapSyncFilter", () => {
   });
 
   it("threads additional arguments to the filter", () => {
-    const fn = (v: number, multiplier: number) => v * multiplier;
+    const fn = (v: number, ...args: readonly unknown[]) => {
+      const multiplier = args[0] as number;
+      return v * multiplier;
+    };
     const wrapped = wrapSyncFilter(fn, {
       pluginId: "test-plugin",
       breaker,
@@ -113,7 +116,7 @@ describe("wrapSyncFilter", () => {
   });
 
   it("accumulates failures toward circuit breaker threshold", () => {
-    const fn = () => {
+    const fn = (_v: string) => {
       throw new Error("boom");
     };
 

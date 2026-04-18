@@ -86,10 +86,11 @@ exclude:
 
 ### Thresholds
 
-| Package         | Stmts | Branches | Funcs | Lines | Mode                     |
-| --------------- | ----- | -------- | ----- | ----- | ------------------------ |
-| `packages/core` | 90%   | 90%      | 90%   | 90%   | Enforced (non-zero exit) |
-| All others      | —     | —        | —     | —     | Informative only         |
+| Package         | Stmts | Branches | Funcs | Lines | Mode                                        |
+| --------------- | ----- | -------- | ----- | ----- | ------------------------------------------- |
+| `packages/core` | 90%   | 90%      | 90%   | 90%   | Enforced (non-zero exit)                    |
+| `packages/db`   | 75%   | 75%      | 70%   | 75%   | Warn-only (CI: continue-on-error, Sprint 1) |
+| All others      | —     | —        | —     | —     | Informative only                            |
 
 ### Coverage baseline (Sprint 1 day 1, passing tests only)
 
@@ -116,12 +117,41 @@ Action items (not Helena scope):
 
 ## Pre-commit Hooks
 
-**Status: NOT configured. Decision deferred to Sprint 2.**
+**Status: Prototype / opt-in (Sprint 1). NOT mandatory yet.**
 
-Candidates to evaluate: `husky` + `lint-staged` (lint only changed files), `tsc --noEmit`.
+Configured in Sprint 1 day 2. Adoption decision at retro Sprint 1 → Sprint 2.
 
-Flag for Sprint 2 planning: Should pre-commit block on `eslint` errors? On `tsc` errors? Or warn-only?
-Bring to team retro before implementing — hooks affect all devs and need consensus.
+## Husky (prototype / opt-in)
+
+### What the pre-commit hook runs
+
+Executes `npx lint-staged` on staged files only. Specifically:
+
+- `*.{ts,tsx}`: `eslint --fix` then `prettier --write`
+- `*.{md,yaml,yml,json}`: `prettier --write`
+
+**What it does NOT run:** `tsc --noEmit` (too slow for pre-commit), tests.
+
+### How to disable temporarily
+
+```sh
+HUSKY=0 git commit -m "your message"
+```
+
+This skips all husky hooks for that commit. Use sparingly — CI will still catch lint errors.
+
+### Evaluation timeline
+
+- **Sprint 1:** prototype, opt-in. No enforcement.
+- **Retro Sprint 1:** team votes: adopt mandatory, iterate, or drop.
+- **Sprint 2 (if adopted):** mandatory + possibly add typecheck gate.
+
+### Deps (pinned)
+
+| Package       | Version |
+| ------------- | ------- |
+| `husky`       | 9.1.7   |
+| `lint-staged` | 16.4.0  |
 
 ---
 
@@ -135,12 +165,12 @@ The harness is built around three pure validator functions (`contract.ts`) that 
 
 Divergences covered:
 
-| ID      | What is checked |
-|---------|----------------|
-| DIV-001 | `date_gmt` and `modified_gmt` must NOT appear in responses (ADR-006) |
+| ID      | What is checked                                                                                              |
+| ------- | ------------------------------------------------------------------------------------------------------------ |
+| DIV-001 | `date_gmt` and `modified_gmt` must NOT appear in responses (ADR-006)                                         |
 | DIV-002 | `title`, `content`, `excerpt` must be `{rendered: string, protected: boolean}` objects — never plain strings |
-| DIV-003 | `featured_media`, `comment_status`, `ping_status`, `format`, `sticky`, `template` must be absent (ADR-007) |
-| DIV-005 | `_nodepress` namespace must be present with `type`, `menu_order`, `parent_id`, `meta` sub-fields |
+| DIV-003 | `featured_media`, `comment_status`, `ping_status`, `format`, `sticky`, `template` must be absent (ADR-007)   |
+| DIV-005 | `_nodepress` namespace must be present with `type`, `menu_order`, `parent_id`, `meta` sub-fields             |
 
 ### When it runs
 

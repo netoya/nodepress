@@ -39,3 +39,9 @@ type: project
 - **New constraint documented:** cURL in WASM is synchronous — blocks Node.js event loop. Requires async wrapper before production use.
 - **Sprint 2+ POC recommendation added:** Contact Form 7 render + cURL HTTP POST mock, or bespoke `[fetch-nodepress]` shortcode, to validate cURL/GD end-to-end.
 - **Lesson learned captured in ADR:** Empirical validation mandatory before finalizing any runtime capability inventory.
+
+## Sprint 1 día 2 — retro R-6 + R-7 (2026-04-18)
+
+- **R-6 husky prototype:** husky@9.1.7 + lint-staged@16.4.0 instalados (pinned). `.husky/pre-commit` = `npx lint-staged`. Config `lint-staged` en root `package.json`: `*.{ts,tsx}` → eslint --fix + prettier, `*.{md,yaml,yml,json}` → prettier. NO typecheck en pre-commit (lento). `prepare: husky` añadido automáticamente por `husky init`. Status: opt-in, evaluate retro Sprint 1.
+- **R-7 db coverage threshold:** `packages/db/vitest.config.ts` creado con thresholds 75/75/70/75 (stmts/branches/funcs/lines). Modo: **warn-only** — CI debe usar `continue-on-error: true` en el job de db hasta Sprint 2. Smoke test placeholder creado en `packages/db/src/__tests__/smoke.test.ts` (`it.todo`).
+- **quality-gates.md actualizado:** sección "## Husky (prototype / opt-in)" añadida + tabla thresholds actualizada con packages/db.
