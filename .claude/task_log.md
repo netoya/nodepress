@@ -50,3 +50,4 @@
 | 2026-04-18 | tomas           | retro Sprint 0 consolidada — 5 responses + 9 acciones                                                               | 1 file    | pending | ✅     |
 | 2026-04-18 | raul            | #20 wrapSyncFilter + wrapAsyncAction + CircuitBreaker                                                               | 5 files   | pending | ✅     |
 | 2026-04-18 | helena          | R-6 husky prototype + R-7 db coverage threshold (warn-only)                                                         | 6 files   | done    | ✅     |
+| 2026-04-18 | raul            | sync GitHub Issues + board con estado Sprint 1 día 2 (10 closed + 3 updated)                                        | 1 file    | pending | ✅     |
