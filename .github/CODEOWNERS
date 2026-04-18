@@ -1,0 +1,40 @@
+# CODEOWNERS — NodePress
+#
+# Sprint 5 kickoff (2026-04-18). Governance rule D-009: touching packages/core/
+# requires 2 reviews (Román + Ingrid). GitHub enforces review counts through
+# branch protection rules; this file maps paths to reviewers.
+#
+# Order matters: last matching pattern wins. Specific paths override the
+# global fallback at the bottom.
+#
+# References:
+#   - docs/adr/ADR-001-architecture-overview.md  (package boundaries)
+#   - docs/adr/ADR-015-tooling-runtime-boundary.md  (tooling lanes)
+#   - CONTRIBUTING.md § R-5  (fresh-clone smoke discipline)
+
+# ─── Fallback ────────────────────────────────────────────────────────────────
+# Every PR needs at least Román on it. Specific rules below override.
+*                           @netoya/roman
+
+# ─── Core and adjacent runtime packages ──────────────────────────────────────
+# packages/core/ is load-bearing: HookRegistry, PluginContext, lifecycle.
+# Two owners enforces the 2-review rule (D-009) without needing branch
+# protection aware of it at review time.
+/packages/core/             @netoya/roman @netoya/ingrid
+
+/packages/plugin-api/       @netoya/roman
+/packages/server/           @netoya/ingrid @netoya/roman
+/packages/db/               @netoya/ingrid
+/packages/admin/            @netoya/lucas
+/packages/cli/              @netoya/roman @netoya/carmen
+/packages/theme-engine/     @netoya/roman @netoya/lucas
+
+# ─── Infrastructure and process ──────────────────────────────────────────────
+# CI workflows, issue templates, and this file itself. Helena owns release
+# and CI plumbing; Román co-signs for architectural alignment.
+/.github/                   @netoya/roman @netoya/helena
+
+# Architecture decision records. Román is the single owner to keep the
+# authorial voice coherent across the ADR corpus; co-signs happen inside
+# individual ADR headers (e.g. ADR-012 Alejandro, ADR-018 Helena).
+/docs/adr/                  @netoya/roman
