@@ -13,21 +13,20 @@
  *   insert at the correct index on `addFilter` / `addAction` rather than
  *   re-sorting on every invocation, so the hot path (`applyFilters`,
  *   `doAction`) is a tight O(n) loop over already-ordered data.
- * - Errors are contained: a throwing filter or rejecting action is logged via
- *   `console.warn` and the pipeline continues. This is the minimal crash
- *   isolation required for #14. The full `wrapSyncFilter` / `wrapAsyncAction`
- *   circuit breaker ships with #20 (Raúl); see ADR-004 and the TODOs below.
+ * - Errors are contained via `wrapSyncFilter` and `wrapAsyncAction` (ADR-004).
+ *   A throwing filter or rejecting action is logged via `console.warn`, the
+ *   failure is recorded in the circuit breaker, and the pipeline continues.
+ *   See #20 (Raúl) for the full crash isolation + breaker implementation.
  *
  * The class is exported for advanced use cases (subclassing in tests or
  * instrumentation hooks); prefer {@link createHookRegistry} for normal usage —
  * it returns a fresh instance typed as the public `HookRegistry` interface.
  */
 
-import {
-  type ActionEntry,
-  type FilterEntry,
-  type HookRegistry,
-} from "./types.js";
+import type { ActionEntry, FilterEntry, HookRegistry } from "./types.js";
+import type { CircuitBreaker } from "./CircuitBreaker.js";
+import { createCircuitBreaker } from "./CircuitBreaker.js";
+import { wrapAsyncAction, wrapSyncFilter } from "./wrappers.js";
 
 // ---------------------------------------------------------------------------
 // Internal helpers
@@ -57,19 +56,6 @@ function findStableInsertIndex<E extends { readonly priority: number }>(
   return list.length;
 }
 
-/**
- * Narrow an unknown thrown value to a message string for logging.
- */
-function errorMessage(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  if (typeof err === "string") return err;
-  try {
-    return JSON.stringify(err);
-  } catch {
-    return String(err);
-  }
-}
-
 // ---------------------------------------------------------------------------
 // Implementation
 // ---------------------------------------------------------------------------
@@ -77,6 +63,11 @@ function errorMessage(err: unknown): string {
 export class HookRegistryImpl implements HookRegistry {
   readonly #filters = new Map<string, FilterEntry[]>();
   readonly #actions = new Map<string, ActionEntry[]>();
+  readonly #breaker: CircuitBreaker;
+
+  constructor(breaker?: CircuitBreaker) {
+    this.#breaker = breaker ?? createCircuitBreaker();
+  }
 
   addFilter<T = unknown, R = T>(name: string, entry: FilterEntry<T, R>): void {
     // `FilterEntry<T, R>` narrows to `FilterEntry<unknown, unknown>` at the
@@ -107,25 +98,11 @@ export class HookRegistryImpl implements HookRegistry {
 
     let current: T = value;
     for (const entry of list) {
-      const previous: T = current;
-      try {
-        // TODO(#20 — Raúl): replace with `wrapSyncFilter` from ADR-004.
-        // That wrapper will (a) detect a `Promise` return value and log the
-        // developer error without awaiting, (b) feed the circuit breaker on
-        // repeated failure. Here we only have try/catch resilience.
-        const result = entry.fn(current, ...args) as T;
-        current = result;
-      } catch (err) {
-        // Resilience: a broken filter must not break the pipeline. Pass the
-        // pre-error value through to the next filter.
-        // TODO: replace `console.warn` with injected logger once the logger
-        // abstraction lands (tracked alongside #20).
-        console.warn(
-          `[HookRegistry] filter "${name}" threw from plugin "${entry.pluginId}" ` +
-            `(priority ${entry.priority}): ${errorMessage(err)}`,
-        );
-        current = previous;
-      }
+      const wrapped = wrapSyncFilter(entry.fn, {
+        pluginId: entry.pluginId,
+        breaker: this.#breaker,
+      });
+      current = wrapped(current, ...args) as T;
     }
     return current;
   }
@@ -138,19 +115,11 @@ export class HookRegistryImpl implements HookRegistry {
     // `Promise.all` would race the callbacks and break the WP mental model
     // (ADR-005 § Implementation Notes).
     for (const entry of list) {
-      try {
-        // TODO(#20 — Raúl): replace with `wrapAsyncAction` from ADR-004 once
-        // the circuit breaker is in place. Current behaviour is the minimal
-        // isolation required for #14.
-        await entry.fn(...args);
-      } catch (err) {
-        // TODO: replace `console.warn` with injected logger (see above).
-        console.warn(
-          `[HookRegistry] action "${name}" threw from plugin "${entry.pluginId}" ` +
-            `(priority ${entry.priority}): ${errorMessage(err)}`,
-        );
-        // Swallow and continue — the next action in the chain still runs.
-      }
+      const wrapped = wrapAsyncAction(entry.fn, {
+        pluginId: entry.pluginId,
+        breaker: this.#breaker,
+      });
+      await wrapped(...args);
     }
   }
 
@@ -188,7 +157,11 @@ export class HookRegistryImpl implements HookRegistry {
  *
  * Creating a dedicated instance per test keeps the suite free of shared global
  * state and makes parallel test execution safe.
+ *
+ * @param breaker Optional CircuitBreaker. If omitted, a fresh instance is
+ *                 created automatically. Provide your own for fine-grained
+ *                 control or test isolation.
  */
-export function createHookRegistry(): HookRegistry {
-  return new HookRegistryImpl();
+export function createHookRegistry(breaker?: CircuitBreaker): HookRegistry {
+  return new HookRegistryImpl(breaker);
 }

@@ -28,3 +28,13 @@
 - **Verdict day 2 = CONTINUAR A DAY 3.** Tier 2 viable confirmed. Todos hard requirements cumplidos. Plan day 3: benchmark ×50, memory profile, decisión final. **Date:** 2026-04-18
 - **Tiempo invertido day 2:** ~2.5 horas (investigación wordpress-playground + implementación runner + bespoke plugin + doc). Dentro de budget. **Date:** 2026-04-18
 - **Deliverable:** docs/spikes/2026-04-18-day2-phpwasm.md (comprehensive findings + blocker resolution + extension matrix delta). **Date:** 2026-04-18
+
+## Sprint 1 día 2 — #20 wrapSync/Async + CircuitBreaker (2026-04-18)
+
+- **CircuitBreaker:** Implementado en `packages/core/src/hooks/CircuitBreaker.ts`. Threshold 5 fallos en ventana 60s abre el circuito. Auto-reset tras 60s sin fallos. Map<pluginId, timestamps[]> naive PoC. **Date:** 2026-04-18
+- **wrapSyncFilter:** Implementado en `packages/core/src/hooks/wrappers.ts`. Detecta Promise return (dev error), captura throws, registra en breaker, devuelve valor original en error. Skip execution si breaker abierto. **Date:** 2026-04-18
+- **wrapAsyncAction:** Similar a wrapSyncFilter pero tolera async. Siempre retorna Promise. Nunca propaga errores — los loguea y continúa. **Date:** 2026-04-18
+- **HookRegistry integración:** Constructor acepta CircuitBreaker opcional. applyFilters/doAction ahora usan wrappers para cada entry. Eliminadas try/catch redundantes del registry (ahora en wrappers). **Date:** 2026-04-18
+- **Tests:** 11 para CircuitBreaker (threshold, auto-reset, aislamiento, reset manual, edge cases). 15 para wrappers (normal, Promise detection, throw/reject, breaker open). 16 HookRegistry existentes ajustados (mensajes de log). **Date:** 2026-04-18
+- **Resultado:** 56 tests passed, 0 failures. TS strict, ESLint 0 errors. Coverage: CircuitBreaker + wrappers + HookRegistry integration. **Date:** 2026-04-18
+- **TODOs eliminados:** 2x `TODO(#20 — Raúl)` en HookRegistry.ts (applyFilters + doAction). Arquitectura crash-isolation completada. **Date:** 2026-04-18

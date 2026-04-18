@@ -196,7 +196,7 @@ describe("addFilter + applyFilters", () => {
     // between ok1 and ok3.
     expect(result).toBe("start-ok1-ok3");
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0]?.[0]).toMatch(/filter "boom"/);
+    expect(warnSpy.mock.calls[0]?.[0]).toMatch(/filter plugin/);
     expect(warnSpy.mock.calls[0]?.[0]).toMatch(/bad-plugin/);
     expect(warnSpy.mock.calls[0]?.[0]).toMatch(/kaboom/);
   });
@@ -274,7 +274,7 @@ describe("addAction + doAction", () => {
     await expect(r.doAction("boot")).resolves.toBeUndefined();
     expect(calls).toEqual(["before", "after"]);
     expect(warnSpy).toHaveBeenCalledTimes(1);
-    expect(warnSpy.mock.calls[0]?.[0]).toMatch(/action "boot"/);
+    expect(warnSpy.mock.calls[0]?.[0]).toMatch(/action plugin/);
     expect(warnSpy.mock.calls[0]?.[0]).toMatch(/bad-plugin/);
   });
 
