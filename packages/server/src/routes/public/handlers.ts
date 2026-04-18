@@ -1,6 +1,7 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { db, posts } from "@nodepress/db";
 import { eq } from "drizzle-orm";
+import { renderShortcodes } from "../../bridge/index.js";
 import "../../hooks.js";
 
 /**
@@ -135,7 +136,7 @@ export async function getHome(
   // Filter for published (in case mock returns all posts) and sort by createdAt DESC
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const publishedPosts = allPosts.filter((p: any) => p.status === "publish");
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const sortedPosts = publishedPosts.sort(
     (a: any, b: any) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -197,7 +198,9 @@ export async function getHome(
 /**
  * GET /p/:slug — Single post page.
  * 404 if slug not found or post is not published (no draft leak).
- * Content is rendered via the_content filter hook.
+ * Content is rendered via the_content filter hook after optional Tier 2 bridge processing.
+ * When NODEPRESS_TIER2=true, pre-processes content via renderShortcodes before
+ * applying the_content filter chain.
  */
 export async function getPost(
   request: FastifyRequest,
@@ -244,11 +247,33 @@ export async function getPost(
 
   const hooks = request.server.hooks;
 
+  // Pre-process content through Tier 2 bridge if active
+  let contentForFilter = post.content;
+  const useBridge = process.env["NODEPRESS_TIER2"] === "true";
+
+  if (useBridge) {
+    try {
+      const bridgeOutput = await renderShortcodes({
+        postContent: post.content,
+        context: {
+          postId: post.id,
+          postType: post.type,
+          postStatus: post.status,
+        },
+      });
+      contentForFilter =
+        bridgeOutput.error === null ? bridgeOutput.html : post.content;
+    } catch {
+      // Fail-safe: use original content on any bridge error
+      contentForFilter = post.content;
+    }
+  }
+
   // Apply the_content filter to render content
   // (same pattern as in serialize.ts REST endpoint)
   const renderedContent = hooks.applyFilters<string>(
     "the_content",
-    post.content,
+    contentForFilter,
     post,
   );
 

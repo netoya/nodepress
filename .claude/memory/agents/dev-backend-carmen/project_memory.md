@@ -48,6 +48,22 @@ type: project
 - **Tests:** 145/148 verde (new 6 public + existing 139 posts/hooks/conformance + 1 skipped + 2 todo). Sin regressions. **Date:** 2026-04-18
 - **Ficheros creados:** `packages/server/src/routes/public/index.ts`, `packages/server/src/routes/public/handlers.ts`, `packages/server/src/routes/public/__tests__/public.integration.test.ts`. **Ficheros modificados:** `packages/server/src/index.ts` (import + register publicPlugin). **Date:** 2026-04-18
 
+## Sprint 1 día 2 — #23 Tier 2 bridge integration into content pipeline (2026-04-18)
+
+- **Tarea:** Conectar `renderShortcodes` del bridge Tier 2 en el pipeline de contenido real (REST GET + página pública).
+- **Problema:** `applyFilters("the_content", ...)` corre con filtros sync registrados, pero el bridge (async PHP-WASM) nunca se llamaba desde los handlers GET.
+- **Solución implementada:**
+  1. Nueva función `toWpPostAsync()` en `serialize.ts`: versión async de `toWpPost()` que opcionalmente llama `renderShortcodes` si `bridge` está provisto. Si bridge devuelve `error !== null`, usa original content (passthrough). Luego aplica `the_content` filter sync.
+  2. Actualizar `listPosts()` en `handlers.ts`: si `NODEPRESS_TIER2==="true"`, usa `toWpPostAsync` con bridge inyectado. Si no, comportamiento sync idéntico.
+  3. Actualizar `getPost()` en `handlers.ts`: mismo patrón.
+  4. Actualizar `GET /p/:slug` handler en `public/handlers.ts`: pre-procesa con `renderShortcodes` antes de `applyFilters("the_content", ...)`. Fail-safe: cualquier error → original content.
+  5. Tests: nuevo archivo `serialize.test.ts` con 8 tests que cubren: serialization sync, filter application, async sin bridge (backward compat), async con bridge mockeado, bridge error passthrough, bridge exception handling, \_nodepress fields.
+- **Archivos modificados:** `packages/server/src/routes/posts/serialize.ts` (+96 líneas async fn), `packages/server/src/routes/posts/handlers.ts` (import bridge, actualizar listPosts + getPost), `packages/server/src/routes/public/handlers.ts` (import bridge, actualizar getPost). **Archivo creado:** `packages/server/src/routes/posts/__tests__/serialize.test.ts` (8 tests).
+- **Tests:** 150+ passando (new 8 serialize + existing posts/public/conformance). Sin regressions.
+- **ADR compliance:** ADR-017 §Hook Integration pattern implemented: bridge async work hoisted before `applyFilters`, filter entry remains sync no-op anchor. ADR-005 (sync filters) intact.
+- **Flags:** NODEPRESS_TIER2 activa bridge en GET endpoints. Backward compat cuando env var ausente.
+- **Date:** 2026-04-18
+
 ## Sprint 1 día 2 — #18 drizzle migrations with journal (2026-04-18)
 
 - **Migration:** De `drizzle:push` (sin historial) a `drizzle:generate` + `drizzle:migrate` con journal comiteado. **Date:** 2026-04-18
