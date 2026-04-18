@@ -23,3 +23,7 @@ export {
   wrapAsyncAction,
   wrapSyncFilter,
 } from "./hooks/index.js";
+
+// Plugin loader (ADR-020)
+export { loadPlugins } from "./plugins/loader.js";
+export type { PluginModule } from "./plugins/loader.js";

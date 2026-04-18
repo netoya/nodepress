@@ -169,3 +169,23 @@
 - **Pilot Display Posts:** candidatePosts[] → PHP literal array injection, [display-posts] shortcode, /p/:slug URLs. priority 9.8. 17 tests. **Date:** 2026-04-18
 - **ADR-013 CircuitBreaker stress findings → Accepted:** co-sign Román. 17/17 tests. p95=2.40ms, 44 extensions. **Date:** 2026-04-18
 - **Estado Sprint 2:** 231 tests verdes. Los 3 pilotos operativos con NODEPRESS_TIER2=true. **Date:** 2026-04-18
+
+## Sprint 3 — #52 Plugin Loader Runtime (ADR-020 implementación)
+
+- **Ubicación:** `packages/core/src/plugins/loader.ts` (nuevos 100 líneas).
+- **Interfaz PluginModule:** `export default (hooks, context) => void | Promise<void>`.
+- **Discovery:** Escanea `NODEPRESS_PLUGINS_DIR` (env var, default `./plugins`) por archivos `.js`. Directorio ausente → `[]` sin error (ADR-014 compliance).
+- **Activation:** Await del default export. Fallos logueados, salta el plugin, continúa el proceso.
+- **Resolución ESM:** `pathToFileURL(absolutePath).href` para NodeNext strict (ADR-015).
+- **Error handling:** log(`[PluginLoader] failed to load X: error message`) vía `console.error`.
+- **Tests:** 7 en `packages/core/src/plugins/__tests__/loader.test.ts`:
+  - Directorio ausente → `[]` (ADR-014)
+  - Plugin válido activado
+  - Plugins sin default export → skip
+  - Non-.js files → skip
+  - Resiliencia: buenos cargan pese a fallos ajenos
+  - Env var override NODEPRESS_PLUGINS_DIR
+  - Múltiples plugins mismo directorio
+  - **All 7 PASS. TS strict 0 errors, ESLint 0, Prettier applied.**
+- **Exportación core:** `packages/core/src/index.ts` + `loadPlugins` + `PluginModule` type.
+- **ADR-020:** Status Proposed → Accepted (Sprint 3). Sección "## Implementation" con detalles. **Date:** 2026-04-18

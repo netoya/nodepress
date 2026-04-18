@@ -11,8 +11,10 @@ import { test, expect } from "@playwright/test";
  *   1. Dashboard landing with 5 seeded posts
  *   2. Posts list — seeded titles visible
  *   3. Create a new post via the form (POST /wp/v2/posts)
- *   4. Hook system proof: title gets [DEMO] prefix (pre_save_post filter)
- *   5. Hook system proof: content gets "Powered by NodePress" footer (the_content filter)
+ *   4. Sprint 3: TaxonomySelector — Categories and Tags panels visible in the editor
+ *   5. Sprint 3: Select a category before publishing (TaxonomySelector checkbox interaction)
+ *   6. Hook system proof: title gets [DEMO] prefix (pre_save_post filter)
+ *   7. Hook system proof: content gets "Powered by NodePress" footer (the_content filter)
  *
  * Pacing: deliberate waitForTimeout calls so a human viewer can follow.
  */
@@ -57,6 +59,35 @@ test.describe("NodePress 30-04 Demo Flow", () => {
     await page.getByRole("option", { name: /^published$/i }).click();
     await page.waitForTimeout(500);
 
+    // ── Sprint 3: Taxonomy selectors visible ──────────────────────────────────
+    // TaxonomySelector renders a <fieldset> with <legend> for each taxonomy.
+    // Verify both panels are present in the editor before interacting.
+    const categoriesFieldset = page.getByRole("group", { name: /categories/i });
+    const tagsFieldset = page.getByRole("group", { name: /tags/i });
+    await expect(categoriesFieldset).toBeVisible({ timeout: 5000 });
+    await expect(tagsFieldset).toBeVisible({ timeout: 5000 });
+    await page.waitForTimeout(800);
+
+    // ── Sprint 3: TaxonomySelector loads categories from API ─────────────────
+    // When the stack is running in demo mode (VITE_USE_MSW=false), TaxonomySelector
+    // fetches GET /wp/v2/categories from the real backend. In MSW mode the handler
+    // returns mock data. Either way: wait for at least one checkbox to appear inside
+    // the Categories fieldset, confirming the data round-trip completed.
+    // Backend TODO: categories not yet persisted to posts — visible in UI only.
+    const firstCategoryCheckbox = categoriesFieldset
+      .getByRole("checkbox")
+      .first();
+    await expect(firstCategoryCheckbox).toBeVisible({ timeout: 8000 });
+    await page.waitForTimeout(600);
+
+    // ── Sprint 3: Select first category before creating the post ─────────────
+    // Demonstrates the TaxonomySelector checkbox interaction in the video.
+    // The category id is included in the POST payload (backend silently ignores
+    // it until #56 lands, but the UI interaction is the demo point).
+    await firstCategoryCheckbox.check();
+    await expect(firstCategoryCheckbox).toBeChecked();
+    await page.waitForTimeout(800);
+
     // ── 6. Submit → POST /wp/v2/posts → hook mutates title + content ──────────
     await page.getByRole("button", { name: /^create$/i }).click();
 
@@ -69,6 +100,18 @@ test.describe("NodePress 30-04 Demo Flow", () => {
     // Wait for the URL + heading to stabilize.
     await page.waitForURL(/#posts\/\d+\/edit/, { timeout: 5000 });
     await page.waitForTimeout(800);
+
+    // ── Sprint 3: TaxonomySelector visible in edit mode too ──────────────────
+    // After redirect to #posts/:id/edit the editor re-mounts. Both taxonomy
+    // selectors should still be present, confirming TaxonomySelector works in
+    // both new-post and edit-post contexts.
+    await expect(page.getByRole("group", { name: /categories/i })).toBeVisible({
+      timeout: 5000,
+    });
+    await expect(page.getByRole("group", { name: /tags/i })).toBeVisible({
+      timeout: 5000,
+    });
+    await page.waitForTimeout(600);
 
     // ── 9. Verify hook mutation: title input has [DEMO] prefix ────────────────
     // pre_save_post filter mutates "Hello from demo" → "[DEMO] Hello from demo"

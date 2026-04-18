@@ -1,8 +1,9 @@
 # ADR-020: Plugin Loader Runtime — File-based JS/TS Discovery
 
-- **Status:** Proposed
+- **Status:** Accepted (Sprint 3)
 - **Date:** 2026-04-18
 - **Author:** Román (Tech Lead)
+- **Implementation:** 2026-04-18 (Raúl)
 - **Related:** ADR-004 (Plugin Lifecycle), ADR-005 (Hook System Semantics), ADR-012 (Plugin API — type surface), ADR-014 (Developer Quickstart Invariant), ADR-015 (Tooling Runtime Boundary)
 
 ## Context
@@ -58,6 +59,25 @@ The loader discovers plugins from a directory and initialises each one by invoki
 - If `NODEPRESS_PLUGINS_DIR` resolves to a directory outside the repo (absolute path), the loader will happily load it. This is intended (operators need to point at `/var/lib/nodepress/plugins` in prod) but means Sprint 3 has no containment boundary. Helena's Bridge Security Boundary ADR (ADR-018) addresses the Tier 2 side; a Tier 1 equivalent will be Sprint 4 work once sandboxing lands.
 - A plugin that blocks the event loop during activation stalls server boot. Sprint 3 accepts the risk because the only plugin loaded in Sprint 3 is the demo one. Sprint 4 adds an activation timeout wrapper aligned with the circuit breaker pattern (ADR-013).
 
+## Implementation (Sprint 3)
+
+Implemented in `packages/core/src/plugins/loader.ts`:
+
+- **Discovery:** Scans `NODEPRESS_PLUGINS_DIR` (env var or `./plugins` default) for `.js` files. Absent directory returns empty array without error (ADR-014 compliance).
+- **Activation:** Awaits default export as `(hooks: HookRegistry, context: PluginContext) => void | Promise<void>`. Failed modules are logged and skipped; process continues.
+- **Module loading:** Uses `pathToFileURL(absolutePath).href` for strict NodeNext ESM resolution per ADR-015.
+- **Error handling:** Logs plugin name + error stack via `console.error`; failed plugins do not halt startup.
+- **Tests:** 7 comprehensive tests cover:
+  - Absent directory → empty array (ADR-014 compliance)
+  - Valid plugin activation
+  - Plugins without default export (silently skipped)
+  - Non-.js files (skipped)
+  - Resilience: good plugins load despite failures in others
+  - Environment variable override (`NODEPRESS_PLUGINS_DIR`)
+  - Multiple plugins in same directory
+
+All tests pass. Type-strict, ESLint 0 errors, Prettier applied. No new dependencies.
+
 ## Open Questions
 
 - **Plugin identity for single-file plugins.** Sprint 3 uses the filename (minus extension) as slug. Is that stable enough, or do we require `plugin.json` for any plugin the admin panel surfaces? Preference: require `plugin.json` for admin-visible plugins, allow loose files for dev/demo only. Formalise in Sprint 4.
@@ -66,6 +86,8 @@ The loader discovers plugins from a directory and initialises each one by invoki
 
 ## References
 
+- `packages/core/src/plugins/loader.ts` — implementation
+- `packages/core/src/plugins/__tests__/loader.test.ts` — test suite (7 tests)
 - `packages/plugin-api/src/types.ts` — type surface this loader implements
 - ADR-004 § Plugin Lifecycle — disposable registry, pluginId-scoped cleanup
 - ADR-005 § Hook System Semantics — registry methods used by plugins

@@ -107,6 +107,14 @@
 - **Tests: 95/95 green.** TypeCheck + ESLint: 0 errors. **Date:** 2026-04-18
 - **Gotcha — TaxonomySelector in PostEditorPage tests:** TaxonomySelector mounts and fires taxonomy queries. Any test that renders PostEditorPage needs handlers for both taxonomy endpoints in its MSW server. Pattern: add them as default handlers with `HttpResponse.json([])`. **Date:** 2026-04-18
 
+## Sprint 3 — Demo spec updated with taxonomy steps (2026-04-18)
+
+- **`admin/e2e/demo/demo-30-04.spec.ts` updated:** 4 new Sprint 3 steps inserted between status-select and form submit, plus 1 step in edit mode. **Date:** 2026-04-18
+- **New steps cover:** (a) both `<fieldset>` panels visible (`getByRole("group", { name: /categories|tags/ })`), (b) TaxonomySelector loads categories (wait for first checkbox inside fieldset), (c) check first category checkbox + assert checked, (d) after redirect to edit mode verify both panels still visible. **Date:** 2026-04-18
+- **Selector pattern for TaxonomySelector:** `page.getByRole("group", { name: /categories/i })` — TaxonomySelector uses `<fieldset>/<legend>` which maps to `role="group"` in ARIA. **Date:** 2026-04-18
+- **Backend TODO documented in spec:** `POST /wp/v2/posts` does not persist categories yet (#56 pending). UI interaction is the demo point — category id IS included in payload. **Date:** 2026-04-18
+- **`record-demo-video.sh` unchanged** — no infrastructure changes needed. **Date:** 2026-04-18
+
 ## Sprint 1 sem 2 — Playwright demo video config + spec (2026-04-18)
 
 - **`admin/playwright.demo.config.ts`** creado: config separada para grabación de video. `video: on`, `trace: on`, `fullyParallel: false`, `workers: 1`, `testDir: ./e2e/demo`. NO arranca webServer — requiere stack real corriendo. **Date:** 2026-04-18
