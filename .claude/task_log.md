@@ -37,4 +37,9 @@
 | 2026-04-17 | marta           | fix lint: 5 errors + 4 warnings en Card/Button/ErrorBoundary (→ 0/0)                                                | 3 files   | pending | ✅     |
 | 2026-04-17 | roman           | ESLint module extension fix (opt B: rename .js→.mjs)                                                                | 1 file    | pending | ✅     |
 | 2026-04-17 | ingrid          | tests DisposableRegistry + ADR-006 + ADR-007 | 4 files | pending | ✅     |
-| 2026-04-17 | roman           | commit Wave 4 gap closure (Ingrid tests+ADRs, Marta lint, ESLint rename) | 12 files | ab2cb59 | ✅     |
+| 2026-04-17 | roman           | commit Wave 4 gap closure (Ingrid tests+ADRs, Marta lint, ESLint rename)                                            | 12 files  | ab2cb59 | ✅     |
+| 2026-04-17 | raul            | push main Wave 4 (ab2cb59 + task_log 0bedc30)                                                                       | —         | 0bedc30 | ✅     |
+| 2026-04-17 | helena          | #27 matriz extensiones PHP + ADR-008                                                                                | 2 files   | 0a2833e | ✅     |
+| 2026-04-17 | ingrid          | #17 WP conformance harness — contract/fixtures/tests (26/26 green)                                                  | 4 files   | 0a2833e | ✅     |
+| 2026-04-17 | tomas           | retro Sprint 0 async + ping Sofía + health check PROJECT_STATUS                                                     | 3 files   | 0a2833e | ✅     |
+| 2026-04-17 | raul            | commit Wave 5 (0a2833e — rama temporal + ff-merge workaround)                                                       | 11 files  | 0a2833e | ✅     |
