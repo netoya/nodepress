@@ -1,6 +1,5 @@
 /**
  * SAX streaming parser for WXR XML.
- * Emits typed WXR records as they complete.
  */
 
 import sax from "sax";
@@ -14,12 +13,11 @@ interface ParserState {
   inAuthor: boolean;
   inComment: boolean;
   currentElement: string;
-  elementStack: string[];
   charBuffer: string;
-  currentPost?: Partial<WxrPost>;
-  currentTerm?: Partial<WxrTerm>;
-  currentUser?: Partial<WxrUser>;
-  currentComment?: Partial<WxrComment>;
+  currentPost: Partial<WxrPost> | null;
+  currentTerm: Partial<WxrTerm> | null;
+  currentUser: Partial<WxrUser> | null;
+  currentComment: Partial<WxrComment> | null;
 }
 
 interface ParseHandlers {
@@ -45,27 +43,27 @@ export function parseWxrStream(
     inAuthor: false,
     inComment: false,
     currentElement: "",
-    elementStack: [],
     charBuffer: "",
+    currentPost: null,
+    currentTerm: null,
+    currentUser: null,
+    currentComment: null,
   };
 
   const parser = sax.createStream(true, { trim: true });
 
   parser.on("opentag", (node: sax.QualifiedTag) => {
-    state.elementStack.push(node.name);
     state.currentElement = node.name;
     state.charBuffer = "";
 
-    // Track when we enter container elements
     if (node.name === "item") {
       state.inItem = true;
       state.currentPost = {};
     }
 
-    // Categories, tags, authors
     if (
-      node.name === "category" &&
-      (node.attributes as Record<string, unknown>)["domain"] === "category"
+      node.name === "wp:category" ||
+      (node.name === "category" && !state.inItem)
     ) {
       state.inCategory = true;
       state.currentTerm = {
@@ -76,10 +74,7 @@ export function parseWxrStream(
       };
     }
 
-    if (
-      node.name === "tag" &&
-      (node.attributes as Record<string, unknown>)["domain"] === "post_tag"
-    ) {
+    if (node.name === "wp:tag" || (node.name === "tag" && !state.inItem)) {
       state.inTag = true;
       state.currentTerm = {
         taxonomy: "post_tag" as const,
@@ -89,15 +84,12 @@ export function parseWxrStream(
       };
     }
 
-    if (
-      node.name === "author" &&
-      state.elementStack[state.elementStack.length - 2] === "rss"
-    ) {
+    if (node.name === "wp:author" && !state.inItem) {
       state.inAuthor = true;
       state.currentUser = {};
     }
 
-    if (node.name === "comment" && state.inItem) {
+    if (node.name === "wp:comment" && state.inItem) {
       state.inComment = true;
       state.currentComment = {};
     }
@@ -111,59 +103,55 @@ export function parseWxrStream(
 
   parser.on("closetag", (name: string) => {
     const trimmedText = state.charBuffer.trim();
-    state.elementStack.pop();
-    state.currentElement =
-      state.elementStack[state.elementStack.length - 1] || "";
 
     // Posts
     if (state.inItem && !state.inCategory && !state.inTag && !state.inComment) {
-      if (name === "post_id" && state.currentPost) {
-        state.currentPost.wpPostId = parseInt(trimmedText, 10) || 0;
-      } else if (name === "title" && state.currentPost) {
-        state.currentPost.title = trimmedText;
-      } else if (name === "post_name" && state.currentPost) {
-        state.currentPost.slug = trimmedText;
-      } else if (name === "content:encoded" && state.currentPost) {
-        state.currentPost.content = trimmedText;
-      } else if (name === "excerpt:encoded" && state.currentPost) {
-        state.currentPost.excerpt = trimmedText;
-      } else if (name === "wp:post_type" && state.currentPost) {
-        const pt = trimmedText as "post" | "page" | "attachment" | "custom";
-        if (pt === "post" || pt === "page") {
-          state.currentPost.type = pt;
-        } else if (pt === "attachment") {
-          state.currentPost.type = "attachment";
-        } else {
-          state.currentPost.type = "custom";
+      if (state.currentPost) {
+        if (name === "wp:post_id") {
+          state.currentPost.wpPostId = parseInt(trimmedText, 10) || 0;
+        } else if (name === "title") {
+          state.currentPost.title = trimmedText;
+        } else if (name === "wp:post_name") {
+          state.currentPost.slug = trimmedText;
+        } else if (name === "content:encoded") {
+          state.currentPost.content = trimmedText;
+        } else if (name === "excerpt:encoded") {
+          state.currentPost.excerpt = trimmedText;
+        } else if (name === "wp:post_type") {
+          const pt = trimmedText as "post" | "page" | "attachment" | "custom";
+          state.currentPost.type =
+            pt === "post" || pt === "page" || pt === "attachment"
+              ? pt
+              : "custom";
+        } else if (name === "wp:status") {
+          const st = trimmedText as
+            | "publish"
+            | "draft"
+            | "private"
+            | "trash"
+            | "pending";
+          if (
+            st === "publish" ||
+            st === "draft" ||
+            st === "private" ||
+            st === "trash" ||
+            st === "pending"
+          ) {
+            state.currentPost.status = st;
+          }
+        } else if (name === "pubDate") {
+          state.currentPost.pubDate = new Date(trimmedText);
+        } else if (name === "dc:creator") {
+          state.currentPost.authorLogin = trimmedText;
         }
-      } else if (name === "wp:status" && state.currentPost) {
-        const st = trimmedText as
-          | "publish"
-          | "draft"
-          | "private"
-          | "trash"
-          | "pending";
-        if (
-          st === "publish" ||
-          st === "draft" ||
-          st === "private" ||
-          st === "trash" ||
-          st === "pending"
-        ) {
-          state.currentPost.status = st;
-        }
-      } else if (name === "pubDate" && state.currentPost) {
-        state.currentPost.pubDate = new Date(trimmedText);
-      } else if (name === "dc:creator" && state.currentPost) {
-        state.currentPost.authorLogin = trimmedText;
       }
     }
 
-    // Categories (imported as terms)
+    // Categories
     if (state.inCategory && state.currentTerm) {
-      if (name === "cat_name") {
+      if (name === "wp:cat_name") {
         state.currentTerm.name = trimmedText;
-      } else if (name === "category_nicename") {
+      } else if (name === "wp:category_nicename") {
         state.currentTerm.slug = trimmedText;
       } else if (name === "wp:term_id") {
         state.currentTerm.wpTermId = parseInt(trimmedText, 10) || 0;
@@ -172,9 +160,7 @@ export function parseWxrStream(
         if (parentId > 0) {
           state.currentTerm.parentId = parentId;
         }
-      } else if (name === "description") {
-        state.currentTerm.description = trimmedText;
-      } else if (name === "category") {
+      } else if (name === "wp:category") {
         state.inCategory = false;
         if (
           state.currentTerm.wpTermId &&
@@ -183,21 +169,19 @@ export function parseWxrStream(
         ) {
           handlers.onTerm(state.currentTerm as WxrTerm);
         }
-        state.currentTerm = undefined;
+        state.currentTerm = null;
       }
     }
 
-    // Tags (imported as terms)
+    // Tags
     if (state.inTag && state.currentTerm) {
-      if (name === "tag_name") {
+      if (name === "wp:tag_name") {
         state.currentTerm.name = trimmedText;
-      } else if (name === "tag_slug") {
+      } else if (name === "wp:tag_slug") {
         state.currentTerm.slug = trimmedText;
       } else if (name === "wp:term_id") {
         state.currentTerm.wpTermId = parseInt(trimmedText, 10) || 0;
-      } else if (name === "description") {
-        state.currentTerm.description = trimmedText;
-      } else if (name === "tag") {
+      } else if (name === "wp:tag") {
         state.inTag = false;
         if (
           state.currentTerm.wpTermId &&
@@ -206,11 +190,11 @@ export function parseWxrStream(
         ) {
           handlers.onTerm(state.currentTerm as WxrTerm);
         }
-        state.currentTerm = undefined;
+        state.currentTerm = null;
       }
     }
 
-    // Authors (imported as users)
+    // Authors
     if (state.inAuthor && state.currentUser) {
       if (name === "wp:author_id") {
         state.currentUser.wpUserId = parseInt(trimmedText, 10) || 0;
@@ -220,7 +204,7 @@ export function parseWxrStream(
         state.currentUser.email = trimmedText;
       } else if (name === "wp:author_display_name") {
         state.currentUser.displayName = trimmedText;
-      } else if (name === "author") {
+      } else if (name === "wp:author") {
         state.inAuthor = false;
         if (
           state.currentUser.wpUserId &&
@@ -229,7 +213,7 @@ export function parseWxrStream(
         ) {
           handlers.onUser(state.currentUser as WxrUser);
         }
-        state.currentUser = undefined;
+        state.currentUser = null;
       }
     }
 
@@ -255,7 +239,7 @@ export function parseWxrStream(
         if (parentId > 0) {
           state.currentComment.parentWpId = parentId;
         }
-      } else if (name === "comment") {
+      } else if (name === "wp:comment") {
         state.inComment = false;
         if (
           state.currentComment.wpCommentId &&
@@ -265,7 +249,7 @@ export function parseWxrStream(
         ) {
           handlers.onComment(state.currentComment as WxrComment);
         }
-        state.currentComment = undefined;
+        state.currentComment = null;
       }
     }
 
@@ -273,7 +257,6 @@ export function parseWxrStream(
     if (state.inItem && name === "item" && state.currentPost) {
       state.inItem = false;
 
-      // Check post type
       const type = state.currentPost.type || "post";
       if (type === "attachment") {
         handlers.onSkipAttachment();
@@ -286,11 +269,10 @@ export function parseWxrStream(
       ) {
         handlers.onSkipCustomType(type);
       } else if (state.currentPost.wpPostId && state.currentPost.title) {
-        // Only emit if valid
         handlers.onPost(state.currentPost as WxrPost);
       }
 
-      state.currentPost = undefined;
+      state.currentPost = null;
     }
 
     state.charBuffer = "";

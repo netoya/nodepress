@@ -1,6 +1,5 @@
 /**
  * Batch writer: buffers normalized rows and flushes to DB.
- * Handles idempotency via metadata fields.
  */
 
 import { db, posts, terms, users, comments } from "@nodepress/db";
@@ -9,11 +8,30 @@ import { sql } from "drizzle-orm";
 
 const BATCH_SIZE = 500;
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type AnyMeta = any;
+
+interface BufferedPost extends NewPost {
+  meta: AnyMeta;
+}
+
+interface BufferedTerm extends NewTerm {
+  meta: AnyMeta;
+}
+
+interface BufferedUser extends NewUser {
+  meta: AnyMeta;
+}
+
+interface BufferedComment extends NewComment {
+  meta: AnyMeta;
+}
+
 interface BatchState {
-  posts: (NewPost & { meta: Record<string, unknown> })[];
-  terms: (NewTerm & { meta: Record<string, unknown> })[];
-  users: (NewUser & { meta: Record<string, unknown> })[];
-  comments: (NewComment & { meta: Record<string, unknown> })[];
+  posts: BufferedPost[];
+  terms: BufferedTerm[];
+  users: BufferedUser[];
+  comments: BufferedComment[];
   termMappings: Map<number, number>;
   userMappings: Map<number, number>;
   postMappings: Map<number, number>;
@@ -58,19 +76,19 @@ export class BatchWriter {
     };
   }
 
-  addPost(post: NewPost & { meta: Record<string, unknown> }): void {
+  addPost(post: BufferedPost): void {
     this.state.posts.push(post);
   }
 
-  addTerm(term: NewTerm & { meta: Record<string, unknown> }): void {
+  addTerm(term: BufferedTerm): void {
     this.state.terms.push(term);
   }
 
-  addUser(user: NewUser & { meta: Record<string, unknown> }): void {
+  addUser(user: BufferedUser): void {
     this.state.users.push(user);
   }
 
-  addComment(comment: NewComment & { meta: Record<string, unknown> }): void {
+  addComment(comment: BufferedComment): void {
     this.state.comments.push(comment);
   }
 
@@ -87,92 +105,68 @@ export class BatchWriter {
   }
 
   async flush(): Promise<void> {
-    if (this.dryRun) {
-      return; // No-op in dry-run
-    }
-
-    // Flush users first (posts reference them)
+    if (this.dryRun) return;
     await this.flushUsers();
-
-    // Flush posts (need user IDs)
     await this.flushPosts();
-
-    // Flush terms
     await this.flushTerms();
-
-    // Flush comments (need post IDs, optional user IDs)
     await this.flushComments();
   }
 
   private async flushUsers(): Promise<void> {
     if (this.state.users.length === 0) return;
-
     const userRows = this.state.users.splice(0, BATCH_SIZE);
     for (const user of userRows) {
       try {
-        // Check if user exists by email
         const existing = await db
           .select({ id: users.id })
           .from(users)
           .where(sql`email = ${user.email}`)
           .limit(1);
-
         if (existing.length > 0) {
           this.stats.usersSkipped++;
-          // Don't update existing users (security — imported users don't overwrite)
         } else {
-          const inserted = await db
+          const result = await db
             .insert(users)
             .values(user)
             .returning({ id: users.id });
-          if (inserted.length > 0) {
+          if (result.length > 0) {
             this.stats.usersInserted++;
-            const wpUserId = (user.meta as Record<string, unknown>)?.wp_user_id;
-            if (typeof wpUserId === "number") {
-              this.recordUserMapping(wpUserId, inserted[0].id);
-            }
+            const wpUserId = user.meta?.wp_user_id;
+            if (typeof wpUserId === "number")
+              this.recordUserMapping(wpUserId, result[0]!.id);
           }
         }
       } catch (err) {
         console.error(`[WARN] Failed to insert user ${user.email}:`, err);
       }
     }
-
-    // Recursive flush if more batches
-    if (this.state.users.length > 0) {
-      await this.flushUsers();
-    }
+    if (this.state.users.length > 0) await this.flushUsers();
   }
 
   private async flushPosts(): Promise<void> {
     if (this.state.posts.length === 0) return;
-
     const postRows = this.state.posts.splice(0, BATCH_SIZE);
     for (const post of postRows) {
       try {
-        // Resolve authorId from mapping
-        const wpAuthorLogin = (post.meta as Record<string, unknown>)
-          ?.wp_author_login;
+        const wpAuthorLogin = post.meta?.wp_author_login;
         if (typeof wpAuthorLogin === "string") {
-          // Find user by login
           const author = await db
             .select({ id: users.id })
             .from(users)
             .where(sql`login = ${wpAuthorLogin}`)
             .limit(1);
           if (author.length > 0) {
-            post.authorId = author[0].id;
+            post.authorId = author[0]!.id;
           } else {
-            // Fallback to first user
             const firstUser = await db
               .select({ id: users.id })
               .from(users)
               .limit(1);
-            post.authorId = firstUser.length > 0 ? firstUser[0].id : 1;
+
+            post.authorId = firstUser.length > 0 ? firstUser[0]!.id : 1;
           }
         }
-
-        const wpPostId = (post.meta as Record<string, unknown>)?.wp_post_id;
+        const wpPostId = post.meta?.wp_post_id;
         const existing =
           typeof wpPostId === "number"
             ? await db
@@ -181,53 +175,41 @@ export class BatchWriter {
                 .where(sql`meta->>'wp_post_id' = ${String(wpPostId)}`)
                 .limit(1)
             : [];
-
         if (existing.length > 0) {
-          // Update existing post
-          const updated = await db
+          const result = await db
             .update(posts)
-            .set({
-              ...post,
-              updatedAt: new Date(),
-            })
-            .where(sql`id = ${existing[0].id}`)
+            .set({ ...post, updatedAt: new Date() })
+            .where(sql`id = ${existing[0]!.id}`)
             .returning({ id: posts.id });
-          if (updated.length > 0) {
+          if (result.length > 0) {
             this.stats.postsInserted++;
-            if (typeof wpPostId === "number") {
-              this.recordPostMapping(wpPostId, updated[0].id);
-            }
+            if (typeof wpPostId === "number")
+              this.recordPostMapping(wpPostId, result[0]!.id);
           }
         } else {
-          // Insert new post
-          const inserted = await db
+          const result = await db
             .insert(posts)
             .values(post)
             .returning({ id: posts.id });
-          if (inserted.length > 0) {
+          if (result.length > 0) {
             this.stats.postsInserted++;
-            if (typeof wpPostId === "number") {
-              this.recordPostMapping(wpPostId, inserted[0].id);
-            }
+            if (typeof wpPostId === "number")
+              this.recordPostMapping(wpPostId, result[0]!.id);
           }
         }
       } catch (err) {
         console.error(`[WARN] Failed to insert post ${post.slug}:`, err);
       }
     }
-
-    if (this.state.posts.length > 0) {
-      await this.flushPosts();
-    }
+    if (this.state.posts.length > 0) await this.flushPosts();
   }
 
   private async flushTerms(): Promise<void> {
     if (this.state.terms.length === 0) return;
-
     const termRows = this.state.terms.splice(0, BATCH_SIZE);
     for (const term of termRows) {
       try {
-        const wpTermId = (term.meta as Record<string, unknown>)?.wp_term_id;
+        const wpTermId = term.meta?.wp_term_id;
         const existing =
           typeof wpTermId === "number"
             ? await db
@@ -238,61 +220,49 @@ export class BatchWriter {
                 )
                 .limit(1)
             : [];
-
         if (existing.length > 0) {
-          // Update
-          const updated = await db
+          const result = await db
             .update(terms)
             .set(term)
-            .where(sql`id = ${existing[0].id}`)
+            .where(sql`id = ${existing[0]!.id}`)
             .returning({ id: terms.id });
-          if (updated.length > 0) {
+          if (result.length > 0) {
             this.stats.termsInserted++;
-            if (typeof wpTermId === "number") {
-              this.recordTermMapping(wpTermId, updated[0].id);
-            }
+            if (typeof wpTermId === "number")
+              this.recordTermMapping(wpTermId, result[0]!.id);
           }
         } else {
-          // Insert
-          const inserted = await db
+          const result = await db
             .insert(terms)
             .values(term)
             .returning({ id: terms.id });
-          if (inserted.length > 0) {
+          if (result.length > 0) {
             this.stats.termsInserted++;
-            if (typeof wpTermId === "number") {
-              this.recordTermMapping(wpTermId, inserted[0].id);
-            }
+            if (typeof wpTermId === "number")
+              this.recordTermMapping(wpTermId, result[0]!.id);
           }
         }
       } catch (err) {
         console.error(`[WARN] Failed to insert term ${term.name}:`, err);
       }
     }
-
-    if (this.state.terms.length > 0) {
-      await this.flushTerms();
-    }
+    if (this.state.terms.length > 0) await this.flushTerms();
   }
 
   private async flushComments(): Promise<void> {
     if (this.state.comments.length === 0) return;
-
     const commentRows = this.state.comments.splice(0, BATCH_SIZE);
     for (const comment of commentRows) {
       try {
-        // Resolve postId from mapping
-        const wpPostId = (comment.meta as Record<string, unknown>)
-          ?.wp_comment_post_id;
+        const wpPostId = comment.meta?.wp_comment_post_id;
         if (
           typeof wpPostId === "number" &&
           this.state.postMappings.has(wpPostId)
         ) {
-          comment.postId = this.state.postMappings.get(wpPostId)!;
+          const mapped = this.state.postMappings.get(wpPostId);
+          if (mapped) comment.postId = mapped;
         }
-
-        const wpCommentId = (comment.meta as Record<string, unknown>)
-          ?.wp_comment_id;
+        const wpCommentId = comment.meta?.wp_comment_id;
         const existing =
           typeof wpCommentId === "number"
             ? await db
@@ -301,26 +271,20 @@ export class BatchWriter {
                 .where(sql`meta->>'wp_comment_id' = ${String(wpCommentId)}`)
                 .limit(1)
             : [];
-
         if (existing.length > 0) {
           this.stats.commentsSkipped++;
         } else {
-          const inserted = await db
+          const result = await db
             .insert(comments)
             .values(comment)
             .returning({ id: comments.id });
-          if (inserted.length > 0) {
-            this.stats.commentsInserted++;
-          }
+          if (result.length > 0) this.stats.commentsInserted++;
         }
       } catch (err) {
         console.error(`[WARN] Failed to insert comment:`, err);
       }
     }
-
-    if (this.state.comments.length > 0) {
-      await this.flushComments();
-    }
+    if (this.state.comments.length > 0) await this.flushComments();
   }
 
   getStats(): ImportStats {

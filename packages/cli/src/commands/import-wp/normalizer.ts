@@ -22,6 +22,7 @@ export function normalizeWxrPost(wxr: WxrPost): Omit<NewPost, "authorId"> & {
     authorId: 1, // Placeholder; caller must resolve from user map
     parentId: undefined,
     menuOrder: 0,
+
     meta: {
       wp_post_id: wxr.wpPostId,
       wp_author_login: wxr.authorLogin,
@@ -41,6 +42,7 @@ export function normalizeWxrTerm(wxr: WxrTerm): NewTerm {
     slug: wxr.slug,
     description: wxr.description || "",
     parentId: wxr.parentId,
+
     meta: {
       wp_term_id: wxr.wpTermId,
     } as any,
@@ -60,6 +62,7 @@ export function normalizeWxrUser(wxr: WxrUser): NewUser {
     passwordHash: "!", // Marker for "password reset required"
     roles: ["subscriber"],
     capabilities: {},
+
     meta: {
       wp_user_id: wxr.wpUserId,
       wp_imported: true,
@@ -85,6 +88,7 @@ export function normalizeWxrComment(
     content: wxr.content,
     status: wxr.status === "approved" ? "approved" : "pending",
     type: "comment",
+
     meta: {
       wp_comment_id: wxr.wpCommentId,
       wp_author_name: wxr.authorName,

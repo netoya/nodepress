@@ -1,6 +1,5 @@
 /**
  * Import pipeline: parses WXR, normalizes, batches, writes to DB.
- * Handles dry-run, progress reporting, and error recovery.
  */
 
 import { existsSync, statSync } from "fs";
@@ -34,16 +33,13 @@ interface Progress {
   comments: number;
   attachments: number;
   customTypes: Set<string>;
-  metaKeys: Map<string, number>;
   serializedPhp: number;
-  themeSettings: number;
 }
 
 export async function runImport(options: ImportOptions): Promise<{
   result: WxrParseResult;
   stats: ImportStats;
 }> {
-  // Validate source
   if (!existsSync(options.source)) {
     throw new Error(`File not found: ${options.source}`);
   }
@@ -58,7 +54,6 @@ export async function runImport(options: ImportOptions): Promise<{
   console.log(`Dry run: ${options.dryRun}`);
   console.log("");
 
-  // Track progress
   const progress: Progress = {
     posts: 0,
     terms: 0,
@@ -66,9 +61,7 @@ export async function runImport(options: ImportOptions): Promise<{
     comments: 0,
     attachments: 0,
     customTypes: new Set(),
-    metaKeys: new Map(),
     serializedPhp: 0,
-    themeSettings: 0,
   };
 
   const writer = new BatchWriter(options.dryRun);
@@ -130,10 +123,8 @@ export async function runImport(options: ImportOptions): Promise<{
         parseResult.skipped.customPostTypes.add(type);
       },
 
-      onSkipMeta: (key: string) => {
-        const count = progress.metaKeys.get(key) || 0;
-        progress.metaKeys.set(key, count + 1);
-        parseResult.skipped.meta.set(key, count + 1);
+      onSkipMeta: () => {
+        progress.serializedPhp++;
       },
 
       onError: (err: Error) => {
@@ -144,7 +135,6 @@ export async function runImport(options: ImportOptions): Promise<{
     parseWxrStream(options.source, handlers, async () => {
       process.stderr.write("\n");
 
-      // Summary
       console.log(`  ✓ Found ${progress.posts} posts`);
       console.log(
         `  ✓ Found ${progress.terms} terms (${getCategoryCount(parseResult.terms)} categories, ${getTagCount(parseResult.terms)} tags)`,
@@ -165,36 +155,28 @@ export async function runImport(options: ImportOptions): Promise<{
 
       console.log("\nImporting...");
 
-      // Write to DB
       try {
-        // Insert users first
         for (const user of parseResult.users) {
           const normalized = normalizeWxrUser(user);
           writer.addUser(normalized as never);
         }
 
-        // Flush users so we have IDs for post author resolution
         await writer.flush();
 
-        // Insert posts
         for (const post of parseResult.posts) {
           const normalized = normalizeWxrPost(post);
           writer.addPost(normalized as never);
         }
 
-        // Flush posts
         await writer.flush();
 
-        // Insert terms
         for (const term of parseResult.terms) {
           const normalized = normalizeWxrTerm(term);
           writer.addTerm(normalized as never);
         }
 
-        // Flush terms
         await writer.flush();
 
-        // Insert comments
         for (const comment of parseResult.comments) {
           if (parseResult.posts.find((p) => p.wpPostId === comment.postWpId)) {
             const normalized = normalizeWxrComment(comment, 0);
@@ -202,12 +184,10 @@ export async function runImport(options: ImportOptions): Promise<{
           }
         }
 
-        // Flush comments
         await writer.flush();
 
         const stats = writer.getStats();
 
-        // Report results
         if (options.dryRun) {
           console.log("  (dry-run, no DB writes)");
         } else {
