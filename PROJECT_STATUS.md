@@ -50,7 +50,7 @@
 | **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init             |
 | **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO  | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
 | **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO  | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
-| Sprint 3     | 2026-05-05 → 2026-05-16 | 🟡 PLANNING | Roles/capabilities + taxonomías + admin edit flow + CLI init |
+| Sprint 3     | 2026-05-05 → 2026-05-16 | 🔵 EN CURSO | Roles/capabilities + taxonomías + admin edit flow + CLI init |
 | Sprint 4     | 2026-05-19 → 2026-05-30 | ⚪ BACKLOG  | Plugin API + vm.Context + primer plugin + piloto outreach    |
 
 ---
@@ -149,12 +149,29 @@
 
 ## ADRs
 
-| ADR | Título                     | Estado      | Autor |
-| --- | -------------------------- | ----------- | ----- |
-| 001 | Architecture Overview      | ✅ Accepted | Román |
-| 002 | Folder Structure           | ✅ Accepted | Román |
-| 003 | PHP Compatibility Strategy | ✅ Accepted | Román |
-| 004 | Plugin Lifecycle           | ✅ Accepted | Román |
+| ADR | Título                         | Estado      | Autor           |
+| --- | ------------------------------ | ----------- | --------------- |
+| 001 | Architecture Overview          | ✅ Accepted | Román           |
+| 002 | Folder Structure               | ✅ Accepted | Román           |
+| 003 | PHP Compatibility Strategy     | ✅ Accepted | Román           |
+| 004 | Plugin Lifecycle               | ✅ Accepted | Román           |
+| 005 | Hook System Async Boundary     | ✅ Accepted | Román           |
+| 006 | date_gmt omission              | ✅ Accepted | Román + Ingrid  |
+| 007 | Slug auto-suffix WP-style      | ✅ Accepted | Carmen          |
+| 008 | PHP-WASM Tier 2 Verdict        | ✅ Accepted | Raúl + Helena   |
+| 009 | Context param (view/edit)      | ✅ Accepted | Carmen          |
+| 010 | CLI Architecture               | ✅ Accepted | Román           |
+| 011 | Theme Engine Contract          | ✅ Accepted | Román           |
+| 012 | Plugin API                     | ✅ Accepted | Román           |
+| 013 | CircuitBreaker stress findings | ✅ Accepted | Raúl            |
+| 014 | Developer Quickstart Invariant | ✅ Accepted | Román           |
+| 015 | Tooling Runtime Boundary       | ✅ Accepted | Román           |
+| 016 | Demo Lifecycle Contract        | ✅ Accepted | Román           |
+| 017 | Tier 2 Bridge Surface          | ✅ Accepted | Román + Ingrid  |
+| 018 | Bridge Security Boundary       | ✅ Accepted | Helena          |
+| 019 | Bridge Observability           | ✅ Accepted | Ingrid + Helena |
+| 020 | Plugin Loader Runtime          | 🔵 Proposed | Román           |
+| 021 | Theme↔Core Integration         | 🔵 Proposed | Román           |
 
 ---
 
@@ -308,4 +325,49 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint 2 kickoff)_
+---
+
+## Sprint 3 — Roles + Taxonomías + Admin Edit + CLI (2026-05-05 → 2026-05-16)
+
+**Sprint Goal:** "NodePress operable y creíble: auth con roles reales, taxonomías WP-compat (categorías + tags), admin edit flow completo, CLI serve+migrate, y repo público el 14-05 con TTFA <5 min en fresh clone."
+
+**DoD Sprint 3:** requireAdmin valida roles en DB, taxonomías CRUD REST, TaxonomySelector en admin editor, CLI ejecutable npm publish, 360+ tests verdes, feature freeze 12-05 12:00, repo público 14-05.
+
+### Ticket Mapping Sprint 3
+
+| PROJECT_STATUS # | GitHub Issue | Short title                                        | Responsable     | Estado  |
+| ---------------- | ------------ | -------------------------------------------------- | --------------- | ------- |
+| 44               | —            | Auth roles DB + GET /wp/v2/users/me                | Ingrid          | ✅ DONE |
+| 45               | —            | ADRs 010/011/012 → Accepted + ADR-020/021 Proposed | Román           | ✅ DONE |
+| 46               | —            | GET /wp/v2/media stub → []                         | Raúl            | ✅ DONE |
+| 47               | —            | CLI serve + migrate commands (bin nodepress)       | Raúl            | ✅ DONE |
+| 48               | —            | Bridge timeout 5s + D-014 disposeAll AbortSignal   | Raúl            | ✅ DONE |
+| 49               | —            | GET /wp/v2/categories + /tags REST + OpenAPI       | Ingrid          | ✅ DONE |
+| 50               | —            | TaxonomySelector + PostForm taxonomy assignment    | Lucas           | ✅ DONE |
+| 51               | —            | Backend persist post→taxonomy assignments          | Carmen          | ⬜ TODO |
+| 52               | —            | ADR-020 Plugin Loader → Accepted + implementation  | Román + Raúl    | ⬜ TODO |
+| 53               | —            | ADR-021 Theme↔Core → implementación MVP            | Román + Lucas   | ⬜ TODO |
+| 54               | —            | CI npm publish CLI + release checklist             | Helena + Martín | ⬜ TODO |
+| 55               | —            | Demo video regenerado con features Sprint 3        | Lucas           | ⬜ TODO |
+
+### Sprint 3 — Estado parcial (2026-04-18)
+
+- **Tickets completados:** 7/12
+- **Tests:** 360 verdes (186 server + 95 admin + 70 core + 5 db + 4 cli)
+- **ADRs:** 12 Accepted (001-012 + 013-019), 2 Proposed (020, 021)
+- **Feature freeze:** 2026-05-12 12:00
+- **Repo público:** 2026-05-14
+
+### Decisiones Sprint 3
+
+| ID    | Fecha      | Decisión                                                                               | Responsable       |
+| ----- | ---------- | -------------------------------------------------------------------------------------- | ----------------- |
+| D-025 | 2026-04-18 | ADRs 010/011/012 → Accepted. Gate Sprint 3 cerrado.                                    | Román             |
+| D-026 | 2026-04-18 | Taxonomías sin jerarquía Sprint 3. parent=0 siempre. Jerarquía = deuda ADR.            | Román + Ingrid    |
+| D-027 | 2026-04-18 | `GET /wp/v2/users/me` encadenado en #44 — no ticket separado.                          | Ingrid            |
+| D-028 | 2026-04-18 | CLI usa process.argv directo — sin dependencias adicionales (commander/yargs).         | Raúl              |
+| D-029 | 2026-04-18 | Planning 05-05 AM + outreach signal review 05-05 PM + ajuste 06-05 si cambio material. | Tomás + Alejandro |
+
+---
+
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint 3 en curso)_

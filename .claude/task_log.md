@@ -91,4 +91,9 @@
 | 2026-04-18 | carmen          | ADR-009 ?context=edit — SerializeContext type, raw fields, requireAdmin gate, 12 new tests (231 total)                        | 4 files   | 942dc8e | ✅     |
 | 2026-04-18 | orchestrator    | OpenAPI: ?context param + RenderedFieldEdit schema + 401 on GET endpoints                                                     | 1 file    | 65db561 | ✅     |
 | 2026-04-18 | helena          | CI ci.yml cache: npm via setup-node (S2-infra-backlog closed)                                                                 | 1 file    | ef313cc | ✅     |
-| 2026-04-18 | orchestrator    | /meet Sprint 3 planning — acta + 5 participant memories (Alejandro, Román, Ingrid, Tomás, Martín)                             | 6 files   | done    | ✅     |
+| 2026-04-18 | orchestrator    | /meet Sprint 3 planning — acta + 5 participant memories (Alejandro, Román, Ingrid, Tomás, Martín)                             | 6 files   | cfaab1b | ✅     |
+| 2026-04-18 | roman           | ADRs 010/011/012 → Accepted + ADR-020 Plugin Loader Runtime + ADR-021 Theme↔Core (Proposed)                                   | 5 files   | 17c8cb4 | ✅     |
+| 2026-04-18 | ingrid          | #44 requireAdmin roles DB + GET /wp/v2/users/me (WP-compat shape, 8 tests)                                                    | 4 files   | 17c8cb4 | ✅     |
+| 2026-04-18 | raul            | GET /wp/v2/media stub + bridge 5s timeout + disposeAll AbortSignal + CLI serve/migrate (9 tests)                              | 7 files   | 17c8cb4 | ✅     |
+| 2026-04-18 | ingrid          | GET /wp/v2/categories + /tags REST + OpenAPI WpTerm schema + spec (9 tests, 355 total)                                        | 5 files   | 734e1ca | ✅     |
+| 2026-04-18 | lucas           | TaxonomySelector + PostForm taxonomy assignment + MSW handlers (8 tests, 360 total)                                           | 9 files   | bcf7a58 | ✅     |
