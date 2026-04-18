@@ -429,7 +429,7 @@ _Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint
 
 | PROJECT_STATUS # | GitHub Issue | Short title                                                   | Responsable           | Estado  |
 | ---------------- | ------------ | ------------------------------------------------------------- | --------------------- | ------- |
-| 60               | —            | Backlog adjustment post-ICP-1 signal (debrief + priorización) | Alejandro + Martín    | ⬜ TODO |
+| 60               | —            | Backlog adjustment post-ICP-1 signal (debrief + priorización) | Alejandro + Martín    | ✅ DONE |
 | 61               | —            | CLA Assistant config + issues externos triage SLA             | Helena + Martín       | ⬜ TODO |
 | 66               | —            | WP Import CLI real (posts+terms+users+comments, dry-run)      | Carmen (brief Ingrid) | ✅ DONE |
 | 67               | —            | Plugin list command CLI (nodepress plugin list)               | Raúl                  | ✅ DONE |

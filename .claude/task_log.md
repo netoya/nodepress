@@ -117,3 +117,6 @@
 | 2026-06-02 | lucas           | fix(admin): auth flow — LoginPage + AuthGuard + localStorage token + DashboardError network msg                               | 8 files   | ee257cf | ✅     |
 | 2026-06-02 | orchestrator    | #69 LICENSE (GPL-3.0) + COMMERCIAL-LICENSE.md + CONTRIBUTING.md — dual license + CLA docs                                     | 3 files   | pending | ✅     |
 | 2026-04-18 | lucas           | D-038 /plugins page — list + enable/disable UI (ICP-1 signal, Sprint 5) — 6 tests, MSW handler, WpPlugin type, router updated | 6 files   | pending | ✅     |
+| 2026-06-14 | carmen          | docs(openapi): add users endpoints + taxonomies in posts + context=edit param                                                 | 1 file    | 2ab4e5b | ✅     |
+| 2026-06-14 | lucas           | feat(admin): /plugins page — list + enable/disable UI optimistic + 6 tests (101 total, D-038)                                 | 5 files   | 29ad70a | ✅     |
+| 2026-06-14 | martin          | docs(#60): Sprint 6 backlog draft + ICP-1 debrief — 5 hallazgos, 10 tickets, buffer #72/#73 propuesta                         | 2 files   | pending | ✅     |
