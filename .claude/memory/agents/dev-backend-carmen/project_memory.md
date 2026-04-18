@@ -72,3 +72,11 @@ type: project
 - **Scripts:** `package.json` verificado (scripts `migrate` + `drizzle:generate` + `drizzle:push` ya existían). Removido `drizzle:status` (comando inexistente en drizzle-kit v0.30.0). **Date:** 2026-04-18
 - **README creado:** `packages/db/README.md` con estrategia dev vs prod: dev → `drizzle:push` (sin journal), prod → `drizzle:generate` → commit → `drizzle:migrate`. **Date:** 2026-04-18
 - **Commits:** `ec5d2ca` — feat(#18): implement drizzle migrations with journal tracking. **Date:** 2026-04-18
+
+## Sprint 2 — Entregables ejecutados (2026-04-18)
+
+- **#28 drizzle:generate+migrate con journal:** 0000_productive_grandmaster.sql + \_journal.json + snapshot. packages/db/README.md. **Date:** 2026-04-18
+- **#30 Bug excerpt.raw OpenAPI fix:** serialize.ts raw field removido de context=view (solo visible en context=edit). **Date:** 2026-04-18
+- **Pilot Display Posts (packages/server/src/bridge/pilots/display-posts.ts):** buildDisplayPostsPhpCode, candidatePosts[] PHP literal array, /p/:slug URLs. 17 tests. **Date:** 2026-04-18
+- **ADR-009 ?context=edit HTTP integration tests:** context-edit.test.ts — 7 tests HTTP layer (Fastify inject). Auth enforcement GET /wp/v2/posts + GET /wp/v2/posts/{id}. **Date:** 2026-04-18
+- **Estado Sprint 2:** 16/16 done. 231 tests verdes. **Date:** 2026-04-18

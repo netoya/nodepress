@@ -131,3 +131,14 @@ type: project
 - **ADR bridge observability: Sprint 2 semana 1.** Cada bridge call = span traceable. Si se difiere a Sprint 3, Tier 2 ship sin observability = rework. **Date:** 2026-04-18
 - **CI gaps (coverage artefact, PR lint, npm audit) → S2-infra-backlog.** No Sprint Goal pero visibles en GitHub antes del lunes. **Date:** 2026-04-18
 - **drizzle:push = no apruebo despliegue DB sin journal.** Bloqueo hasta que Ingrid/Carmen recuperen migrate con journal S2-W1. **Date:** 2026-04-18
+
+## Sprint 2 — Entregables ejecutados (2026-04-18)
+
+- **ADR-018 Bridge security boundary → Accepted (co-sign Román):** RCE (exec/system/eval stubbed), SSRF (curl_exec+allow_url_fopen Off), DoS (32MB+2s+3s Promise.race), data injection (array $atts), cross-plugin (scope reset). **Date:** 2026-04-18
+- **ADR-019 Bridge observability → Accepted (co-sign Ingrid):** BridgeSpan JSON, levels info/warn/error, exclusions (postContent, html, atts values). **Date:** 2026-04-18
+- **CI coverage.yml:** Postgres 16 service, vitest --coverage, artifact upload 7 días. **Date:** 2026-04-18
+- **CI pr-lint.yml:** amannn/action-semantic-pull-request@v5, conventional commits enforced. **Date:** 2026-04-18
+- **CI security-audit.yml:** npm audit --audit-level=high, push main + cron lunes 9am. **Date:** 2026-04-18
+- **CI ci.yml cache mejorado:** migrado de manual actions/cache a cache: npm en setup-node. S2-infra-backlog cerrado. **Date:** 2026-04-18
+- **@php-wasm/node en CI validado:** dynamic import lazy, smoke no activa NODEPRESS_TIER2. Sin cambios needed. **Date:** 2026-04-18
+- **Estado Sprint 2:** 5 workflows CI activos. 231 tests. **Date:** 2026-04-18

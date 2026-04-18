@@ -123,3 +123,12 @@
 - **cURL sync documentada como limitación ADR-008, fuera Sprint 2.** Los 3 pilotos (Footnotes, Shortcodes, Display Posts) no usan HTTP — están limpios. **Date:** 2026-04-18
 - **ADR-017 es precondición para harness Tier 2.** Raúl provee findings spike a Román el lunes para que pueda escribirlo. **Date:** 2026-04-18
 - **Singleton PHP-WASM recomendado para prod** — cold start 40-50ms por instancia nueva. Implementar PoC si load testing revela latency. **Date:** 2026-04-18
+
+## Sprint 2 — Entregables ejecutados (2026-04-18)
+
+- **GC stale entries CircuitBreaker:** gcIntervalMs param, destroy(), #startGC(), #collectGarbage(). 3 nuevos tests. **Date:** 2026-04-18
+- **Pilot Footnotes (packages/server/src/bridge/pilots/footnotes.ts):** buildFootnotesPhpCode, registerFootnotesPlugin priority 9.5. 13 tests green. **Date:** 2026-04-18
+- **Pilot Shortcodes Ultimate:** su_button/su_box/su_note → HTML. XSS-safe (htmlspecialchars). priority 9.6. 16 tests. **Date:** 2026-04-18
+- **Pilot Display Posts:** candidatePosts[] → PHP literal array injection, [display-posts] shortcode, /p/:slug URLs. priority 9.8. 17 tests. **Date:** 2026-04-18
+- **ADR-013 CircuitBreaker stress findings → Accepted:** co-sign Román. 17/17 tests. p95=2.40ms, 44 extensions. **Date:** 2026-04-18
+- **Estado Sprint 2:** 231 tests verdes. Los 3 pilotos operativos con NODEPRESS_TIER2=true. **Date:** 2026-04-18

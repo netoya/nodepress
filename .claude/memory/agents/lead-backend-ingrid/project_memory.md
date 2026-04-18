@@ -228,3 +228,13 @@
 - **ADR-017 es gate para código Tier 2:** sin ADR firmado no arranca implementación bridge. Esperamos a lunes 21-04. **Date:** 2026-04-18
 - **Bug excerpt.raw en serialize.ts:** ticket S2-W1, Carmen cierra. Ingrid anota ticket. **Date:** 2026-04-18
 - **ADR-013 → Accepted hoy EOD.** GC CircuitBreaker entra como ticket Sprint 2 semana 1. **Date:** 2026-04-18
+
+## Sprint 2 — Entregables ejecutados (2026-04-18)
+
+- **drizzle:generate+migrate con journal:** journal comiteado en packages/db/drizzle/. drizzle:push eliminado de flujo producción. **Date:** 2026-04-18
+- **Bridge core (packages/server/src/bridge/index.ts):** renderShortcodes, destroyBridge, registerBridgeHooks. Lazy singleton PHP-WASM. 8 unit tests + 8 integration tests. **Date:** 2026-04-18
+- **ADR-019 Bridge observability → Accepted (co-sign con Helena):** BridgeSpan emitido en todas las rutas (happy + error). **Date:** 2026-04-18
+- **Bridge wiring en server boot:** NODEPRESS_TIER2=true activa bridge + 3 pilots. toWpPostAsync en listPosts/getPost. **Date:** 2026-04-18
+- **toWpPostAsync:** async serializer con bridge pre-process + sync the_content filter. Backward compat preservado. **Date:** 2026-04-18
+- **ADR-009 context=edit:** SerializeContext param en toWpPost/toWpPostAsync. raw fields en context=edit. 5 nuevos tests serialize. **Date:** 2026-04-18
+- **Estado Sprint 2:** 16/16 done. 231 tests verdes. 16 ADRs Accepted. **Date:** 2026-04-18

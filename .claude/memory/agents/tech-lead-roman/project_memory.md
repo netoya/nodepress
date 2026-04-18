@@ -238,3 +238,16 @@
 - **ADR-017 Tier 2 Bridge Surface:** escribir lunes 21-04 tras findings Raúl. Sin ADR firmado, nadie escribe código bridge. **Date:** 2026-04-18
 - **ADR bridge security boundary (Helena):** independiente de ADR-015. Confirmado que no hay dependencia. **Date:** 2026-04-18
 - **cURL sync fuera de Sprint 2:** CF7 requiere ADR nuevo + señal outreach antes de entrar al backlog. **Date:** 2026-04-18
+
+## Sprint 2 — Entregables ejecutados (2026-04-18)
+
+- **ADR-013 → Accepted:** CircuitBreaker stress findings firmados Román+Raúl. GC ticket S2-W1. **Date:** 2026-04-18
+- **ADR-014 → Accepted:** Developer quickstart invariant. Condición cumplida: smoke-fresh-clone CI operativo. **Date:** 2026-04-18
+- **ADR-015 Tooling runtime boundary → Accepted:** 3 lanes (NodeNext app, tsx scripts, NODE_OPTIONS CJS). drizzle-kit = Lane C. **Date:** 2026-04-18
+- **ADR-016 Demo lifecycle contract → Accepted:** 3 invariantes implementados, demo 30-04 grabada OK. **Date:** 2026-04-18
+- **ADR-017 Tier 2 Bridge Surface → Accepted:** renderShortcodes contract, BridgeInput/BridgeOutput, singleton PHP-WASM, mutex. **Date:** 2026-04-18
+- **ADR-018 Bridge security boundary → Accepted (co-sign Helena):** RCE/SSRF/DoS/XSS mitigados. stubs en bootstrap con ≥90% test coverage. **Date:** 2026-04-18
+- **ADR-019 Bridge observability → Accepted (co-sign Ingrid+Helena):** BridgeSpan, console.log JSON, OTel-ready. **Date:** 2026-04-18
+- **ADR-009 context=edit implementado:** SerializeContext type, toWpPost/toWpPostAsync branching, requireAdmin gate. **Date:** 2026-04-18
+- **OpenAPI actualizado:** ?context param documentado GET /wp/v2/posts + GET /wp/v2/posts/{id}. RenderedFieldEdit schema. **Date:** 2026-04-18
+- **Estado Sprint 2:** 16/16 tickets done. ADRs 001-009 + 013-019 Accepted (16 total). 231 tests verdes. **Date:** 2026-04-18
