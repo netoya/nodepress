@@ -1,7 +1,7 @@
 # NodePress — Project Status
 
 > Documento vivo. Actualizado en cada Sprint Review.
-> Última actualización: 2026-04-09
+> Última actualización: 2026-04-17
 
 ---
 
@@ -19,8 +19,8 @@
 
 | Sprint       | Fechas                  | Estado         | Objetivo                                          |
 | ------------ | ----------------------- | -------------- | ------------------------------------------------- |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | 🟢 EN CURSO    | Scaffolding: monorepo, CI, docker, packages init  |
-| Sprint 1     | 2026-04-17 → 2026-04-30 | ⚪ PLANIFICADO | Hook system + CRUD posts REST + Admin shell       |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO     | Scaffolding: monorepo, CI, docker, packages init  |
+| Sprint 1     | 2026-04-17 → 2026-04-30 | 🟢 EN CURSO    | Hook system + CRUD posts REST + Admin shell       |
 | Sprint 2     | 2026-05-01 → 2026-05-14 | ⚪ BACKLOG     | Roles/capabilities + taxonomías + CLI port-plugin |
 | Sprint 3     | 2026-05-15 → 2026-05-28 | ⚪ BACKLOG     | Plugin API + vm.Context + primer plugin ejemplo   |
 
@@ -64,7 +64,7 @@
 | 18  | Auth simplificado (Bearer = admin)                 | Ingrid          | ⬜ TODO | Roles en Sprint 2 |
 | 19  | PluginContext + DisposableRegistry (types)         | Ingrid          | ⬜ TODO | Semana 1          |
 | 20  | wrapSyncFilter + wrapAsyncAction + circuit breaker | Raúl            | ⬜ TODO |                   |
-| 21  | Schema plugin_registry table                       | Ingrid          | ✅ DONE | migration added in packages/db/src/20260413_create_plugin_registry.sql |
+| 21  | Schema plugin_registry table                       | Ingrid          | ✅ DONE | migration consolidated in packages/db/drizzle/ post-cleanup |
 
 ### Frontend
 
@@ -81,6 +81,15 @@
 | 25  | Spike php-wasm: shortcode plugin WP real         | Raúl (sup. Román) | ⬜ TODO | 2 días          |
 | 26  | Benchmark vm.Context: 50 hooks, overhead/request | Raúl              | ⬜ TODO | Parte del spike |
 | 27  | Matriz extensiones PHP en php-wasm               | Helena            | ⬜ TODO |                 |
+
+### Sprint 1 — Kickoff (2026-04-17)
+
+- Demo objetivo 30-04: hook registrado programáticamente muta payload → POST /wp/v2/posts → render en admin. Plugin loader fuera de scope.
+- Contrato HookEntry/PluginContext congelado en sesión Román + Ingrid (2026-04-17).
+- Asimetría filters sync / actions async mantenida. ADR-005 pendiente — responsable Román.
+- Cualquier desvío de semántica WP requiere ADR antes de merge.
+- Raúl arranca spike php-wasm (#25) hoy; hard stop día 3 (2026-04-19).
+- Daily async en GitHub Discussions, formato 3 líneas: qué mergé ayer / qué abro hoy / qué me bloquea.
 
 ---
 
@@ -152,4 +161,4 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-09_
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-17_

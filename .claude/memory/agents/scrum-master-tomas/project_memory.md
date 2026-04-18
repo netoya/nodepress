@@ -15,3 +15,12 @@
 - **Daily asíncrono:** Issue diario en GitHub. No call. Ceremonies síncronas: Planning, Review+Retro. **Date:** 2026-04-09
 - **Acciones Tomás:** Crear 26 issues esta noche. Mantener PROJECT_STATUS.md. **Date:** 2026-04-09
 - **DoD Sprint 0:** npm run dev levanta, CI verde, packages buildean, typecheck limpio, npm test exit 0. **Date:** 2026-04-09
+
+## Meet 2026-04-17 — Kickoff Sprint 1 y puesta al día
+
+- **Sprint 0 cierre formal:** Actualizar PROJECT_STATUS.md a ✅ CERRADO tras merge de ci/db-migrations-cleanup. **Why:** estaba "EN CURSO" y los commits finales aparecían como "pending". **How to apply:** en cualquier Sprint Review futuro, cerrar estado en el doc antes de hablar de sprint siguiente. **Date:** 2026-04-17
+- **Retro async obligatoria incluso en sprints de infra:** 3 preguntas (qué funcionó / qué frenó / qué probamos). **Why:** Alejandro priorizó proceso consistente sobre proceso "útil-cuando-conviene". **How to apply:** lanza retro async todo sprint, cierre viernes mediodía. **Date:** 2026-04-17
+- **Daily async formato fijado:** 3 líneas por persona — qué mergé ayer, qué abro hoy, qué me bloquea. Canal en GitHub Discussions pinned al Sprint. Martín lo monta. Tomás sincroniza tablero. **Date:** 2026-04-17
+- **Ausencia 2 días sin postear = check-in privado, no público.** **Why:** daily es detección de bloqueos, no control de presencia. **Date:** 2026-04-17
+- **Demo objetivo Sprint 1 (30-04):** hook registrado programáticamente muta payload → POST /wp/v2/posts → render admin. Plugin loader fuera de scope. **Date:** 2026-04-17
+- **Wireframes dashboard Lucas:** Tomás los persigue con Sofía, deadline viernes 2026-04-18. **Date:** 2026-04-17

@@ -13,3 +13,6 @@
 | 2026-04-09 | —               | WORKFLOW.md quick reference                | 1 file   | ad4a389 | ✅     |
 | 2026-04-16 | roman           | docs: root README added and pushed         | 2 files  | pending | ✅     |
 | 2026-04-16 | roman           | fix(ts): remove allowImportingTsExtensions | 3 files  | pending | ✅     |
+| 2026-04-17 | roman           | merge ci/db-migrations-cleanup to main (PR #17, already merged 2026-04-16; local main fast-forwarded, stash popped) | —        | 7ad18fc | ✅     |
+| 2026-04-17 | tomas           | Cierre Sprint 0 + kickoff Sprint 1 en PROJECT_STATUS | 1 file   | pending | ✅     |
+| 2026-04-17 | roman           | commit housekeeping Sprint 1 kickoff       | 9 files  | pending | ✅     |

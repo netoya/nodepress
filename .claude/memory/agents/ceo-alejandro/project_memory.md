@@ -22,3 +22,11 @@
 - **ICP reafirmado:** Agencias y equipos que quieren salir de PHP. WooCommerce legacy no es nuestro cliente hoy. **Date:** 2026-04-09
 - **Acción Alejandro:** Definir ICP formal con Eduardo en Sprint 0. **Date:** 2026-04-09
 - **Si demanda enterprise en 6 meses:** Arquitectura plugin-server está pensada, condiciones de Helena como pre-requisitos. **Date:** 2026-04-09
+
+## Meet 2026-04-17 — Kickoff Sprint 1 y puesta al día
+
+- **Compatibilidad WP = tesis del proyecto, no feature opcional:** cualquier desvío de semántica WP requiere ADR con justificación. **Why:** la compat es lo que vendemos; consistencia interna no compensa perderla. **How to apply:** rechazar PRs que se desvíen sin ADR. **Date:** 2026-04-17
+- **Demo objetivo Sprint 1 (30-04):** hook programático muta payload → POST /wp/v2/posts por REST → visible en admin. Sin plugin loader. **Why:** primer demo real para early adopters; plugin loader es Sprint 3. **Date:** 2026-04-17
+- **Proceso consistente incluso cuando va bien:** retro de Sprint 0 (sprint de infra) no se salta. **Why:** saltarse ceremonias cuando funcionan descalibra el hábito para cuando dolerán. **Date:** 2026-04-17
+- **Repo público al cierre Sprint 2 (14-05), no antes:** CLA Assistant pendiente de configurar. Hasta entonces, cero outreach externo. **Date:** 2026-04-17
+- **Win visible 30-04 es innegociable:** PoC con 13 roles activos es caro, sin demo tangible pierde credibilidad interna. **Date:** 2026-04-17

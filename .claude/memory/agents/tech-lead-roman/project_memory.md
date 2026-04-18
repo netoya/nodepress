@@ -76,3 +76,13 @@
 - **ADR-003 + ADR-004:** Escribir esta semana (Sprint 0). Antes de Sprint 1. **Date:** 2026-04-09
 - **contributing.md + PR template:** Sprint 0 día 1-2. **Date:** 2026-04-09
 - **docs/ estructura:** adr/, design/, api/, guides/, status/. **Date:** 2026-04-09
+
+## Meet 2026-04-17 — Kickoff Sprint 1 y puesta al día
+
+- **Filters sync, actions async — asimetría WP intencional:** ADR-005 a escribir esta semana. **Why:** compat WP es la tesis; forzar todo a async rompería plugins portados. **How to apply:** mantener la asimetría en HookRegistry y en wrapping de Raúl. **Date:** 2026-04-17
+- **Contrato HookEntry + PluginContext.addHook() se congela día 1 con Ingrid:** 30 min sesión post-kickoff. Firma y semántica antes de que Raúl toque #20. **Why:** #14, #19, #20 enlazados — divergencia temprana = rework en cadena. **Date:** 2026-04-17
+- **HookEntry forma acordada con Ingrid:** { pluginId, priority, fn }. removeAllByPlugin() parte del contrato público. **Date:** 2026-04-17
+- **Raúl primeros 2-3 días = spike php-wasm (#25)** mientras espera contrato para #20. Hard stop día 3 si no hay resultado. **Date:** 2026-04-17
+- **Cualquier desvío de semántica WP requiere ADR** antes de implementar. Regla impuesta por Alejandro. **How to apply:** en code review, si detecto desvío sin ADR, bloqueo merge. **Date:** 2026-04-17
+- **Testing bar HookRegistry:** 100% coverage, ordering prioridades, removeAllByPlugin, property-based test add→remove→add idempotente. **Date:** 2026-04-17
+- **Merge ci/db-migrations-cleanup → main es bloqueante para Sprint 1.** Lo ejecuto yo tras kickoff, squash. **Date:** 2026-04-17

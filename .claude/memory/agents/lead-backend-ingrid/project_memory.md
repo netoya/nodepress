@@ -33,3 +33,13 @@
 ## Session Todos
 - move-migrations-to-drizzle: done
 - clean-duplicate-migrations: done
+
+## Meet 2026-04-17 — Kickoff Sprint 1 y puesta al día
+
+- **Filters sync, actions async — asimetría WP mantenida:** ADR-005 la documenta Román. **Why:** compat WP es la tesis. **How to apply:** tipos en PluginContext deben reflejar asimetría, no forzar Promise<T> en filters. **Date:** 2026-04-17
+- **Orden ataque Sprint 1:** día 1-2 #19 PluginContext types + #18 Auth (paralelos, infra pequeña) → día 2-3 spec OpenAPI → día 3+ Carmen arranca #15+#16 contra spec → #17 test harness corriendo ANTES de endpoints "completos". **Date:** 2026-04-17
+- **Spec OpenAPI obligatoria antes de que Carmen toque código:** Carmen es Haiku, ambigüedad en spec = código fuera de WP compat. Yo escribo spec, yo reviso PR. **Date:** 2026-04-17
+- **Test harness WP conformance debe correr ANTES de marcar endpoints completos, no después.** **Why:** detectar incompat al final = rework de días. **Date:** 2026-04-17
+- **Corrección ruta migración plugin_registry en PROJECT_STATUS:** quedó en packages/db/drizzle/ tras cleanup (no en packages/db/src/). **Date:** 2026-04-17
+- **Contrato HookEntry con Román:** { pluginId, priority, fn }. Sesión 30 min post-kickoff para congelar firma. **Date:** 2026-04-17
+- **Cualquier desvío de semántica WP requiere ADR.** Aplicable a API design también: si endpoint devuelve shape no-WP, ADR obligatoria. **Date:** 2026-04-17
