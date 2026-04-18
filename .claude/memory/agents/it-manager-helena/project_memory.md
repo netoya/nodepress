@@ -27,3 +27,15 @@ type: project
 - **Recomendación POC Raúl día 2:** plugin `Footnotes` (MCI Footnotes, ~50KB, pcre+string only) o bespoke `[hello-nodepress]` 20 líneas. NO usar Contact Form 7 (cURL en submit).
 - **Criterio de viabilidad formalizado en ADR-008:** sin extensión fuera del bundle, sin cURL/network, sin `$wpdb` raw SQL, sin FS writes, sin loops proporcionales a datos.
 - **Fuente:** knowledge base + spike day 1 Raúl. Pendiente validación empírica día 2.
+
+## Sprint 1 día 2 — ADR-008 revision (2026-04-18)
+
+- **ADR-008 status changed:** Proposed → Revised (2026-04-18). Empirical data from Raúl spike day 2.
+- **Actual extension count:** 44 (vs. ~20–21 estimated day 1). Full flat list pending spike day 3 capture.
+- **Extensions now confirmed present (were NOT Available in day 1):** cURL, GD, Imagick, PDO, PDO_MySQL, mysqli, SOAP, dom, libxml, SimpleXML, xml, xmlreader, xmlwriter.
+- **Extensions confirmed absent:** intl/ICU, redis/memcached, opcache, mcrypt.
+- **Viability estimates revised:** Inviable ~50% (down from 70%), Marginal ~25% (up from 15%), Viable ~25% (up from 15%).
+- **Plugins reclassified:** TablePress → ✅ Viable. Contact Form 7 → ⚠️ (was already ⚠️ but reasoning updated — cURL present, SMTP still blocks full send). WooCommerce basic display → ⚠️. Yoast SEO (meta only) → ⚠️. Akismet → ⚠️. WP All Import — partially unblocked (pending Sprint 2). ACF — pending re-eval Sprint 2.
+- **New constraint documented:** cURL in WASM is synchronous — blocks Node.js event loop. Requires async wrapper before production use.
+- **Sprint 2+ POC recommendation added:** Contact Form 7 render + cURL HTTP POST mock, or bespoke `[fetch-nodepress]` shortcode, to validate cURL/GD end-to-end.
+- **Lesson learned captured in ADR:** Empirical validation mandatory before finalizing any runtime capability inventory.

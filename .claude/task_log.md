@@ -46,3 +46,4 @@
 | 2026-04-18 | martin          | reconcile numeración tickets PROJECT_STATUS ↔ GitHub Issues — Opción B, mapping table añadida                       | 1 file    | pending | ✅     |
 | 2026-04-18 | carmen          | fix(serialize): remove raw field — OpenAPI alignment + ADR-009 context-param deferral                              | 4 files   | pending | ✅     |
 | 2026-04-18 | raul            | spike #25 day 2 — php-wasm hello world + shortcode + hook interception + extension matrix validation               | 4 files   | pending | ✅     |
+| 2026-04-18 | helena          | ADR-008 revisado con datos empíricos spike day 2 | 1 file | pending | ✅     |
