@@ -254,4 +254,57 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (cierre día 2)_
+---
+
+## Sprint 2 — Hardening + ADRs + Tier 2 Content-Only (2026-04-18 → 2026-05-02)
+
+**Sprint Goal:** "NodePress operable en producción — migraciones con historial, clean-clone <5 min, ADRs sellados, Tier 2 surface congelado."
+
+**DoD Sprint 2:** ADRs 013-019 Accepted, drizzle:generate+migrate con journal, CircuitBreaker GC, 3 pilotos Tier 2 integrados y testeados, CI coverage+lint+audit operativos.
+
+### Ticket Mapping Sprint 2
+
+| PROJECT_STATUS # | GitHub Issue | Short title                                       | Responsable           | Estado  |
+| ---------------- | ------------ | ------------------------------------------------- | --------------------- | ------- |
+| 28               | #15          | drizzle:generate + migrate con journal            | Carmen (brief Ingrid) | ✅ DONE |
+| 29               | #16          | GC stale entries CircuitBreaker                   | Raúl (review Román)   | ✅ DONE |
+| 30               | #17          | Bug excerpt.raw — OpenAPI fix                     | Carmen (brief Ingrid) | ✅ DONE |
+| 31               | —            | ADR-013 CircuitBreaker stress findings → Accepted | Román                 | ✅ DONE |
+| 32               | —            | ADR-014 Developer quickstart invariant → Accepted | Román                 | ✅ DONE |
+| 33               | —            | ADR-015 Tooling runtime boundary → Accepted       | Román                 | ✅ DONE |
+| 34               | —            | ADR-016 Demo lifecycle contract → Accepted        | Román                 | ✅ DONE |
+| 35               | —            | ADR-017 Tier 2 bridge surface → Accepted          | Román                 | ✅ DONE |
+| 36               | —            | ADR-018 Bridge security boundary → Accepted       | Helena + Román        | ✅ DONE |
+| 37               | —            | ADR-019 Bridge observability → Accepted           | Ingrid + Helena       | ✅ DONE |
+| 38               | —            | Bridge core (index.ts + singleton php-wasm)       | Raúl                  | ✅ DONE |
+| 39               | —            | Pilot: Footnotes plugin (Tier 2)                  | Raúl                  | ✅ DONE |
+| 40               | —            | Pilot: Shortcodes Ultimate plugin (Tier 2)        | Raúl                  | ✅ DONE |
+| 41               | —            | Pilot: Display Posts plugin (Tier 2)              | Raúl                  | ✅ DONE |
+| 42               | —            | Wiring bridge → REST + public routes              | Carmen + Ingrid       | ✅ DONE |
+| 43               | —            | CI: coverage artifact + PR lint + security audit  | Helena                | ✅ DONE |
+
+### Sprint 2 — Estado (cierre 2026-04-18)
+
+- **Tickets completados:** 15/16 (ticket #23 dashboard visual refinement pendiente decisión Lucas/Román lunes 21-04)
+- **Tests acumulados:** 219 verdes (22 ficheros de test)
+- **ADRs Accepted:** 16 (001-009 + 013-019)
+- **ADRs Proposed:** 010, 011, 012 (contratos sin implementación — Sprint 3+)
+- **CI workflows activos:** ci.yml, smoke-fresh-clone.yml, coverage.yml, pr-lint.yml, security-audit.yml
+- **Tier 2 bridge:** operativo con NODEPRESS_TIER2=true. 3 pilotos (Footnotes, Shortcodes Ultimate, Display Posts).
+- **Gate abierto:** CLA Assistant pendiente (Alejandro + Eduardo, jueves 23-04)
+- **Repo público:** 2026-05-14
+
+### Decisiones Sprint 2
+
+| ID    | Fecha      | Decisión                                                                     | Responsable         |
+| ----- | ---------- | ---------------------------------------------------------------------------- | ------------------- |
+| D-019 | 2026-04-18 | ADRs 010/011/012 permanecen Proposed — no se aceptan sin implementación      | Román               |
+| D-020 | 2026-04-18 | cURL sync fuera de Sprint 2 — pilotos no usan HTTP                           | Raúl + Román        |
+| D-021 | 2026-04-18 | drizzle:push → drizzle:generate+migrate en producción                        | Ingrid              |
+| D-022 | 2026-04-18 | Bridge activa con NODEPRESS_TIER2=true, mutuamente excluyente con DEMO_MODE  | Román               |
+| D-023 | 2026-04-18 | renderShortcodes corre ANTES de applyFilters — async bridge, sync hook chain | Román + Ingrid      |
+| D-024 | 2026-04-18 | Outreach 24-04: pregunta neutral sobre dolor, no sobre compat plugins        | Alejandro + Eduardo |
+
+---
+
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint 2 kickoff)_
