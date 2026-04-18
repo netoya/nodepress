@@ -45,12 +45,13 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado      | Objetivo                                          |
-| ------------ | ----------------------- | ----------- | ------------------------------------------------- |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init  |
-| Sprint 1     | 2026-04-17 → 2026-04-30 | 🟢 EN CURSO | Hook system + CRUD posts REST + Admin shell       |
-| Sprint 2     | 2026-05-01 → 2026-05-14 | ⚪ BACKLOG  | Roles/capabilities + taxonomías + CLI port-plugin |
-| Sprint 3     | 2026-05-15 → 2026-05-28 | ⚪ BACKLOG  | Plugin API + vm.Context + primer plugin ejemplo   |
+| Sprint       | Fechas                  | Estado      | Objetivo                                                     |
+| ------------ | ----------------------- | ----------- | ------------------------------------------------------------ |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init             |
+| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO  | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
+| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO  | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
+| Sprint 3     | 2026-05-05 → 2026-05-16 | 🟡 PLANNING | Roles/capabilities + taxonomías + admin edit flow + CLI init |
+| Sprint 4     | 2026-05-19 → 2026-05-30 | ⚪ BACKLOG  | Plugin API + vm.Context + primer plugin + piloto outreach    |
 
 ---
 

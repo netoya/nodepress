@@ -8,10 +8,10 @@
 
 The WordPress REST API v2 POST object supports a `context` query parameter that controls serialization scope:
 
-| Context | Audience        | Visible Fields         |
-| ------- | --------------- | ---------------------- |
-| `view`  | Public          | `{rendered, protected}` |
-| `edit`  | Admin (auth)    | `{rendered, raw, protected}` |
+| Context | Audience     | Visible Fields               |
+| ------- | ------------ | ---------------------------- |
+| `view`  | Public       | `{rendered, protected}`      |
+| `edit`  | Admin (auth) | `{rendered, raw, protected}` |
 
 The `raw` field exposes the unrendered source content (e.g., shortcodes, raw HTML) and is intentionally gated to `?context=edit` to avoid leaking rendering hints to public consumers.
 
@@ -24,6 +24,7 @@ Ingrid's conformance harness (#17) validated against OpenAPI fixtures that corre
 **Immediate (Sprint 1):** Remove `raw` field from all serialized post responses. NodePress v1 operates in `context=view` mode exclusively.
 
 **Deferred (Sprint 2):** Implement full context param support:
+
 - Handlers accept `?context=view|edit` query parameter
 - `?context=edit` routes through `requireAdmin` or equivalent role guard
 - Serializer branches on context: returns `raw` only for `context=edit`
@@ -75,11 +76,23 @@ If business priority demands `?context=edit` in Sprint 1:
 
 Effort: ~2 hours; not critical for v1 launch.
 
+## Implementation (Sprint 2 — 2026-04-18)
+
+**Status: Implemented.** Delivered in commit `942dc8e`.
+
+- `SerializeContext = "view" | "edit"` type exported from `serialize.ts`
+- `toWpPost(dbRow, hooks, context)` and `toWpPostAsync(dbRow, hooks, bridge, context)` accept context param
+- `context=edit` spreads `raw` into title/content/excerpt (unrendered DB source, not filter output)
+- `GET /wp/v2/posts?context=edit` and `GET /wp/v2/posts/:id?context=edit` call `requireAdmin` before serializing
+- OpenAPI spec updated: `?context` param, `RenderedFieldEdit` schema, `401` response declared
+- WP conformance harness extended: 10 new tests (context=view raw absent + context=edit raw present + 401 gate)
+
 ## References
 
 - [WordPress REST API — Post object — context parameter](https://developer.wordpress.org/rest-api/reference/posts/#context)
-- `packages/server/src/routes/posts/serialize.ts` — `toWpPost()` function
-- `docs/api/openapi.yaml` — DIV-002 (title/content/excerpt shape)
+- `packages/server/src/routes/posts/serialize.ts` — `SerializeContext`, `toWpPost()`, `toWpPostAsync()`
+- `packages/server/src/routes/posts/handlers.ts` — context param + `requireAdmin` gate
+- `packages/server/src/__tests__/wp-conformance/post.contract.test.ts` — ADR-009 conformance section
+- `docs/api/openapi.yaml` — `?context` param + `RenderedFieldEdit` schema
 - ADR-006: Omission of `date_gmt` / `modified_gmt` (precedent for DIV-001)
 - #17 WP Conformance Harness (triggered this review)
-- Sprint 2 backlog: Admin roles and edit-context support (planned)

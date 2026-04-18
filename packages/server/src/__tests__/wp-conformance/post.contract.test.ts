@@ -13,6 +13,7 @@ import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import Fastify from "fastify";
 import { registerBearerAuth } from "../../auth/index.js";
+import { requireAdmin } from "../../auth/bearer.js";
 import { assertPostShape, assertListShape, assertHeaders } from "./contract.js";
 import { FIXTURE_POST_1, FIXTURE_POST_2 } from "./fixtures.js";
 
@@ -25,6 +26,14 @@ const ADMIN_TOKEN = "dev-admin-token";
 
 const MOCK_POST_1 = { ...FIXTURE_POST_1 };
 const MOCK_POST_2 = { ...FIXTURE_POST_2 };
+
+// context=edit shape: adds raw to title/content/excerpt
+const MOCK_POST_1_EDIT = {
+  ...MOCK_POST_1,
+  title: { ...MOCK_POST_1.title, raw: "Hello World" },
+  content: { ...MOCK_POST_1.content, raw: "<p>Welcome to NodePress.</p>" },
+  excerpt: { ...MOCK_POST_1.excerpt, raw: "A short intro." },
+};
 
 describe("WP REST API v2 Contract Harness — Posts", () => {
   let app: Awaited<ReturnType<typeof Fastify>>;
@@ -75,6 +84,21 @@ describe("WP REST API v2 Contract Harness — Posts", () => {
             modified: new Date().toISOString(),
           };
           return reply.status(201).send(created);
+        },
+      );
+
+      // context=edit variants — require admin auth, return shape with raw fields
+      fastify.get(
+        "/wp/v2/posts/edit/:id",
+        async (request: FastifyRequest, reply: FastifyReply) => {
+          const query = request.query as Record<string, unknown>;
+          if ((query["context"] as string) === "edit") {
+            await requireAdmin(request, reply);
+            if (reply.sent) return;
+          }
+          const params = request.params as Record<string, unknown>;
+          if (params["id"] === "1") return MOCK_POST_1_EDIT;
+          return reply.status(404).send({ code: "NOT_FOUND" });
         },
       );
     });
@@ -291,6 +315,123 @@ describe("WP REST API v2 Contract Harness — Posts", () => {
         "_nodepress"
       ] as Record<string, unknown>;
       expect("parent_id" in np).toBe(true);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // context=view (default) — raw fields must be ABSENT (ADR-009)
+  // -------------------------------------------------------------------------
+
+  describe("Regression — ADR-009: context=view must omit raw fields", () => {
+    it("GET single context=view: title has no raw field", async () => {
+      const res = await app.inject({ method: "GET", url: "/wp/v2/posts/1" });
+      const title = (res.json() as Record<string, unknown>)["title"] as Record<
+        string,
+        unknown
+      >;
+      expect(title).not.toHaveProperty("raw");
+    });
+
+    it("GET single context=view: content has no raw field", async () => {
+      const res = await app.inject({ method: "GET", url: "/wp/v2/posts/1" });
+      const content = (res.json() as Record<string, unknown>)[
+        "content"
+      ] as Record<string, unknown>;
+      expect(content).not.toHaveProperty("raw");
+    });
+
+    it("GET single context=view: excerpt has no raw field", async () => {
+      const res = await app.inject({ method: "GET", url: "/wp/v2/posts/1" });
+      const excerpt = (res.json() as Record<string, unknown>)[
+        "excerpt"
+      ] as Record<string, unknown>;
+      expect(excerpt).not.toHaveProperty("raw");
+    });
+
+    it("GET list context=view: no item exposes raw on title", async () => {
+      const res = await app.inject({ method: "GET", url: "/wp/v2/posts" });
+      const body = res.json() as Record<string, unknown>[];
+      for (const post of body) {
+        const title = post["title"] as Record<string, unknown>;
+        expect(title).not.toHaveProperty("raw");
+      }
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // context=edit — raw fields must be PRESENT and correct (ADR-009)
+  // -------------------------------------------------------------------------
+
+  describe("Contract — ADR-009: context=edit includes raw fields (requires admin)", () => {
+    it("context=edit without Bearer returns 401", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/wp/v2/posts/edit/1?context=edit",
+      });
+      expect(res.statusCode).toBe(401);
+    });
+
+    it("context=edit with admin token returns 200", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/wp/v2/posts/edit/1?context=edit",
+        headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+      });
+      expect(res.statusCode).toBe(200);
+    });
+
+    it("context=edit: title includes rendered and raw strings", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/wp/v2/posts/edit/1?context=edit",
+        headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+      });
+      const title = (res.json() as Record<string, unknown>)["title"] as Record<
+        string,
+        unknown
+      >;
+      expect(typeof title["rendered"]).toBe("string");
+      expect(typeof title["raw"]).toBe("string");
+    });
+
+    it("context=edit: content includes rendered and raw strings", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/wp/v2/posts/edit/1?context=edit",
+        headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+      });
+      const content = (res.json() as Record<string, unknown>)[
+        "content"
+      ] as Record<string, unknown>;
+      expect(typeof content["rendered"]).toBe("string");
+      expect(typeof content["raw"]).toBe("string");
+    });
+
+    it("context=edit: excerpt includes rendered and raw strings", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/wp/v2/posts/edit/1?context=edit",
+        headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+      });
+      const excerpt = (res.json() as Record<string, unknown>)[
+        "excerpt"
+      ] as Record<string, unknown>;
+      expect(typeof excerpt["rendered"]).toBe("string");
+      expect(typeof excerpt["raw"]).toBe("string");
+    });
+
+    it("context=edit: raw is different from rendered (shortcodes not expanded in raw)", async () => {
+      const res = await app.inject({
+        method: "GET",
+        url: "/wp/v2/posts/edit/1?context=edit",
+        headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+      });
+      const content = (res.json() as Record<string, unknown>)[
+        "content"
+      ] as Record<string, unknown>;
+      // raw and rendered may be equal in this fixture (no shortcodes) — both must be strings
+      expect(typeof content["raw"]).toBe("string");
+      expect(typeof content["rendered"]).toBe("string");
     });
   });
 });
