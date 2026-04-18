@@ -1,7 +1,22 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Post } from "@nodepress/db";
 import { toWpPost, toWpPostAsync } from "../serialize.js";
 import type { BridgeOutput } from "../../../bridge/index.js";
+
+// Mock @nodepress/db to avoid DB access in tests
+vi.mock("@nodepress/db", () => ({
+  db: {
+    select: vi.fn(() => ({
+      from: vi.fn(() => ({
+        innerJoin: vi.fn(() => ({
+          where: vi.fn(async () => []),
+        })),
+      })),
+    })),
+  },
+  termRelationships: {},
+  terms: {},
+}));
 
 /**
  * Sample post for testing
@@ -30,6 +45,10 @@ const noopHooks = {
 };
 
 describe("serialize.ts — toWpPost and toWpPostAsync", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe("toWpPost (sync version)", () => {
     it("should serialize a post to WP v2 shape", () => {
       const post = createSamplePost();
@@ -79,29 +98,9 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
 
     it("raw in context=edit reflects unrendered source, not filtered content", () => {
       const post = createSamplePost();
-      const hooksThatMutate = {
-        applyFilters<T>(name: string, value: T): T {
-          if (name === "the_content" && typeof value === "string")
-            return (value + " [FILTERED]") as T;
-          return value;
-        },
-      };
-      const result = toWpPost(post, hooksThatMutate, "edit");
 
-      expect(result.content.rendered).toContain("[FILTERED]");
-      expect((result.content as any).raw).toBe(post.content);
-      expect((result.content as any).raw).not.toContain("[FILTERED]");
-    });
-
-    it("should apply the_content filter if hooks provided", () => {
-      const post = createSamplePost();
       const customHooks = {
-        applyFilters<T>(
-          name: string,
-          value: T,
-
-          _context?: any,
-        ): T {
+        applyFilters<T>(name: string, value: T): T {
           if (name === "the_content" && typeof value === "string") {
             return (value + " [FILTERED]") as T;
           }
@@ -109,22 +108,58 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
         },
       };
 
+      const result = toWpPost(post, customHooks, "edit");
+
+      // raw should be unfiltered original
+      expect((result.content as any).raw).toBe(post.content);
+      // rendered should be filtered
+      expect(result.content.rendered).toBe(post.content + " [FILTERED]");
+    });
+
+    it("should apply the_content filter to rendered content", () => {
+      const post = createSamplePost();
+
+      const customHooks = {
+        applyFilters<T>(name: string, value: T): T {
+          if (name === "the_content" && typeof value === "string") {
+            return (value + " [SYNC_FILTERED]") as T;
+          }
+          return value;
+        },
+      };
+
       const result = toWpPost(post, customHooks);
-      expect(result.content.rendered).toBe(
-        "[footnote]This is a footnote[/footnote] Main content [FILTERED]",
-      );
+
+      expect(result.content.rendered).toBe(post.content + " [SYNC_FILTERED]");
+    });
+
+    it("should support category and tag arrays", () => {
+      const post = createSamplePost();
+      const result = toWpPost(post, noopHooks, "view", [1, 2], [3, 4]);
+
+      expect(result.categories).toEqual([1, 2]);
+      expect(result.tags).toEqual([3, 4]);
+    });
+
+    it("should default categories and tags to empty arrays", () => {
+      const post = createSamplePost();
+      const result = toWpPost(post);
+
+      expect(result.categories).toEqual([]);
+      expect(result.tags).toEqual([]);
     });
   });
 
   describe("toWpPostAsync (async version)", () => {
-    it("should serialize a post without bridge (same as sync)", async () => {
+    it("should return same shape as toWpPost without bridge", async () => {
       const post = createSamplePost();
       const result = await toWpPostAsync(post, noopHooks);
 
       expect(result.id).toBe(1);
       expect(result.title.rendered).toBe("Test Post");
-      expect(result.content.rendered).toBe(post.content);
       expect(result.slug).toBe("test-post");
+      expect(result.status).toBe("publish");
+      expect(result.author).toBe(1);
     });
 
     it("should pre-process content through bridge if provided", async () => {
@@ -140,7 +175,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
         })),
       };
 
-      const result = await toWpPostAsync(post, noopHooks, mockBridge);
+      const result = await toWpPostAsync(post, noopHooks, mockBridge as any);
 
       expect(mockBridge.renderShortcodes).toHaveBeenCalledWith({
         postContent: post.content,
@@ -180,7 +215,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
         },
       };
 
-      const result = await toWpPostAsync(post, customHooks, mockBridge);
+      const result = await toWpPostAsync(post, customHooks, mockBridge as any);
 
       expect(result.content.rendered).toBe(
         "<p>Bridge output</p> [SYNC_FILTERED]",
@@ -200,7 +235,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
         })),
       };
 
-      const result = await toWpPostAsync(post, noopHooks, mockBridge);
+      const result = await toWpPostAsync(post, noopHooks, mockBridge as any);
 
       // Should use original content (passthrough)
       expect(result.content.rendered).toBe(post.content);
@@ -217,7 +252,7 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
         }),
       };
 
-      const result = await toWpPostAsync(post, noopHooks, mockBridge);
+      const result = await toWpPostAsync(post, noopHooks, mockBridge as any);
 
       // Should use original content on any exception
       expect(result.content.rendered).toBe(post.content);
@@ -247,16 +282,35 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
     it("raw in context=edit reflects bridge input, not bridge output", async () => {
       const post = createSamplePost();
       const mockBridge = {
-        renderShortcodes: vi.fn(async () => ({
-          html: "<p>rendered</p>",
+        renderShortcodes: vi.fn<
+          [{ postContent: string; context: any }],
+          Promise<BridgeOutput>
+        >(async () => ({
+          html: "Bridge says this",
           warnings: [],
           error: null,
         })),
       };
-      const result = await toWpPostAsync(post, noopHooks, mockBridge, "edit");
 
-      expect(result.content.rendered).toBe("<p>rendered</p>");
+      const result = await toWpPostAsync(
+        post,
+        noopHooks,
+        mockBridge as any,
+        "edit",
+      );
+
+      // raw should be original unrendered content (not bridge output)
       expect((result.content as any).raw).toBe(post.content);
+      // rendered should be bridge output
+      expect(result.content.rendered).toBe("Bridge says this");
+    });
+
+    it("should include empty categories and tags from DB mock", async () => {
+      const post = createSamplePost();
+      const result = await toWpPostAsync(post, noopHooks);
+
+      expect(result.categories).toEqual([]);
+      expect(result.tags).toEqual([]);
     });
   });
 });

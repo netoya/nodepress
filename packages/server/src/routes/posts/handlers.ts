@@ -1,7 +1,12 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { db, posts } from "@nodepress/db";
+import { db, posts, termRelationships } from "@nodepress/db";
 import { eq, and, or, ilike } from "drizzle-orm";
-import { toWpPost, toWpPostAsync, type SerializeContext } from "./serialize.js";
+import {
+  toWpPost,
+  toWpPostAsync,
+  loadPostTerms,
+  type SerializeContext,
+} from "./serialize.js";
 import { requireAdmin } from "../../auth/bearer.js";
 import { deriveSlug, findAvailableSlug } from "./slug.js";
 import { renderShortcodes } from "../../bridge/index.js";
@@ -106,6 +111,9 @@ export async function getPost(request: FastifyRequest, reply: FastifyReply) {
     });
   }
 
+  // Load categories and tags from database
+  const [categories, tags] = await loadPostTerms(id);
+
   // Use async version if Tier 2 bridge is active
   const useBridge = process.env["NODEPRESS_TIER2"] === "true";
   return useBridge
@@ -115,13 +123,14 @@ export async function getPost(request: FastifyRequest, reply: FastifyReply) {
         { renderShortcodes },
         context,
       )
-    : toWpPost(post, request.server.hooks, context);
+    : toWpPost(post, request.server.hooks, context, categories, tags);
 }
 
 /**
  * POST /wp/v2/posts — Create a new post.
  * Requires admin authentication.
  * Implements WordPress-compatible slug auto-suffixing: if slug exists, tries -2, -3, etc.
+ * Accepts optional categories and tags arrays; persists to term_relationships.
  */
 export async function createPost(request: FastifyRequest, reply: FastifyReply) {
   const body = request.body as Record<string, unknown>;
@@ -131,12 +140,16 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
     status = "draft",
     excerpt = "",
     slug: explicitSlug,
+    categories = [],
+    tags = [],
   } = {
     title: body["title"] as string,
     content: body["content"] as string,
     status: body["status"] as string | undefined,
     excerpt: body["excerpt"] as string | undefined,
     slug: body["slug"] as string | undefined,
+    categories: (body["categories"] as number[] | undefined) ?? [],
+    tags: (body["tags"] as number[] | undefined) ?? [],
   };
 
   // For now, default authorId to 1 (admin user).
@@ -197,7 +210,39 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
       })
       .returning();
 
-    return reply.status(201).send(toWpPost(created!, request.server.hooks));
+    // Persist term relationships (categories and tags)
+    const termIds = [...new Set([...categories, ...tags])]; // Deduplicate
+    if (termIds.length > 0 && created) {
+      // Silently ignore non-existent term IDs (no validation against DB)
+      await Promise.all(
+        termIds.map((termId) =>
+          db
+            .insert(termRelationships)
+            .values({
+              postId: created.id,
+              termId,
+              order: 0,
+            })
+            .catch(() => {
+              // Silently ignore FK constraint violations (non-existent terms)
+            }),
+        ),
+      );
+    }
+
+    // Load fresh relationships and return serialized post
+    const [loadedCategories, loadedTags] = await loadPostTerms(created!.id);
+    return reply
+      .status(201)
+      .send(
+        toWpPost(
+          created!,
+          request.server.hooks,
+          "view",
+          loadedCategories,
+          loadedTags,
+        ),
+      );
   } catch (err: unknown) {
     // Handle explicit slug collision — 409 if caller was explicit
     if (err instanceof Error && err.message.includes("unique")) {
@@ -218,6 +263,7 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
  * PUT /wp/v2/posts/:id — Update a post (partial updates allowed).
  * Requires admin authentication.
  * If title is updated without explicit slug, re-derives slug and applies auto-suffix if collision.
+ * Accepts optional categories and tags arrays; replaces all existing term_relationships (idempotent).
  */
 export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
   const params = request.params as Record<string, unknown>;
@@ -229,12 +275,16 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
     status,
     excerpt,
     slug: explicitSlug,
+    categories,
+    tags,
   } = {
     title: body["title"] as string | undefined,
     content: body["content"] as string | undefined,
     status: body["status"] as string | undefined,
     excerpt: body["excerpt"] as string | undefined,
     slug: body["slug"] as string | undefined,
+    categories: body["categories"] as number[] | undefined,
+    tags: body["tags"] as number[] | undefined,
   };
 
   // Fetch current post to determine slug derivation
@@ -308,7 +358,42 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
       });
     }
 
-    return toWpPost(updated, request.server.hooks);
+    // Update term relationships if provided (replaces all existing — idempotent)
+    if (categories !== undefined || tags !== undefined) {
+      // Delete all existing relationships for this post
+      await db
+        .delete(termRelationships)
+        .where(eq(termRelationships.postId, id));
+
+      // Insert new relationships
+      const termIds = [...new Set([...(categories ?? []), ...(tags ?? [])])];
+      if (termIds.length > 0) {
+        await Promise.all(
+          termIds.map((termId) =>
+            db
+              .insert(termRelationships)
+              .values({
+                postId: id,
+                termId,
+                order: 0,
+              })
+              .catch(() => {
+                // Silently ignore FK constraint violations (non-existent terms)
+              }),
+          ),
+        );
+      }
+    }
+
+    // Load fresh relationships and return serialized post
+    const [loadedCategories, loadedTags] = await loadPostTerms(id);
+    return toWpPost(
+      updated,
+      request.server.hooks,
+      "view",
+      loadedCategories,
+      loadedTags,
+    );
   } catch (err: unknown) {
     // Handle explicit slug collision — 409 if caller was explicit
     if (err instanceof Error && err.message.includes("unique")) {

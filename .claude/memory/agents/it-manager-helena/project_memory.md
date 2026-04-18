@@ -142,3 +142,9 @@ type: project
 - **CI ci.yml cache mejorado:** migrado de manual actions/cache a cache: npm en setup-node. S2-infra-backlog cerrado. **Date:** 2026-04-18
 - **@php-wasm/node en CI validado:** dynamic import lazy, smoke no activa NODEPRESS_TIER2. Sin cambios needed. **Date:** 2026-04-18
 - **Estado Sprint 2:** 5 workflows CI activos. 231 tests. **Date:** 2026-04-18
+
+## Sprint 3 — CI npm publish + Release Readiness (2026-04-18)
+
+- **Workflow `.github/workflows/publish-cli.yml` creado:** trigger `push tags v*`, setup-node 22 + cache npm, `npm run build --workspace=packages/cli`, `npm publish --workspace=packages/cli --access public`. Secret requerido: `NPM_TOKEN` en repo settings. **Date:** 2026-04-18
+- **`packages/cli/package.json` — `"private": true` eliminado:** CLI ahora publicable. Sin otros cambios (name, version, bin conservados). **Date:** 2026-04-18
+- **`docs/process/release-readiness-checklist.md` creado:** Owner Helena + Martín. Deadline 2026-05-13 EOD. Secciones: pre-release (freeze, CI verde, coverage >80%, TS strict, ESLint, audit), demo/docs (README, TTFA, video, dual license), infraestructura (CLA Assistant, npm publish, CI workflows), go-live (repo público, release GitHub, anuncio). **Date:** 2026-04-18

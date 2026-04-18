@@ -82,6 +82,17 @@ vi.mock("@nodepress/db", () => {
     })),
     select: vi.fn((_fields?: unknown) => ({
       from: vi.fn((_table: unknown) => ({
+        innerJoin: vi.fn((_table2: unknown, _on: unknown) => ({
+          where: vi.fn((_cond: unknown) => {
+            // For term_relationships queries, return empty array (no relationships loaded in test)
+            return {
+              then: (
+                onFulfilled?: (v: unknown[]) => unknown,
+                onRejected?: (e: unknown) => unknown,
+              ) => Promise.resolve([]).then(onFulfilled, onRejected),
+            };
+          }),
+        })),
         where: vi.fn((_cond: unknown) => {
           // Chainable mock that supports both:
           // 1. requireAdmin: .where(...).limit(1) → admin user row
@@ -146,6 +157,17 @@ vi.mock("@nodepress/db", () => {
       displayName: "displayName",
       roles: "roles",
       capabilities: "capabilities",
+    },
+    termRelationships: {
+      postId: "postId",
+      termId: "termId",
+      order: "order",
+    },
+    terms: {
+      id: "id",
+      taxonomy: "taxonomy",
+      name: "name",
+      slug: "slug",
     },
     eq: mockEq,
     and: vi.fn((...args: unknown[]) => args),

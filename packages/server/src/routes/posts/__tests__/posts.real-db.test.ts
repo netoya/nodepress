@@ -21,7 +21,7 @@ import {
   afterEach,
   vi,
 } from "vitest";
-import { posts, users } from "@nodepress/db";
+import { posts, users, terms, termRelationships } from "@nodepress/db";
 import { eq } from "drizzle-orm";
 
 const DOCKER_AVAILABLE = process.env["DOCKER_AVAILABLE"] !== "false";
@@ -357,6 +357,202 @@ describeReal(
           .from(posts)
           .where(eq(posts.id, created!.id));
         expect(rows).toHaveLength(0);
+      });
+    });
+
+    describe("Categories and tags", () => {
+      it("POST with categories array persists term_relationships", async () => {
+        const { getTestDb } = await import("../../../__tests__/helpers/db.js");
+        const testDb = getTestDb();
+
+        // Create test categories
+        const cat1 = await testDb
+          .insert(terms)
+          .values({
+            taxonomy: "category",
+            name: "Tech",
+            slug: "tech",
+          })
+          .returning();
+
+        const cat2 = await testDb
+          .insert(terms)
+          .values({
+            taxonomy: "category",
+            name: "News",
+            slug: "news",
+          })
+          .returning();
+
+        // POST with categories
+        const res = await app.inject({
+          method: "POST",
+          url: "/wp/v2/posts",
+          headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+          payload: {
+            title: "Test Post with Categories",
+            content: "Content",
+            categories: [cat1[0]!.id, cat2[0]!.id],
+          },
+        });
+
+        expect(res.statusCode).toBe(201);
+        const body = JSON.parse(res.body) as Record<string, unknown>;
+
+        // Response should include categories array
+        expect(body["categories"]).toEqual(
+          expect.arrayContaining([cat1[0]!.id, cat2[0]!.id]),
+        );
+
+        // Verify DB has relationships
+        const rels = await testDb
+          .select()
+          .from(termRelationships)
+          .where(eq(termRelationships.postId, body["id"] as number));
+        expect(rels).toHaveLength(2);
+      });
+
+      it("PUT replaces categories without accumulating", async () => {
+        const { getTestDb } = await import("../../../__tests__/helpers/db.js");
+        const testDb = getTestDb();
+
+        // Create categories
+        const cat1 = await testDb
+          .insert(terms)
+          .values({
+            taxonomy: "category",
+            name: "Old",
+            slug: "old",
+          })
+          .returning();
+
+        const cat2 = await testDb
+          .insert(terms)
+          .values({
+            taxonomy: "category",
+            name: "New",
+            slug: "new",
+          })
+          .returning();
+
+        // Create post with cat1
+        const createRes = await app.inject({
+          method: "POST",
+          url: "/wp/v2/posts",
+          headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+          payload: {
+            title: "Post to Update",
+            content: "Content",
+            categories: [cat1[0]!.id],
+          },
+        });
+
+        const postId = (JSON.parse(createRes.body) as Record<string, unknown>)[
+          "id"
+        ] as number;
+
+        // Verify 1 relationship
+        let rels = await testDb
+          .select()
+          .from(termRelationships)
+          .where(eq(termRelationships.postId, postId));
+        expect(rels).toHaveLength(1);
+        expect(rels[0]!.termId).toBe(cat1[0]!.id);
+
+        // PUT with different category
+        const updateRes = await app.inject({
+          method: "PUT",
+          url: `/wp/v2/posts/${postId}`,
+          headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+          payload: {
+            categories: [cat2[0]!.id],
+          },
+        });
+
+        expect(updateRes.statusCode).toBe(200);
+        const updateBody = JSON.parse(updateRes.body) as Record<
+          string,
+          unknown
+        >;
+        expect(updateBody["categories"]).toEqual([cat2[0]!.id]);
+
+        // Verify only cat2, not both
+        rels = await testDb
+          .select()
+          .from(termRelationships)
+          .where(eq(termRelationships.postId, postId));
+        expect(rels).toHaveLength(1);
+        expect(rels[0]!.termId).toBe(cat2[0]!.id);
+      });
+
+      it("GET post returns empty categories array when no relationships", async () => {
+        const res = await app.inject({
+          method: "POST",
+          url: "/wp/v2/posts",
+          headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+          payload: {
+            title: "Post No Categories",
+            content: "Content",
+          },
+        });
+
+        expect(res.statusCode).toBe(201);
+        const body = JSON.parse(res.body) as Record<string, unknown>;
+
+        expect(body["categories"]).toEqual([]);
+        expect(body["tags"]).toEqual([]);
+      });
+
+      it("POST with tags array persists and separates from categories", async () => {
+        const { getTestDb } = await import("../../../__tests__/helpers/db.js");
+        const testDb = getTestDb();
+
+        // Create a tag
+        const tag = await testDb
+          .insert(terms)
+          .values({
+            taxonomy: "post_tag",
+            name: "Important",
+            slug: "important",
+          })
+          .returning();
+
+        // Create a category
+        const cat = await testDb
+          .insert(terms)
+          .values({
+            taxonomy: "category",
+            name: "Urgent",
+            slug: "urgent",
+          })
+          .returning();
+
+        // POST with both
+        const res = await app.inject({
+          method: "POST",
+          url: "/wp/v2/posts",
+          headers: { Authorization: `Bearer ${ADMIN_TOKEN}` },
+          payload: {
+            title: "Post with Categories and Tags",
+            content: "Content",
+            categories: [cat[0]!.id],
+            tags: [tag[0]!.id],
+          },
+        });
+
+        expect(res.statusCode).toBe(201);
+        const body = JSON.parse(res.body) as Record<string, unknown>;
+
+        // Both should be present, separated
+        expect(body["categories"]).toEqual([cat[0]!.id]);
+        expect(body["tags"]).toEqual([tag[0]!.id]);
+
+        // Verify DB has 2 separate relationships
+        const rels = await testDb
+          .select()
+          .from(termRelationships)
+          .where(eq(termRelationships.postId, body["id"] as number));
+        expect(rels).toHaveLength(2);
       });
     });
   },

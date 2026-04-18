@@ -80,3 +80,24 @@ type: project
 - **Pilot Display Posts (packages/server/src/bridge/pilots/display-posts.ts):** buildDisplayPostsPhpCode, candidatePosts[] PHP literal array, /p/:slug URLs. 17 tests. **Date:** 2026-04-18
 - **ADR-009 ?context=edit HTTP integration tests:** context-edit.test.ts — 7 tests HTTP layer (Fastify inject). Auth enforcement GET /wp/v2/posts + GET /wp/v2/posts/{id}. **Date:** 2026-04-18
 - **Estado Sprint 2:** 16/16 done. 231 tests verdes. **Date:** 2026-04-18
+
+## Sprint 3 — Tarea #51: POST/PUT posts acepta categories y tags en term_relationships (2026-04-18)
+
+- **Funcionalidad:** Endpoints POST/PUT /wp/v2/posts ahora aceptan arrays `categories: number[]` y `tags: number[]` en el payload. Persistencia en tabla `term_relationships` con soporte para FK cascading.
+- **Implementación:**
+  1. **Handler POST createPost:** Extrae `categories` y `tags` del body (default `[]`). Deduplicación de IDs con `new Set()`. Inserta en `term_relationships` para cada termId con `postId` + `order=0`. Silenciosamente ignora FK constraint violations (términos no existentes).
+  2. **Handler PUT updatePost:** Extrae `categories` y `tags` si presentes. DELETE existentes, INSERT nuevos (idempotente — reemplaza, no acumula). Mismo patrón de inserción que POST.
+  3. **Serializer toWpPost:** Añade parámetros opcionales `categories: number[] = []` y `tags: number[] = []`. Retorna ambos arrays en shape WP. Backward compat: defaults [] si no provisto.
+  4. **Serializer toWpPostAsync:** Añade helper `loadPostTerms(postId)` que consulta `term_relationships` + `terms` con innerJoin, filtra por taxonomy ("category"/"post_tag"), devuelve tupla `[categoryIds, tagIds]`. toWpPostAsync carga términos y retorna en shape.
+  5. **Handlers GET getPost:** Llama `loadPostTerms()` antes de serializar, pasa arrays a toWpPost.
+  6. **Handlers GET listPosts:** No carga términos (lista es cara). toWpPostAsync ya los carga internamente.
+  7. **Tests:** 4 nuevos tests en posts.real-db.test.ts: (1) POST con categories persiste relaciones, (2) PUT reemplaza categorías (no acumula), (3) GET devuelve arrays vacíos sin relaciones, (4) POST con categorías + tags separa ambas taxonomías.
+- **Notas:**
+  - Schema: table `term_relationships(postId FK → posts.id CASCADE, termId FK → terms.id CASCADE, order INT DEFAULT 0, PK=(postId,termId))`
+  - Idempotencia: PUT siempre reemplaza, nunca acumula. Útil para flujos de edición sin estado.
+  - Silently ignore non-existent terms: Si admin envía `categories: [999]` (no existe), ignora. No falla request. WP-style behavior.
+  - Mock DB actualizado para soportar `select().from().innerJoin().where()` en tests (demo-end-to-end.test.ts).
+- **Ficheros modificados:** handlers.ts (POST/PUT + loadPostTerms import), serialize.ts (+loadPostTerms helper, +categories/tags params), posts.real-db.test.ts (+4 tests).
+- **Ficheros nuevos:** serialize.test.ts refactored con DB mocks para cargas de términos.
+- **Tests:** 266/266 verdes (nuevo serialize.test.ts + 4 posts.real-db.test.ts + existentes). Sin regressions.
+- **Date:** 2026-04-18

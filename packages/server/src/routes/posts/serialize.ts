@@ -1,4 +1,6 @@
 import type { Post } from "@nodepress/db";
+import { db, termRelationships, terms } from "@nodepress/db";
+import { eq } from "drizzle-orm";
 import type { HookRegistry } from "@nodepress/core";
 import type { BridgeOutput } from "../../bridge/index.js";
 
@@ -21,6 +23,9 @@ const noopHooks: Pick<HookRegistry, "applyFilters"> = {
  * When context='edit', adds `raw` to title/content/excerpt (WP compat, ADR-009).
  * Omits date_gmt and modified_gmt per DIV-001.
  *
+ * Optional parameters for pre-loaded categories/tags (to avoid DB queries in list responses).
+ * If not provided, defaults to empty arrays.
+ *
  * Hook applied:
  *   - **`the_content`** (filter, sync): `(content: string, post: Post) => string`
  *     Applied to `dbRow.content` before placing it in `content.rendered`.
@@ -29,6 +34,8 @@ export function toWpPost(
   dbRow: Post,
   hooks: Pick<HookRegistry, "applyFilters"> = noopHooks,
   context: SerializeContext = "view",
+  categories: number[] = [],
+  tags: number[] = [],
 ) {
   const renderedContent = hooks.applyFilters<string>(
     "the_content",
@@ -60,6 +67,8 @@ export function toWpPost(
       protected: false,
     },
     author: dbRow.authorId,
+    categories,
+    tags,
     _nodepress: {
       type: dbRow.type,
       parent_id: dbRow.parentId ?? null,
@@ -86,8 +95,35 @@ export function toWpPost(
  * Behavior:
  *   1. If bridge is provided: await renderShortcodes({ postContent, context })
  *   2. Use output.html (or original content if error) as input to the_content filter
- *   3. Return the same WP shape as toWpPost
+ *   3. Load categories and tags from term_relationships table
+ *   4. Return the same WP shape as toWpPost
  */
+
+/**
+ * Helper function to load categories and tags for a post from the database.
+ * @returns [categories, tags] arrays of term IDs
+ */
+export async function loadPostTerms(
+  postId: number,
+): Promise<[categories: number[], tags: number[]]> {
+  const relationships = await db
+    .select({
+      termId: termRelationships.termId,
+      taxonomy: terms.taxonomy,
+    })
+    .from(termRelationships)
+    .innerJoin(terms, eq(termRelationships.termId, terms.id))
+    .where(eq(termRelationships.postId, postId));
+
+  const categories = relationships
+    .filter((r) => r.taxonomy === "category")
+    .map((r) => r.termId);
+  const tags = relationships
+    .filter((r) => r.taxonomy === "post_tag")
+    .map((r) => r.termId);
+
+  return [categories, tags];
+}
 
 export async function toWpPostAsync(
   dbRow: Post,
@@ -124,6 +160,9 @@ export async function toWpPostAsync(
     dbRow,
   );
 
+  // Load categories and tags from term_relationships
+  const [categories, tags] = await loadPostTerms(dbRow.id);
+
   const isEdit = context === "edit";
 
   return {
@@ -148,6 +187,8 @@ export async function toWpPostAsync(
       protected: false,
     },
     author: dbRow.authorId,
+    categories,
+    tags,
     _nodepress: {
       type: dbRow.type,
       parent_id: dbRow.parentId ?? null,
