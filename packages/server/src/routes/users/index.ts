@@ -108,16 +108,18 @@ async function listUsersHandler(
     Math.max(1, parseInt((query["per_page"] as string) ?? "10", 10)),
   );
 
-  // Fetch all users (no DB filter in this PoC — would add WHERE in production)
+  // Fetch all users to count total (required for X-WP-Total header)
   const allUsers = await db.select().from(users);
-
-  // Apply pagination
-  const offset = (page - 1) * perPage;
-  const paginatedUsers = allUsers.slice(offset, offset + perPage);
-
-  // Calculate total pages
   const totalUsers = allUsers.length;
   const totalPages = Math.ceil(totalUsers / perPage);
+
+  // Fetch paginated users from DB using LIMIT/OFFSET
+  const offset = (page - 1) * perPage;
+  const paginatedUsers = await db
+    .select()
+    .from(users)
+    .limit(perPage)
+    .offset(offset);
 
   // Serialize to WP public shape (no email)
   const wpUsers = paginatedUsers.map(toWpUserPublic);

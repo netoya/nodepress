@@ -61,7 +61,12 @@ vi.mock("@nodepress/db", async (importOriginal) => {
           where: () => ({
             limit: () => Promise.resolve([mockAllUserRows[0]]),
           }),
-          // For listUsers (no where clause) — make it thenable
+          // For listUsers (no where clause) — support limit/offset
+          limit: (l: number) => ({
+            offset: (o: number) =>
+              Promise.resolve(mockAllUserRows.slice(o, o + l)),
+          }),
+          // For total count — make it thenable
           then: (onFulfilled: (value: object[]) => void) => {
             return Promise.resolve(mockAllUserRows).then(onFulfilled);
           },
