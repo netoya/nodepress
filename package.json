@@ -30,9 +30,11 @@
     "cli": "npm run start --workspace=packages/cli --",
     "spike:phpwasm": "npm run dev --workspace=packages/spike-phpwasm",
     "test:coverage": "vitest run --coverage",
+    "test:integration": "DOCKER_AVAILABLE=true vitest run --root packages/server --config vitest.integration.config.ts",
     "prepare": "husky"
   },
   "devDependencies": {
+    "@testcontainers/postgresql": "^11.14.0",
     "@types/node": "^22.0.0",
     "@vitest/coverage-v8": "3.2.4",
     "eslint": "^9.0.0",
@@ -42,6 +44,7 @@
     "husky": "9.1.7",
     "lint-staged": "16.4.0",
     "prettier": "^3.3.0",
+    "testcontainers": "^11.14.0",
     "typescript": "^5.6.0",
     "typescript-eslint": "8.58.2",
     "vitest": "^3.0.0"

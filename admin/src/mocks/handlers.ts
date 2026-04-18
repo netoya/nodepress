@@ -42,6 +42,30 @@ const mockPosts: WpPost[] = [
     author: 1,
     _nodepress: { type: "post", menu_order: 2, meta: {} },
   },
+  {
+    id: 4,
+    date: "2026-04-18T07:00:00.000Z",
+    modified: "2026-04-18T07:10:00.000Z",
+    slug: "hook-system-draft",
+    status: "draft",
+    title: { rendered: "Hook System Deep Dive (Draft)" },
+    content: { rendered: "<p>Work in progress — hook system internals.</p>" },
+    excerpt: { rendered: "Work in progress — hook system internals." },
+    author: 1,
+    _nodepress: { type: "post", menu_order: 3, meta: {} },
+  },
+  {
+    id: 5,
+    date: "2026-04-18T08:00:00.000Z",
+    modified: "2026-04-18T08:05:00.000Z",
+    slug: "plugin-api-pending",
+    status: "pending",
+    title: { rendered: "Plugin API Reference (Pending Review)" },
+    content: { rendered: "<p>Awaiting editorial review before publish.</p>" },
+    excerpt: { rendered: "Awaiting editorial review before publish." },
+    author: 2,
+    _nodepress: { type: "post", menu_order: 4, meta: {} },
+  },
 ];
 
 export const handlers = [

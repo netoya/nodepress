@@ -147,6 +147,7 @@ describe("Demo flow — hook mutations visible in POST + GET responses", () => {
 
     // Register pre_save_post filter: prepend [DEMO] to the title
     const preSaveEntry: FilterEntry<{ title: string }> = {
+      type: "filter",
       pluginId: "demo-plugin",
       priority: DEFAULT_HOOK_PRIORITY,
       fn: (postData) => ({
@@ -158,6 +159,7 @@ describe("Demo flow — hook mutations visible in POST + GET responses", () => {
 
     // Register the_content filter: append NodePress footer
     const theContentEntry: FilterEntry<string> = {
+      type: "filter",
       pluginId: "demo-plugin",
       priority: DEFAULT_HOOK_PRIORITY,
       fn: (content) =>
@@ -259,6 +261,7 @@ describe("Demo flow — circuit breaker: throwing filter does not abort POST", (
 
     // Register a filter that always throws
     const bustedEntry: FilterEntry = {
+      type: "filter",
       pluginId: "busted-plugin",
       priority: DEFAULT_HOOK_PRIORITY,
       fn: () => {
@@ -269,6 +272,7 @@ describe("Demo flow — circuit breaker: throwing filter does not abort POST", (
 
     // Register a the_content filter that also throws
     const bustedContent: FilterEntry<string> = {
+      type: "filter",
       pluginId: "busted-plugin",
       priority: DEFAULT_HOOK_PRIORITY,
       fn: () => {

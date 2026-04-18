@@ -89,3 +89,28 @@
 - **ADR-006 — `docs/adr/ADR-006-date-modified-gmt-omission.md`:** Documenta DIV-001. Decisión: omitir `date_gmt`/`modified_gmt`. PG TIMESTAMPTZ ya es UTC — `_gmt` variants serían duplicado de storage. Rollback: derivación trivial en serialize.ts sin migración. Estado: Proposed. **Date:** 2026-04-17
 - **ADR-007 — `docs/adr/ADR-007-wp-post-fields-omitted-v1.md`:** Documenta DIV-003. Decisión: omitir `featured_media`, `comment_status`, `ping_status`, `format`, `sticky`, `template` en v1. Cada campo tiene milestone de reintroducción documentado. Alternativa descartada: columnas null-by-default crea superficie de API que luego hay que deprecar. Estado: Proposed. **Date:** 2026-04-17
 - **Typecheck + lint:** Verde. `npx tsc --noEmit` sin errores. ESLint 0 errores, 0 warnings en archivos modificados. **Date:** 2026-04-17
+
+## Meet 2026-04-18 — equipo continuemos (Sprint 1 semana 2)
+
+- **Scope congelado Sprint 1 — NO abrir Sprint 2 por adelantado:** hardening selectivo + prep quirúrgica. **Why:** 92% done con ritmo x6 es ventana peligrosa para scope creep. **Date:** 2026-04-18
+- **/posts list + editor básico entran en Sprint 1** como completude demo: textarea sin bloques. Lucas + Marta. Filtros Martín+Román+Tomás para aprobar. **Date:** 2026-04-18
+- **3 tickets hardening backend:** #28 integration tests Postgres real, #29 coverage db INSERT/SELECT/UPDATE, #30 stress circuit breaker concurrent. Ingrid. **Date:** 2026-04-18
+- **Skeleton + ADR stub en cli/theme-engine/plugin-api** (3 paquetes con index.ts de 1 línea). Román, antes del viernes 2026-04-24. **Date:** 2026-04-18
+- **Protocolo scope freeze activado:** tickets nuevos en Sprint 1 requieren Román + Tomás + Martín. Sin excepción. **Date:** 2026-04-18
+- **CLA Assistant jueves 2026-04-23** (90 min Alejandro + Eduardo). Bloquea outreach. **Date:** 2026-04-18
+- **Outreach privado arranca viernes 2026-04-24:** 15 calls CTOs ICP-1 con demo grabada, 10 días. Pregunta única: "¿Qué tendría que hacer NodePress para que migraseis un cliente piloto en Q3?" **Date:** 2026-04-18
+- **ADRs 005-009 a Accepted antes viernes 24-04.** Sesión asíncrona miércoles. **Date:** 2026-04-18
+- **R-2 (contract-freeze) formalizada en apéndice contributing.md** antes lunes 21-04. Tomás. **Date:** 2026-04-18
+- **Burndown real cada lunes en GitHub Discussions** desde 21-04. Martín. **Date:** 2026-04-18
+- **Messaging A/B test parqueado** a cierre Sprint — un frente abierto cada vez. **Date:** 2026-04-18
+- **Temperature check equipo: sin señales burnout hoy** — Tomás sondea cada 3-4 días, no asume que flow = sostenible. **Date:** 2026-04-18
+
+## Sprint 1 día 2 — #28 Real-DB integration tests
+
+- **Decisión: Opción 1 (Testcontainers, `@testcontainers/postgresql`).** Docker-compose tiene una sola DB `nodepress` sin servicio de test DB separado. Opción 2 requeriría modificar docker-compose y gestionar lifecycle. Testcontainers da aislamiento perfecto sin estado persistente. **Date:** 2026-04-18
+- **DB helper:** `packages/server/src/__tests__/helpers/db.ts` — `setupTestDb()` (container + migrate), `truncateAll()`, `teardownTestDb()`, `getTestDb()`. Migration aplicada parseando el SQL en statements delimitados por `--> statement-breakpoint`. **Date:** 2026-04-18
+- **Mock pattern:** `vi.doMock('@nodepress/db', ...)` + `vi.resetModules()` + re-mock antes de importar handlers. `@nodepress/db/client.ts` lanza si `DATABASE_URL` no está — `setup-integration.ts` como `setupFiles` pone valor dummy antes de que el módulo cargue. **Date:** 2026-04-18
+- **9 tests reales creados** en `posts.real-db.test.ts`: GET list (empty + seeded DIV-002/005), GET by id (404 + DIV-001/005), POST (create + duplicate slug 400), PUT (update + DB verify), DELETE (soft + hard). **Date:** 2026-04-18
+- **Exclusión del test run por defecto:** `packages/server/vitest.config.ts` añade `exclude: ["**/*.real-db.test.ts"]`. Script `test:integration` usa `vitest run --root packages/server --config vitest.integration.config.ts`. **Date:** 2026-04-18
+- **Tests default: 108 verdes (sin cambio).** Tests integration: 9 tests, pasan cuando Docker disponible. **Date:** 2026-04-18
+- **`docs/tooling/quality-gates.md` actualizado** con sección "Real-DB Integration Tests (#28)". **Date:** 2026-04-18

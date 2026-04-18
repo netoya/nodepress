@@ -1,7 +1,8 @@
 # ADR-005: Hook System Semantics — Sync Filters, Async Actions
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-04-17
+- **Accepted:** 2026-04-18
 - **Author:** Román (Tech Lead)
 
 ## Context

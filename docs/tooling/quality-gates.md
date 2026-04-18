@@ -202,3 +202,52 @@ To add a script alias in `package.json`:
 ## ESLint config extension
 
 Config file is `eslint.config.mjs` (renamed from `.js` on 2026-04-17). Root `package.json` has no `"type": "module"` on purpose — keeping it absent avoids flipping the default for any future root-level `.js` tooling script. The `.mjs` extension is explicit and surgical: ESLint auto-detects flat config from `.mjs`, and Node stops emitting `MODULE_TYPELESS_PACKAGE_JSON` on lint runs.
+
+---
+
+## Real-DB Integration Tests (#28)
+
+Tests that exercise the full HTTP → Drizzle → Postgres stack using real data.
+Run against an ephemeral Postgres container via Testcontainers.
+
+### What they cover
+
+- `GET /wp/v2/posts` — empty list + pagination headers; seeded publish post with DIV-002/005 shape
+- `GET /wp/v2/posts/:id` — 404 for missing; full shape with DIV-001 (no `date_gmt`) and DIV-005 (`_nodepress`)
+- `POST /wp/v2/posts` — creates row in DB, returns 201 + WP shape; 400 on duplicate slug
+- `PUT /wp/v2/posts/:id` — updates title in DB, response reflects change
+- `DELETE /wp/v2/posts/:id` — soft delete (status=trash) and hard delete (force=true, row gone)
+
+### How to run
+
+Requires Docker running locally.
+
+```sh
+npm run test:integration
+```
+
+This sets `DOCKER_AVAILABLE=true` and runs only `*.real-db.test.ts` files via a dedicated Vitest config (`packages/server/vitest.integration.config.ts`), isolated from the workspace to avoid picking up all package tests.
+
+### How it works
+
+1. `@testcontainers/postgresql` boots a `postgres:16-alpine` container.
+2. The migration SQL (`packages/db/drizzle/0000_auto-generated-plugin-registry.sql`) is applied directly via `pg` client.
+3. `vi.doMock('@nodepress/db', ...)` swaps the module's `db` export to point at the test container pool before any handler imports.
+4. `vi.resetModules()` + re-mock flushes the module cache so handlers pick up the swapped db.
+5. After each test, `truncateAll()` resets all tables. After the suite, `teardownTestDb()` stops the container.
+
+### CI without Docker
+
+Do not run `npm run test:integration` in CI environments without Docker.
+The default `npm test` excludes `*.real-db.test.ts` via `packages/server/vitest.config.ts`.
+These tests are intended for local pre-merge validation and developer confidence only.
+
+### File locations
+
+| File                                                               | Purpose                                                             |
+| ------------------------------------------------------------------ | ------------------------------------------------------------------- |
+| `packages/server/src/__tests__/helpers/db.ts`                      | `setupTestDb()`, `truncateAll()`, `teardownTestDb()`, `getTestDb()` |
+| `packages/server/src/__tests__/helpers/setup-integration.ts`       | Vitest setupFile — sets dummy DATABASE_URL before module load       |
+| `packages/server/src/routes/posts/__tests__/posts.real-db.test.ts` | 9 real-DB tests (5 endpoints × ~2 tests each)                       |
+| `packages/server/vitest.integration.config.ts`                     | Dedicated config — no workspace, correct include/exclude            |
+| `packages/server/vitest.config.ts`                                 | Default server config — excludes `*.real-db.test.ts`                |

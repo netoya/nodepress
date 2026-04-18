@@ -54,3 +54,7 @@
 | 2026-04-18 | lucas           | #23 dashboard 4 states (draft — MSW + React Query, pending Sofía wireframes)                                        | 11 files  | pending | ✅     |
 | 2026-04-18 | ingrid          | wire HookRegistry → REST handlers + demo end-to-end integration test                                                | 9 files   | pending | ✅     |
 | 2026-04-18 | lucas           | Playwright E2E Chrome visual — 5 specs, 8 tests, 4 dashboard states + a11y, 5 snapshots                             | 11 files  | pending | ✅     |
+| 2026-04-18 | tomas           | formalizar R-2 contract-freeze en contributing.md (sección + TOC + footer)                                          | 1 file    | pending | ✅     |
+| 2026-04-18 | lucas           | brief Marta forms L2 + /posts list scaffold (4 states, 4 tests)                                                     | 7 files   | pending | ✅     |
+| 2026-04-18 | roman           | ADR-005/009 → Accepted + skeleton cli/theme-engine/plugin-api + ADR-010/011/012 stubs                               | 11 files  | pending | ✅     |
+| 2026-04-18 | ingrid          | #28 integration tests REST + Postgres real (setup + 9 tests)                                                        | 6 files   | done    | ✅     |

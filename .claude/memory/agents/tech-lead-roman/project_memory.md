@@ -96,3 +96,31 @@
 - **Coverage no medido formalmente:** `@vitest/coverage-v8` no instalado. Helena debe añadirlo junto al flat config ESLint. **Date:** 2026-04-17
 - **Factory `createHookRegistry()` expuesta junto con la clase:** permite testing aislado sin estado global. **Date:** 2026-04-17
 - **Admin package tests rotos (13 fallos pre-existentes):** `toBeInTheDocument` sin setup `@testing-library/jest-dom`. Ticket para Lucas/Marta — no bloqueo de core. **Date:** 2026-04-17
+
+## Meet 2026-04-18 — equipo continuemos (Sprint 1 semana 2)
+
+- **Scope congelado Sprint 1 — NO abrir Sprint 2 por adelantado:** hardening selectivo + prep quirúrgica. **Why:** 92% done con ritmo x6 es ventana peligrosa para scope creep. **Date:** 2026-04-18
+- **/posts list + editor básico entran en Sprint 1** como completude demo: textarea sin bloques. Lucas + Marta. Filtros Martín+Román+Tomás para aprobar. **Date:** 2026-04-18
+- **3 tickets hardening backend:** #28 integration tests Postgres real, #29 coverage db INSERT/SELECT/UPDATE, #30 stress circuit breaker concurrent. Ingrid. **Date:** 2026-04-18
+- **Skeleton + ADR stub en cli/theme-engine/plugin-api** (3 paquetes con index.ts de 1 línea). Román, antes del viernes 2026-04-24. **Date:** 2026-04-18
+- **Protocolo scope freeze activado:** tickets nuevos en Sprint 1 requieren Román + Tomás + Martín. Sin excepción. **Date:** 2026-04-18
+- **CLA Assistant jueves 2026-04-23** (90 min Alejandro + Eduardo). Bloquea outreach. **Date:** 2026-04-18
+- **Outreach privado arranca viernes 2026-04-24:** 15 calls CTOs ICP-1 con demo grabada, 10 días. Pregunta única: "¿Qué tendría que hacer NodePress para que migraseis un cliente piloto en Q3?" **Date:** 2026-04-18
+- **ADRs 005-009 a Accepted antes viernes 24-04.** Sesión asíncrona miércoles. **Date:** 2026-04-18
+- **R-2 (contract-freeze) formalizada en apéndice contributing.md** antes lunes 21-04. Tomás. **Date:** 2026-04-18
+- **Burndown real cada lunes en GitHub Discussions** desde 21-04. Martín. **Date:** 2026-04-18
+- **Messaging A/B test parqueado** a cierre Sprint — un frente abierto cada vez. **Date:** 2026-04-18
+- **Temperature check equipo: sin señales burnout hoy** — Tomás sondea cada 3-4 días, no asume que flow = sostenible. **Date:** 2026-04-18
+
+## Sprint 1 sem 2 día 0 — ADRs Accepted + skeletons (2026-04-18)
+
+- **ADR-005 → Accepted (2026-04-18).** Semántica frozen, registry implementado (#14), types congelados. Sign-off propio: yo soy el autor.
+- **ADR-009 ya estaba Accepted** (Carmen la creó así al aplicar Option A). Sin cambios.
+- **ADR-006/007/008 quedan Proposed hoy:** 006/007 requieren sign-off explícito de Ingrid antes del viernes; 008 esperando verdict spike day 3. No los toco en esta ventana — son decisiones que no me pertenecen solo.
+- **3 paquetes vacíos cerrados arquitectónicamente sin implementar:** `packages/cli/`, `packages/theme-engine/`, `packages/plugin-api/` pasan de `export {}` a surface de tipos completa (`types.ts` + `index.ts`). Decisión: commit de contratos ahora = congelar antes de que otros paquetes crezcan shims ad-hoc. Implementación real a Sprint 2+ (cli) / Sprint 3+ (theme-engine). **Date:** 2026-04-18
+- **0 deps nuevas añadidas en el skeleton.** Intentional: `commander` o equivalente entra como decisión Sprint 2 con spike empírico, no scaffold-time commitment. Argv parser listado como Open Question en ADR-010. **Date:** 2026-04-18
+- **plugin-api depende de @nodepress/core** (package.json + project reference en tsconfig). Re-exporta `PluginContext` + `DisposableRegistry` verbatim — un único import path para plugin authors y plugin hosts. **Date:** 2026-04-18
+- **theme-engine deliberadamente desacoplado de core** en esta fase. El `Renderer` aplicará filtros vía `HookRegistry` en Sprint 3, pero cómo recibe la referencia (injection vs context vs singleton) es Open Question — no congelo el acoplamiento hoy. **Date:** 2026-04-18
+- **ADR-010 (cli), ADR-011 (theme-engine), ADR-012 (plugin-api) creados en Proposed.** Cada ADR es scoping doc para el Sprint que implementa, no record de shipped behaviour. Estructura coherente con ADRs 005-009: Status, Context, Decision, Open Questions, References. **Date:** 2026-04-18
+- **Regla latente:** sprints futuros — nunca dejar un paquete declarado en monorepo con solo `export {}` más de un sprint. Es deuda latente que se convierte en contrato vacuum para los paquetes vecinos. **Date:** 2026-04-18
+- **Typecheck 3 paquetes nuevos: verde.** `tsc -b --force packages/cli packages/theme-engine packages/plugin-api` compila limpio. Los 9 errores pre-existentes en `packages/server/src/__tests__` y `routes/posts/__tests__` son de las last waves (demo-end-to-end.test.ts, posts.real-db.test.ts) — no introducidos por este trabajo. Tickets pendientes para Ingrid/Carmen. **Date:** 2026-04-18

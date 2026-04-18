@@ -13,6 +13,7 @@
 5. [Commit Convention](#commit-convention)
 6. [Ceremonies](#ceremonies)
 7. [Architecture Decision Records](#architecture-decision-records)
+8. [Contract Freeze Protocol (R-2)](#contract-freeze-protocol-r-2)
 
 ---
 
@@ -230,4 +231,47 @@ Once an ADR is accepted, it is **immutable**. Do not edit it. If a decision chan
 
 ---
 
-_Last updated: 2026-04-09 — decisions from the workflow meeting (Tomás, Román, Martín)._
+## Contract Freeze Protocol (R-2)
+
+> Adopted 2026-04-18 after Sprint 1 day 1 experience. Formalises a practice the team was already running.
+
+When two or more tickets share public types, both owners need to agree on those types **before** either starts coding. This 30-minute session is the mechanism for that agreement.
+
+### When to trigger
+
+A contract-freeze session is required when any of the following is true:
+
+- Two or more open tickets share public types (interfaces, API signatures, event payloads).
+- A new package exposes an API consumed by another package within the same sprint.
+- A PR modifies a type that an already-accepted ADR depends on.
+
+If unsure, lean toward triggering. A 30-minute alignment costs less than a mid-sprint interface mismatch.
+
+### How it runs
+
+- **Duration:** 30 minutes, hard stop.
+- **Participants:** Leads of the affected packages + Tech Lead as facilitator.
+- **Output:** One committed file — a types definition file or an ADR draft — that both sides sign off on before either starts implementation.
+- **Format:** Async-first (GitHub Discussion or Slack thread). Escalate to a sync call if no agreement after 24 hours.
+
+### What "frozen" means
+
+- The contract cannot change without a new freeze session or a new ADR.
+- PRs that violate the frozen contract are blocked in review until the contract is renegotiated.
+- The contract file path must appear in the description of every ticket that depends on it.
+
+### Anti-patterns
+
+- Designing the contract while implementing the first ticket — this breaks parallel delivery.
+- Delegating the contract to whoever starts first.
+- Skipping the session because the contract "seems obvious." Obvious contracts still benefit from 30 minutes of shared understanding.
+
+### Historical examples
+
+| Date       | Contract                                | Participants   | Outcome                                  |
+| ---------- | --------------------------------------- | -------------- | ---------------------------------------- |
+| 2026-04-17 | `HookEntry` + `PluginContext.addHook()` | Román + Ingrid | Unblocked parallel delivery of #14 + #19 |
+
+---
+
+_Last updated: 2026-04-18 — R-2 contract-freeze protocol added (Tomás, from meet 2026-04-18)._

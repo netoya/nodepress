@@ -2,6 +2,9 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
+    // Exclude real-DB integration tests from the default test run.
+    // These require Docker and are run via: npm run test:integration
+    exclude: ["**/node_modules/**", "**/dist/**", "**/*.real-db.test.ts"],
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "json-summary"],

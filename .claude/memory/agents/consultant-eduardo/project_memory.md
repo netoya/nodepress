@@ -1,14 +1,16 @@
-## Meet 2026-04-09 — Compatibilidad plugins PHP WordPress
+---
+name: consultant-eduardo-nodepress
+description: Project memory for Eduardo (Consultant) in NodePress
+type: project
+---
 
-- **Framework go-to-market adoptado:** Fase A (JS nativo 6-12m) → Fase B (top 20 por comunidad 12-18m) → Fase C (PHP bridge enterprise 18-24m). **Date:** 2026-04-09
-- **Benchmark:** Ghost, Strapi, Directus — ninguno logró PHP compat. Mercado premia DX, no PHP legacy. **Date:** 2026-04-09
-- **ICP sin PHP:** Agencias web post-WP, dev teams headless, proyectos nuevos. **Date:** 2026-04-09
-- **Acción Eduardo:** Definir ICP y messaging con Alejandro antes de comunicación pública. **Date:** 2026-04-09
-- **Pitch definido:** "Migra tu WP a NodePress: shortcodes PHP funcionan, plugins principales tienen versión nativa, tu equipo trabaja en TypeScript". **Date:** 2026-04-09
+## Meet 2026-04-18 — equipo continuemos (Sprint 1 semana 2)
 
-## Meet 2026-04-09 — nodepress-wp-plugin-server
-
-- **"Esto ya existe y se llama WordPress headless"** — Argumento clave que reorientó la reunión. **Date:** 2026-04-09
-- **Identidad de producto reafirmada:** NodePress es CMS nativo Node.js, no orquestador sobre WP. **Date:** 2026-04-09
-- **ICP reafirmado:** El cliente con WooCommerce legacy no es el target. Construir nuevo > migrar 1:1. **Date:** 2026-04-09
-- **Acción Eduardo:** Definir ICP formal con Alejandro en Sprint 0. **Date:** 2026-04-09
+- **Posición en reunión: velocity técnica sin validación de mercado es deuda disfrazada.** Propuse 7 días discovery + 3 días buffer técnico. Alejandro compró el frame pero lo balanceó con hardening paralelo — outreach y hardening no compiten. **Date:** 2026-04-18
+- **Outreach privado arranca viernes 2026-04-24:** 15 calls CTOs ICP-1 con demo grabada en 10 días. Budget 0€. Pregunta única: "¿Qué tendría que hacer NodePress para que migraseis un cliente piloto en Q3?" Con Alejandro. **Date:** 2026-04-18
+- **CLA Assistant jueves 2026-04-23 (90 min Alejandro + Eduardo).** Bloquea outreach. **Date:** 2026-04-18
+- **Messaging A/B test parqueado a cierre Sprint 1 (post 30-04).** Alejandro priorizó "un frente abierto cada vez" sobre ejecutar en paralelo. Disciplina correcta — acepté. **Date:** 2026-04-18
+- **Señales mercado semana 14-18 abril:** Strapi v5 con focus TypeScript (valida tesis NodePress), Automattic -16% layoffs (mercado WP en contracción emocional), ventana 12-18 meses antes de que Ghost/Payload cierren oportunidad ICP-1. **Date:** 2026-04-18
+- **Benchmark adopción OSS CMS:** Strapi 61k stars en 5 años; primeros 90 días post-público son señal primaria. NodePress no ha empezado a contar — repo privado = discovery ciego. **Date:** 2026-04-18
+- **R-9 ping semanal a Alejandro viernes 2026-04-24** con pregunta concreta: ¿de los 3 ICPs, cuál paga primero? **Date:** 2026-04-18
+- **ICP-1 (Agency Modernizer):** canal outreach directo a CTOs con repos WP públicos. A ellos enseñamos la demo grabada. **Date:** 2026-04-18
