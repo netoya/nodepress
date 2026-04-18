@@ -104,7 +104,7 @@ Offer both, let the caller choose.
 
 - **Non-uniform API.** Consumers must remember which primitive is sync and which is async. Mitigated by type annotations, examples in the Plugin Development Guide, and a lint rule (future) that flags `await applyFilters(...)`.
 - **Filters cannot do I/O.** Intentional, but it is a real limitation for plugins coming from other ecosystems where filters could be async. The migration path for such cases is to refactor the I/O into an action that populates a cache, then read the cache synchronously from the filter.
-- **Accidental-async filter risk.** A TS plugin author can still return `Promise<R>` from a filter via an inferred `async` function. Mitigation: `wrapSyncFilter` (ADR-004) detects `Promise` at runtime and logs; we add an ESLint rule in #19 scope to ban `async` filter callbacks statically.
+- **Accidental-async filter risk.** A TS plugin author can still return `Promise<R>` from a filter via an inferred `async` function. Mitigation: `wrapSyncFilter` (ADR-004) detects `Promise` at runtime and logs. An ESLint rule to statically ban `async` filter callbacks will be scoped in a separate ticket (future); ticket #19 covers only types + `PluginContext` surface.
 
 ### Implementation Notes
 

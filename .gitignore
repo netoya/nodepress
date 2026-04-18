@@ -5,3 +5,6 @@ coverage
 .turbo
 *.log
 .DS_Store
+
+# TypeScript build artifacts
+*.tsbuildinfo

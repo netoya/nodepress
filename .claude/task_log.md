@@ -20,3 +20,6 @@
 | 2026-04-17 | raul            | fix GitHub Issues: close #8, verify #1/#2  | —        | —       | ✅     |
 | 2026-04-17 | lucas           | admin shell scaffold + pinned deps + brief Marta | 8 files  | pending | ✅     |
 | 2026-04-17 | ingrid          | review contrato hooks + #19 PluginContext/DisposableRegistry | 3 files | pending | ✅     |
+| 2026-04-17 | roman           | commit Sprint 1 día 1 (hooks contract + admin shell) | 12+ files | pending | ✅     |
+| 2026-04-17 | raul            | git identity local + untrack tsbuildinfo   | 2 files  | pending | ✅     |
+| 2026-04-17 | roman           | ADR-005 scope fix + housekeeping commit    | 5 files  | pending | ✅     |
