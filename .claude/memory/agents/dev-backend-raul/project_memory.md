@@ -1,3 +1,40 @@
+## Sprint 3 — 3 tickets completados (2026-04-18)
+
+### 1. Media stub — GET /wp/v2/media → [] (✅ 30 min)
+
+- **Handler**: `packages/server/src/routes/media/index.ts` — GET `/wp/v2/media` devuelve `200` con `[]`
+- **Integración**: Registrado en `packages/server/src/index.ts` via `server.register(mediaPlugin)`
+- **Test**: `packages/server/src/routes/media/__tests__/media.test.ts` — 1 test PASS. Status 200, body `[]`
+- **Scope**: Stub solamente. Subida de archivos NO implementada (Sprint 1 scope).
+
+### 2. Bridge timeout + D-014 → 5s (✅ 45 min)
+
+- **renderShortcodes timeout**: Aumentado de 3s a 5s en `packages/server/src/bridge/index.ts:548`. AbortController race via `createTimeout(5000)`. Fallback seguro: retorna content sin procesar en timeout.
+- **D-014 resolution**: Implementado helper `withDisposalTimeout(registry, ms)` en `packages/core/src/hooks/context.ts`. Timeout wrapper para `DisposableRegistry.disposeAll()` per ADR-004 lifecycle (5s DRAINING window).
+- **Tests**: `packages/core/src/hooks/__tests__/DisposableRegistry.test.ts` — 4 nuevos tests PASS: timeout reject, timeout normal, ADR-004 guard 5s, 100ms timeout trigger. Bridge tests (8 existentes) todo verde.
+- **Cambios código**: 2 archivos modificados (bridge/index.ts + context.ts). Sin breaking changes. Backwards compatible.
+
+### 3. CLI serve + migrate (✅ 1h 15 min)
+
+- **buildServer function**: Refactorizado `packages/server/src/index.ts` → `export async function buildServer()`. Permite al CLI instanciar sin listar inmediatamente.
+- **nodepress serve**: Importa buildServer, escucha en puerto 3000 (o $PORT). Logs confirman startup.
+- **nodepress migrate**: Ejecuta `npm run migrate --workspace=@nodepress/db` vía execSync. Drizzle-kit integrado.
+- **Help + version**: `--help`, `-h`, `--version`, `-v` implementados. Sin args muestra help.
+- **CLI binary**: `package.json` bin entry: `"nodepress": "dist/index.js"` ya presente. Ejecutable via `npx nodepress serve`.
+- **Tests**: `packages/cli/src/__tests__/cli.test.ts` — 4 smoke tests PASS: help sin args, help --help, version, unknown command reject.
+- **Dependencias**: Sin nuevas dependencias agregadas. Usa `process.argv` + `execSync` (built-in Node.js).
+
+### Deliverables resumen
+
+| Ticket            | Status | Files            | Tests       | Notes                                         |
+| ----------------- | ------ | ---------------- | ----------- | --------------------------------------------- |
+| Media stub        | ✅     | 2 new            | 1           | GET /wp/v2/media returns 200 with []          |
+| Bridge timeout    | ✅     | 2 modified       | 11 (4 new)  | 5s timeout + D-014 helper withDisposalTimeout |
+| CLI serve/migrate | ✅     | 3 (1 refactored) | 4           | buildServer export + 2 commands               |
+| **Total**         | **✅** | **7**            | **16 PASS** | No TS errors, ESLint 0, all tests green       |
+
+---
+
 ## Meet 2026-04-09 — Ciclo de vida plugins Node vs PHP
 
 - **Spike Sprint 1 ampliado:** (1) php-wasm con shortcode plugin WP real, (2) benchmark vm.Context con plugin 50 hooks. 2 días. **Date:** 2026-04-09

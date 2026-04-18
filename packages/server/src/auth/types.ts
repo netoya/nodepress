@@ -1,12 +1,15 @@
 /**
  * Represents an authenticated user injected into the Fastify request.
- * Sprint 1: simplified — Bearer token grants admin role only.
- * Sprint 2+: extend with real capability checks.
+ * Sprint 3: populated from DB — includes roles and capabilities from users table.
  */
 export interface AuthenticatedUser {
-  role: "admin";
-  /** Optional user id — not populated in simplified auth (sprint 1) */
-  id?: string;
+  /** Database primary key */
+  id: number;
+  login: string;
+  email: string;
+  displayName: string;
+  roles: string[];
+  capabilities: Record<string, unknown>;
 }
 
 /**

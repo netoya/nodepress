@@ -239,6 +239,16 @@
 - **ADR-009 context=edit:** SerializeContext param en toWpPost/toWpPostAsync. raw fields en context=edit. 5 nuevos tests serialize. **Date:** 2026-04-18
 - **Estado Sprint 2:** 16/16 done. 231 tests verdes. 16 ADRs Accepted. **Date:** 2026-04-18
 
+## Sprint 3 día 1 — #44 Auth reads user from DB + GET /wp/v2/users/me (2026-04-18)
+
+- **requireAdmin now queries DB:** `packages/server/src/auth/bearer.ts` — calls `db.select().from(users).where(eq(users.login, login)).limit(1)`. Returns 401 if user not found, 403 if roles array doesn't include 'administrator'. `NODEPRESS_ADMIN_USER` env var controls which login to resolve (default: "admin"). **Date:** 2026-04-18
+- **requireAuth added:** Same as requireAdmin but no role check — any authenticated user. Used for /wp/v2/users/me. **Date:** 2026-04-18
+- **AuthenticatedUser type updated:** Now carries `{id, login, email, displayName, roles, capabilities}` from DB row. Old `{role: "admin"}` shape replaced. All callers use `request.user?.id` (optional chaining, backward compat). **Date:** 2026-04-18
+- **GET /wp/v2/users/me:** `packages/server/src/routes/users/index.ts` — WP-compatible shape: `{id, name, slug, email, url, description, link, locale, nickname, registered_date, roles, capabilities, _nodepress: {login}}`. Registered in server/index.ts. **Date:** 2026-04-18
+- **Test strategy for DB-dependent preHandlers:** vi.mock("@nodepress/db") with mutable `mockUserRows` slot — tests swap the resolved user to test 403 path. requireAdmin/requireAuth no longer accept injected db param (Fastify preHandler signature incompatibility). **Date:** 2026-04-18
+- **Demo test mock patched:** Added `users` table export and chainable `where()` mock `{limit: () => Promise([adminRow]), then: (...) => Promise([]).then(...)}` to support both requireAdmin's `.limit()` call and handlers' direct `await where()`. **Date:** 2026-04-18
+- **254 tests green (up from 246):** 8 new tests — 4 bearer auth (including 403 path), 3 GET /wp/v2/users/me (401 no token, 401 bad token, 200 with WP shape). **Date:** 2026-04-18
+
 ## Meet 2026-04-18 — Planning Sprint 3 (roles, taxonomías, admin edit, CLI init)
 
 - **#44 P0 día 1: auth roles DB.** `requireAdmin` debe consultar `roles` en DB, no solo validar Bearer. Schema ya tiene `roles text[]` + `capabilities jsonb`. **Date:** 2026-04-18

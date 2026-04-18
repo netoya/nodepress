@@ -1,9 +1,40 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
 import Fastify from "fastify";
 import { registerBearerAuth } from "../../../auth/index.js";
 import { requireAdmin } from "../../../auth/bearer.js";
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { SerializeContext } from "../serialize.js";
+
+// Mock @nodepress/db so requireAdmin resolves without a real DB connection.
+vi.mock("@nodepress/db", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("@nodepress/db")>();
+  return {
+    ...actual,
+    db: {
+      select: () => ({
+        from: () => ({
+          where: () => ({
+            limit: () =>
+              Promise.resolve([
+                {
+                  id: 1,
+                  login: "admin",
+                  email: "admin@nodepress.local",
+                  displayName: "Admin",
+                  passwordHash: "dev-only-placeholder",
+                  roles: ["administrator"],
+                  capabilities: {},
+                  meta: {},
+                  createdAt: new Date("2024-01-01"),
+                  updatedAt: new Date("2024-01-01"),
+                },
+              ]),
+          }),
+        }),
+      }),
+    },
+  };
+});
 
 /**
  * Tests for ?context=edit auth enforcement at the HTTP layer (ADR-009).

@@ -80,14 +80,31 @@ vi.mock("@nodepress/db", () => {
         }),
       })),
     })),
-    select: vi.fn(() => ({
+    select: vi.fn((_fields?: unknown) => ({
       from: vi.fn((_table: unknown) => ({
         where: vi.fn((_cond: unknown) => {
-          // For slug collision detection, return empty (no duplicates in tests).
-          // For other queries (e.g., id lookup), return all posts.
-          // Heuristic: if condition is an object with __isMockEq, it's a WHERE query.
-          // For simplicity, assume WHERE queries always return empty (tests don't rely on finding existing posts).
-          return Promise.resolve([]);
+          // Chainable mock that supports both:
+          // 1. requireAdmin: .where(...).limit(1) → admin user row
+          // 2. slug collision / listPosts: await .where(...) → [] (no records)
+          const adminRow = {
+            id: 1,
+            login: "admin",
+            email: "admin@nodepress.local",
+            displayName: "Admin",
+            passwordHash: "dev-only-placeholder",
+            roles: ["administrator"],
+            capabilities: {},
+            meta: {},
+            createdAt: new Date("2024-01-01"),
+            updatedAt: new Date("2024-01-01"),
+          };
+          return {
+            limit: (_n: number) => Promise.resolve([adminRow]),
+            then: (
+              onFulfilled?: (v: unknown[]) => unknown,
+              onRejected?: (e: unknown) => unknown,
+            ) => Promise.resolve([]).then(onFulfilled, onRejected),
+          };
         }),
       })),
     })),
@@ -107,7 +124,29 @@ vi.mock("@nodepress/db", () => {
 
   return {
     db: mockDb,
-    posts: { id: "id", title: "title", content: "content", slug: "slug" },
+    posts: {
+      id: "id",
+      title: "title",
+      content: "content",
+      slug: "slug",
+      status: "status",
+      authorId: "authorId",
+      excerpt: "excerpt",
+      type: "type",
+      parentId: "parentId",
+      menuOrder: "menuOrder",
+      meta: "meta",
+      createdAt: "createdAt",
+      updatedAt: "updatedAt",
+    },
+    users: {
+      id: "id",
+      login: "login",
+      email: "email",
+      displayName: "displayName",
+      roles: "roles",
+      capabilities: "capabilities",
+    },
     eq: mockEq,
     and: vi.fn((...args: unknown[]) => args),
     or: vi.fn((...args: unknown[]) => args),

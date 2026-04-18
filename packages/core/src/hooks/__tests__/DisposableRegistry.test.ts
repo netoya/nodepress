@@ -16,7 +16,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { DisposableRegistryImpl } from "../context.js";
+import { DisposableRegistryImpl, withDisposalTimeout } from "../context.js";
 
 // ---------------------------------------------------------------------------
 // Suite
@@ -145,7 +145,6 @@ describe("DisposableRegistryImpl", () => {
 
     it("handles non-Error string throws gracefully", async () => {
       registry.register(() => {
-         
         throw "string error";
       });
       // Must not reject
@@ -155,7 +154,6 @@ describe("DisposableRegistryImpl", () => {
 
     it("handles non-Error non-string throws (objects) gracefully", async () => {
       registry.register(() => {
-         
         throw { code: 42 };
       });
       await expect(registry.disposeAll()).resolves.toBeUndefined();
@@ -210,14 +208,57 @@ describe("DisposableRegistryImpl", () => {
 
   // -------------------------------------------------------------------------
   // 6. Timeout per disposer — D-014
-  // TODO(D-014): Individual per-disposer timeout (5 s) is not yet implemented
-  // in DisposableRegistryImpl. The guard belongs to the lifecycle layer
-  // (`wrapAsyncAction` in #20). Tracked as D-014 in ADR-004.
+  // Implemented via withDisposalTimeout() helper.
   // -------------------------------------------------------------------------
 
   describe("disposeAll — timeout handling (D-014)", () => {
-    it.todo(
-      "a disposer that hangs longer than 5 s should be abandoned with a warning (D-014 / #20)",
+    it("withDisposalTimeout rejects if disposal takes longer than specified ms", async () => {
+      registry.register(
+        () =>
+          new Promise<void>(
+            (r) => setTimeout(r, 100), // 100ms delay
+          ),
+      );
+      // 50ms timeout < 100ms disposal
+      await expect(withDisposalTimeout(registry, 50)).rejects.toThrow(
+        /Disposal timeout exceeded/,
+      );
+    });
+
+    it("withDisposalTimeout resolves normally if disposal completes before timeout", async () => {
+      registry.register(
+        () =>
+          new Promise<void>(
+            (r) => setTimeout(r, 30), // 30ms delay
+          ),
+      );
+      // 100ms timeout > 30ms disposal
+      await expect(withDisposalTimeout(registry, 100)).resolves.toBeUndefined();
+    });
+
+    it("withDisposalTimeout with 5s (ADR-004 guard) — normal case", async () => {
+      registry.register(() => {
+        // Quick sync
+      });
+      await expect(
+        withDisposalTimeout(registry, 5000),
+      ).resolves.toBeUndefined();
+    });
+
+    it(
+      "withDisposalTimeout with 100ms timeout — slow disposer triggers timeout",
+      async () => {
+        registry.register(
+          () =>
+            new Promise<void>(
+              (r) => setTimeout(r, 500), // 500ms > 100ms timeout
+            ),
+        );
+        await expect(withDisposalTimeout(registry, 100)).rejects.toThrow(
+          /Disposal timeout exceeded: 100ms/,
+        );
+      },
+      { timeout: 2000 },
     );
   });
 });

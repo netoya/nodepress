@@ -538,6 +538,7 @@ export async function renderShortcodes(
           "np_bridge_return(do_shortcode($postContent));\n";
 
         // --- Timeout race (ADR-017 §Runtime Model, ADR-018 §7) ---
+        // 5-second timeout: if php-wasm hangs, return content unprocessed (fail-safe).
 
         const phpRunPromise: Promise<{ text: string }> = php.run({
           code: runnerCode,
@@ -545,7 +546,7 @@ export async function renderShortcodes(
 
         const raceResult = await Promise.race([
           phpRunPromise,
-          createTimeout(3000),
+          createTimeout(5000),
         ]);
 
         // --- Parse output ---

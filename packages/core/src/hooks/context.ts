@@ -1,4 +1,35 @@
 /**
+ * Helper: wrap disposeAll with a timeout (D-014 enforcement).
+ * Returns a rejected promise if the timeout fires; otherwise resolves normally.
+ */
+function createDisposalTimeoutPromise<T = void>(ms: number): Promise<T> {
+  return new Promise<T>((_, reject) =>
+    setTimeout(
+      () => reject(new Error(`Disposal timeout exceeded: ${ms}ms`)),
+      ms,
+    ),
+  );
+}
+
+/**
+ * Apply a timeout to a DisposableRegistry.disposeAll() call.
+ * If the disposal takes longer than `ms`, the returned promise rejects;
+ * the internal disposers continue to run but the caller does not wait.
+ *
+ * @param registry - The registry to wrap.
+ * @param ms - Timeout in milliseconds.
+ * @returns A promise that rejects on timeout, resolves on successful disposal.
+ */
+export async function withDisposalTimeout(
+  registry: DisposableRegistry,
+  ms: number,
+): Promise<void> {
+  const disposalPromise = registry.disposeAll();
+  const timeoutPromise = createDisposalTimeoutPromise<void>(ms);
+  return Promise.race([disposalPromise, timeoutPromise]);
+}
+
+/**
  * DisposableRegistry — ordered cleanup interface for plugin deactivation.
  *
  * Consumed by `PluginContext` to manage resources that must be released when a
@@ -15,6 +46,7 @@
  *   reject — individual disposer failures must be caught and logged internally.
  *   The caller (plugin lifecycle) treats `disposeAll` as a best-effort cleanup
  *   with a hard timeout (5 s per ADR-004; 10 s DRAINING window total).
+ *   Use `withDisposalTimeout(registry, 5000)` to enforce this guard.
  * - After `disposeAll` resolves, the registry is considered empty. Subsequent
  *   calls to `disposeAll` resolve immediately (idempotent).
  */
@@ -57,10 +89,10 @@ export interface DisposableRegistry {
  * - After `disposeAll` resolves the internal list is cleared — a second call
  *   resolves immediately without re-running any disposer.
  *
- * TODO(D-014): Per ADR-004 the lifecycle imposes a 5 s per-plugin timeout on
- * the DRAINING window. Individual disposer timeouts are NOT yet implemented
- * here — that guard belongs to the lifecycle layer (`wrapAsyncAction` in #20).
- * Once #20 ships, callers should wrap this via `withTimeout(registry, 5_000)`.
+ * Timeout guard (D-014 resolution):
+ * Per ADR-004, the lifecycle must enforce a 5s total timeout for the DRAINING
+ * window. Callers that enforce per-disposer timeouts should wrap disposeAll
+ * via `withDisposalTimeout(registry, 5_000)` (see below).
  */
 export class DisposableRegistryImpl implements DisposableRegistry {
   readonly #disposers: Array<() => void | Promise<void>> = [];

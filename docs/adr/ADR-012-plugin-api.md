@@ -1,9 +1,21 @@
 # ADR-012: Plugin API Architecture — `@nodepress/plugin-api`
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-04-18
+- **Accepted:** 2026-04-18
 - **Author:** Román (Tech Lead)
-- **Related:** ADR-001 (Architecture Overview — § Plugin Loading Strategy), ADR-003 (PHP Compatibility — Tier 1 runtime), ADR-004 (Plugin Lifecycle), ADR-005 (Hook System Semantics)
+- **Co-sign:** Alejandro (product, MIT licensing implication)
+- **Related:** ADR-001 (Architecture Overview — § Plugin Loading Strategy), ADR-003 (PHP Compatibility — Tier 1 runtime), ADR-004 (Plugin Lifecycle), ADR-005 (Hook System Semantics), ADR-020 (Plugin Loader Runtime)
+
+## Sprint 3 Scope Addendum
+
+Sprint 3 narrows the Accepted surface deliberately:
+
+- **JS/TS plugins only.** Plugins are TypeScript or JavaScript modules loaded from a local directory. The `WasmPluginLoader` variant anticipated in Open Questions remains a future concern gated by product demand signals.
+- **No PHP in Sprint 3.** The Tier 2 php-wasm bridge (ADR-008, ADR-017) is an independent subsystem; this plugin-api ADR does not require it to ship.
+- **Runtime behaviour of the loader is formalised in ADR-020.** This ADR commits the type surface and the manifest contract. How activation is scheduled, how the loader discovers plugins on disk, and how `export default function(hooks: HookRegistry)` is invoked are ADR-020's concerns.
+
+**Licensing implication (co-signed with Alejandro):** because plugins are JS/TS modules loaded via `import()` into the NodePress process, the core's MIT licence governs the plugin author's interaction surface. Plugins remain free to choose their own licence. The implication is explicit here so no Sprint 4+ change silently shifts this (e.g. a GPL-licenced core would alter the calculus for proprietary plugin authors).
 
 ## Context
 

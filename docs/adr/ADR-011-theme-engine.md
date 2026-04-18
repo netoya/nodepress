@@ -1,9 +1,20 @@
 # ADR-011: Theme Engine Architecture — `@nodepress/theme-engine`
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-04-18
+- **Accepted:** 2026-04-18
 - **Author:** Román (Tech Lead)
-- **Related:** ADR-001 (Architecture Overview — § theme-engine), ADR-002 (Folder Structure), ADR-005 (Hook System Semantics — sync filters)
+- **Related:** ADR-001 (Architecture Overview — § theme-engine), ADR-002 (Folder Structure), ADR-005 (Hook System Semantics — sync filters), ADR-021 (Theme↔Core Integration)
+
+## Sprint 3 Scope Addendum
+
+Sprint 3 freezes the contract, not the implementation. The Accepted status today means:
+
+- The public type surface in `packages/theme-engine/src/types.ts` (`Theme`, `Template`, `TemplateMap`, `RenderContext`, `TemplateResolver`, `Renderer`) is the stable theme↔core contract. Consumers may code against it.
+- The specific integration contract between the theme-engine and `@nodepress/core` (how the `Renderer` receives the `HookRegistry` handle; how the server wires a resolver/renderer into public HTML handlers) is formalised separately in ADR-021.
+- No concrete `Renderer` implementation is required to accept this ADR. Sprint 3 ships a minimal inline renderer sufficient for the public HTML handlers; the full Gutenberg block pipeline, asset bundler, and theme hot-reload remain Sprint 4+ work as already noted under Open Questions.
+
+Deliberately in scope for Sprint 4: template language choice, block rendering pipeline, asset bundler ownership, theme hot-reload mechanism. This ADR does not pre-commit any of them.
 
 ## Context
 

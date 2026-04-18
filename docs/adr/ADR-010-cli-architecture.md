@@ -1,9 +1,24 @@
 # ADR-010: CLI Architecture — `@nodepress/cli`
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-04-18
+- **Accepted:** 2026-04-18
 - **Author:** Román (Tech Lead)
-- **Related:** ADR-001 (Architecture Overview), ADR-002 (Folder Structure), ADR-003 (PHP Compatibility — `port-plugin` command), ADR-004 (Plugin Lifecycle — `plugin build` command)
+- **Related:** ADR-001 (Architecture Overview), ADR-002 (Folder Structure), ADR-003 (PHP Compatibility — `port-plugin` command), ADR-004 (Plugin Lifecycle — `plugin build` command), ADR-020 (Plugin Loader Runtime), ADR-021 (Theme↔Core Integration)
+
+## Sprint 3 Scope Addendum
+
+Sprint 3 delivers the CLI as thin wrappers over capabilities that already exist in the monorepo, published as an npm package. The two P0 commands are:
+
+- **`nodepress serve`** — boots the Fastify server from `@nodepress/server`. Reads `.env`, applies the same startup sequence `npm run dev` uses today. No new runtime behaviour.
+- **`nodepress migrate`** — invokes `drizzle-kit migrate` against the configured database. Wraps the existing Lane C tooling path (ADR-015) so operators do not need to know the underlying command.
+
+Deliberately out of scope for Sprint 3 (and therefore out of scope for the CLI ADR as Accepted today):
+
+- Dynamic plugin-contributed command resolution — the hook exists in the type surface but the binding from `PluginContext` to the registry is deferred until ADR-020's runtime loader ships.
+- `plugin install` / `plugin build` / `import-wp` / `port-plugin` — Sprint 4+ work.
+
+Publishing posture: `@nodepress/cli` is publishable to npm from Sprint 3 end. The bin entry `nodepress` is exposed in `package.json`.
 
 ## Context
 

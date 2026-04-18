@@ -1,2 +1,2 @@
 export type { AuthenticatedUser } from "./types.js";
-export { requireAdmin, registerBearerAuth } from "./bearer.js";
+export { requireAdmin, requireAuth, registerBearerAuth } from "./bearer.js";
