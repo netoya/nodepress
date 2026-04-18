@@ -47,3 +47,12 @@ type: project
 - **Mock DB:** In-memory store con 2 posts fixture (publish + draft). Mock returns array para todos WHERE queries, handlers filtran manualmente por status/slug. **Date:** 2026-04-18
 - **Tests:** 145/148 verde (new 6 public + existing 139 posts/hooks/conformance + 1 skipped + 2 todo). Sin regressions. **Date:** 2026-04-18
 - **Ficheros creados:** `packages/server/src/routes/public/index.ts`, `packages/server/src/routes/public/handlers.ts`, `packages/server/src/routes/public/__tests__/public.integration.test.ts`. **Ficheros modificados:** `packages/server/src/index.ts` (import + register publicPlugin). **Date:** 2026-04-18
+
+## Sprint 1 día 2 — #18 drizzle migrations with journal (2026-04-18)
+
+- **Migration:** De `drizzle:push` (sin historial) a `drizzle:generate` + `drizzle:migrate` con journal comiteado. **Date:** 2026-04-18
+- **drizzle:generate ejecutado:** Generó migración inicial `packages/db/drizzle/0000_productive_grandmaster.sql` con todos 7 tablas (posts, users, options, term_relationships, terms, comments, plugin_registry). 101 líneas SQL con FKs e índices. **Date:** 2026-04-18
+- **Journal comiteado:** `packages/db/drizzle/meta/_journal.json` y `meta/0000_snapshot.json` ahora en repo. Habilita recovery de schema y auditability en producción. **Date:** 2026-04-18
+- **Scripts:** `package.json` verificado (scripts `migrate` + `drizzle:generate` + `drizzle:push` ya existían). Removido `drizzle:status` (comando inexistente en drizzle-kit v0.30.0). **Date:** 2026-04-18
+- **README creado:** `packages/db/README.md` con estrategia dev vs prod: dev → `drizzle:push` (sin journal), prod → `drizzle:generate` → commit → `drizzle:migrate`. **Date:** 2026-04-18
+- **Commits:** `ec5d2ca` — feat(#18): implement drizzle migrations with journal tracking. **Date:** 2026-04-18
