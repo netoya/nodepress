@@ -110,3 +110,9 @@
 | 2026-05-19 | carmen          | #63 import-wp CLI stub + help text (2 tests, 388 total) + PROJECT_STATUS Sprint 4 closed                                      | 3 files   | done    | ✅     |
 | 2026-04-18 | orchestrator    | /meet kickoff sprint 5 — acta + 7 memorias + retro S4 + PROJECT_STATUS Sprint 5 sección + ADRs 020/021 → Accepted             | 12 files  | pending | ✅     |
 | 2026-04-18 | carmen          | hotfix: GET /wp/v2/users paginación en query (limit/offset) — bug activo OOM con volumen                                      | 2 files   | d64e4b3 | ✅     |
+| 2026-06-02 | carmen          | #66 WP Import CLI real — SAX parser + normalizer + batch writer + dry-run (10 tests)                                          | 8 files   | 6128a85 | ✅     |
+| 2026-06-02 | raul            | #67 plugin list command — NODEPRESS_PLUGINS_DIR scan + ASCII table output                                                     | 1 file    | a19f1c5 | ✅     |
+| 2026-06-02 | lucas           | #68 React Router v7 admin migration — AuthGuard + LoginPage + logout + NavLink                                                | 7 files   | ee257cf | ✅     |
+| 2026-06-02 | roman           | #70 ADR-022 WP Import Strategy + #71 CODEOWNERS + publish-cli.yml production gate                                             | 3 files   | 48596f5 | ✅     |
+| 2026-06-02 | lucas           | fix(admin): auth flow — LoginPage + AuthGuard + localStorage token + DashboardError network msg                               | 8 files   | ee257cf | ✅     |
+| 2026-06-02 | orchestrator    | #69 LICENSE (GPL-3.0) + COMMERCIAL-LICENSE.md + CONTRIBUTING.md — dual license + CLA docs                                     | 3 files   | pending | ✅     |

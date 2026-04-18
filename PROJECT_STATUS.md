@@ -45,14 +45,14 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado      | Objetivo                                                     |
-| ------------ | ----------------------- | ----------- | ------------------------------------------------------------ |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init             |
-| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO  | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
-| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO  | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
-| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO  | Roles/capabilities + taxonomías + admin edit flow + CLI init |
-| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO  | Plugin system + Theme engine + post-launch ICP-1 signal      |
-| **Sprint 5** | 2026-06-02 → 2026-06-13 | 🟡 PLANNING | CLI funcional, WP Import real, CLA + contribuidores          |
+| Sprint       | Fechas                  | Estado         | Objetivo                                                     |
+| ------------ | ----------------------- | -------------- | ------------------------------------------------------------ |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO     | Scaffolding: monorepo, CI, docker, packages init             |
+| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO     | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
+| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO     | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
+| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO     | Roles/capabilities + taxonomías + admin edit flow + CLI init |
+| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO     | Plugin system + Theme engine + post-launch ICP-1 signal      |
+| **Sprint 5** | 2026-06-02 → 2026-06-13 | 🟢 IN PROGRESS | CLI funcional, WP Import real, CLA + contribuidores          |
 
 ---
 
@@ -431,12 +431,12 @@ _Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint
 | ---------------- | ------------ | ------------------------------------------------------------- | --------------------- | ------- |
 | 60               | —            | Backlog adjustment post-ICP-1 signal (debrief + priorización) | Alejandro + Martín    | ⬜ TODO |
 | 61               | —            | CLA Assistant config + issues externos triage SLA             | Helena + Martín       | ⬜ TODO |
-| 66               | —            | WP Import CLI real (posts+terms+users+comments, dry-run)      | Carmen (brief Ingrid) | ⬜ TODO |
-| 67               | —            | Plugin list command CLI (nodepress plugin list)               | Raúl                  | ⬜ TODO |
-| 68               | —            | React Router v7 migración admin                               | Lucas + Marta         | ⬜ TODO |
-| 69               | —            | Licencia formalizada + CONTRIBUTING.md para contribuidores    | Alejandro + Román     | ⬜ TODO |
-| 70               | —            | ADR-022 WP Import Strategy                                    | Román                 | ⬜ TODO |
-| 71               | —            | CODEOWNERS + publish-cli.yml approval gate                    | Román + Helena        | ⬜ TODO |
+| 66               | —            | WP Import CLI real (posts+terms+users+comments, dry-run)      | Carmen (brief Ingrid) | ✅ DONE |
+| 67               | —            | Plugin list command CLI (nodepress plugin list)               | Raúl                  | ✅ DONE |
+| 68               | —            | React Router v7 migración admin                               | Lucas + Marta         | ✅ DONE |
+| 69               | —            | Licencia formalizada + CONTRIBUTING.md para contribuidores    | Alejandro + Román     | ✅ DONE |
+| 70               | —            | ADR-022 WP Import Strategy                                    | Román                 | ✅ DONE |
+| 71               | —            | CODEOWNERS + publish-cli.yml approval gate                    | Román + Helena        | ✅ DONE |
 | 72               | —            | Buffer / por confirmar en planning 2026-04-21                 | —                     | ⬜ TODO |
 | 73               | —            | Buffer / por confirmar en planning 2026-04-21                 | —                     | ⬜ TODO |
 
