@@ -11,15 +11,16 @@
 | 2026-04-09 | —               | Version agent memories and logs            | 16 files | a4d22dc | ✅     |
 | 2026-04-09 | roman           | ADR-003, ADR-004, contributing.md          | 3 files  | d14c490 | ✅     |
 | 2026-04-09 | —               | WORKFLOW.md quick reference                | 1 file   | ad4a389 | ✅     |
-| 2026-04-16 | roman           | docs: root README added and pushed         | 2 files  | pending | ✅     |
-| 2026-04-16 | roman           | fix(ts): remove allowImportingTsExtensions | 3 files  | pending | ✅     |
+| 2026-04-16 | roman           | docs: root README added and pushed         | 2 files  | db1b8c8 | ✅     |
+| 2026-04-16 | roman           | fix(ts): remove allowImportingTsExtensions | 3 files  | ad0b5d0 | ✅     |
 | 2026-04-17 | roman           | merge ci/db-migrations-cleanup to main (PR #17, already merged 2026-04-16; local main fast-forwarded, stash popped) | —        | 7ad18fc | ✅     |
-| 2026-04-17 | tomas           | Cierre Sprint 0 + kickoff Sprint 1 en PROJECT_STATUS | 1 file   | pending | ✅     |
-| 2026-04-17 | roman           | commit housekeeping Sprint 1 kickoff       | 9 files  | pending | ✅     |
-| 2026-04-17 | roman           | contract HookEntry/PluginContext + ADR-005 draft | 3 files | pending | ✅     |
+| 2026-04-17 | tomas           | Cierre Sprint 0 + kickoff Sprint 1 en PROJECT_STATUS | 1 file   | bb2f24d | ✅     |
+| 2026-04-17 | roman           | commit housekeeping Sprint 1 kickoff       | 9 files  | bb2f24d | ✅     |
+| 2026-04-17 | roman           | contract HookEntry/PluginContext + ADR-005 draft | 3 files | 454af18 | ✅     |
 | 2026-04-17 | raul            | fix GitHub Issues: close #8, verify #1/#2  | —        | —       | ✅     |
-| 2026-04-17 | lucas           | admin shell scaffold + pinned deps + brief Marta | 8 files  | pending | ✅     |
-| 2026-04-17 | ingrid          | review contrato hooks + #19 PluginContext/DisposableRegistry | 3 files | pending | ✅     |
-| 2026-04-17 | roman           | commit Sprint 1 día 1 (hooks contract + admin shell) | 12+ files | pending | ✅     |
-| 2026-04-17 | raul            | git identity local + untrack tsbuildinfo   | 2 files  | pending | ✅     |
-| 2026-04-17 | roman           | ADR-005 scope fix + housekeeping commit    | 5 files  | pending | ✅     |
+| 2026-04-17 | lucas           | admin shell scaffold + pinned deps + brief Marta | 8 files  | 454af18 | ✅     |
+| 2026-04-17 | ingrid          | review contrato hooks + #19 PluginContext/DisposableRegistry | 3 files | 454af18 | ✅     |
+| 2026-04-17 | roman           | commit Sprint 1 día 1 (hooks contract + admin shell) | 12+ files | 454af18 | ✅     |
+| 2026-04-17 | raul            | git identity local + untrack tsbuildinfo   | 2 files  | 48891a8 | ✅     |
+| 2026-04-17 | roman           | ADR-005 scope fix + housekeeping commit    | 5 files  | 48891a8 | ✅     |
+| 2026-04-17 | raul            | rewrite authorship + push main (3 commits) | —        | 48891a8 | ✅     |
