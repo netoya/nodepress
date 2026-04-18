@@ -85,6 +85,13 @@
 - **MSW handlers extendidos:** +2 posts dummy (status draft, pending) para demo realista. **Date:** 2026-04-18
 - **Tests totales admin:** 54/54 verdes (4 nuevos + 50 previos sin regresiones). **Date:** 2026-04-18
 
+## Sprint 1 sem 2 — demo spec extended: public site steps (2026-04-18)
+
+- **4 new steps (11-14) added to `admin/e2e/demo/demo-30-04.spec.ts`:** after the editor hook-mutation steps, the spec navigates to `http://localhost:3000/` (public home), finds the `[DEMO]` post link, clicks into `/p/:slug`, and asserts the mutated title + "Powered by NodePress" footer. **Date:** 2026-04-18
+- **STATUS pending-carmen:** Carmen's public handlers (`GET /` HTML home, `GET /p/:slug` post page) are not yet merged. Steps are commented with `pending-carmen` — do NOT run the full spec until Carmen merges. **Date:** 2026-04-18
+- **playwright.demo.config.ts:** `baseURL` stays `:5173` (admin). Steps 11-14 use absolute `http://localhost:3000/` URLs — valid in Playwright. No cross-origin restriction applies to `page.goto`. CORS is permissive (`origin: true`). **Date:** 2026-04-18
+- **Selector assumptions for Carmen's HTML:** home has `<h1>` with "NodePress", posts rendered as `<a>` links with title text, individual post has `<h1>` with full title. Adjust if Carmen's markup differs. **Date:** 2026-04-18
+
 ## Sprint 1 sem 2 — Playwright demo video config + spec (2026-04-18)
 
 - **`admin/playwright.demo.config.ts`** creado: config separada para grabación de video. `video: on`, `trace: on`, `fullyParallel: false`, `workers: 1`, `testDir: ./e2e/demo`. NO arranca webServer — requiere stack real corriendo. **Date:** 2026-04-18

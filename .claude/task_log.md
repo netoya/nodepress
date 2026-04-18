@@ -75,3 +75,5 @@
 | 2026-04-18 | marta           | #31 demo:reset script + integración record-demo-video + tests (fix whack-a-mole demo)                               | 6 files   | pending | ✅     |
 | 2026-04-18 | roman           | ADR-016 Demo Lifecycle Contract (Proposed)                                                                          | 1 file    | pending | ✅     |
 | 2026-04-18 | carmen          | #21 slug auto-sufijo WP-style en POST/PUT (fix whack-a-mole demo, deriveSlug + findAvailableSlug, 142/142 tests ✅) | 6 files   | pending | ✅     |
+| 2026-04-18 | lucas           | extender video spec con public home + post page (6 pasos más)                                                       | 1 file    | pending | ✅     |
+| 2026-04-18 | carmen          | #22 public HTML renderer MVP (GET / + GET /p/:slug, hook the_content wiring, 6 tests green, 145/148 total)          | 4 files   | pending | ✅     |

@@ -11,6 +11,7 @@ import fastifyCors from "@fastify/cors";
 import { registerBearerAuth } from "./auth/index.js";
 import { registerHooks } from "./hooks.js";
 import postsPlugin from "./routes/posts/index.js";
+import publicPlugin from "./routes/public/index.js";
 
 const server = Fastify({ logger: true });
 
@@ -43,9 +44,9 @@ if (process.env["NODEPRESS_DEMO_MODE"] === "true") {
 // Register the posts plugin
 await server.register(postsPlugin);
 
-server.get("/", async () => {
-  return "Hello NodePress";
-});
+// Register the public HTML renderer plugin
+// (GET / for home + GET /p/:slug for single post pages)
+await server.register(publicPlugin);
 
 const port = Number(process.env["PORT"] ?? 3000);
 

@@ -34,3 +34,16 @@ type: project
 - **Mock DB fix:** `demo-end-to-end.test.ts` vi.mock de `@nodepress/db` extendido: WHERE queries ahora retornan `[]` (sin colisiones) para evitar bucle infinito en `findAvailableSlug`. **Date:** 2026-04-18
 - **Tests:** 142/142 verde (139 passed + 1 skipped + 2 todo). Sin regressions en 14 posts integration + 26 WP conformance + 7 demo + 13 slug unit. **Date:** 2026-04-18
 - **Ficheros creados:** `slug.ts`, `slug.test.ts`. **Ficheros modificados:** `handlers.ts`, `posts.integration.test.ts`, `demo-end-to-end.test.ts`, `openapi.yaml`. **Date:** 2026-04-18
+
+## Sprint 1 día 2 — #22 public HTML renderer MVP (2026-04-18)
+
+- **Tarea:** Implementar frontend público CMS (no admin editor) — mostrar al CTO "crea aquí, se publica allá". **Date:** 2026-04-18
+- **GET / handler:** Home con lista de posts published (max 10, DESC por createdAt). Cada post: `<article>` con título (link a `/p/:slug`) + excerpt/primeros 200 chars del content. Header con "NodePress" H1 + tagline. Footer con link REST API + "Powered by NodePress". **Date:** 2026-04-18
+- **GET /p/:slug handler:** Página individual del post. 404 si slug no existe o status != publish (no draft leak). Aplica filter `the_content` en el content renderizado — **mismo patrón que REST serialize.ts**, demostrando hook wiring. **Date:** 2026-04-18
+- **HTML inline + CSS mínimo:** Sin template engine externo. CSS inline en `<style>` tag (120+ líneas). Blog-ish: max-width 720px centrado, font system stack, espaciado claro, accent colors para links. Minimalista pero decente. **Date:** 2026-04-18
+- **HTML escaping:** Función `escapeHtml()` para title + slug (previene XSS). Content no escapado (viene del hook ya como HTML, patrón WP). **Date:** 2026-04-18
+- **Plugin estructura:** Nuevo `packages/server/src/routes/public/` con index.ts (plugin), handlers.ts (lógica), `__tests__/public.integration.test.ts` (6 tests). Registrado en `packages/server/src/index.ts` DESPUÉS de postsPlugin. Reemplaza ruta "/" simple anterior. **Date:** 2026-04-18
+- **Tests 6/6 verde:** (1) GET / → 200 + "NodePress" + `<article>`. (2) GET / → lista posts published only (no drafts). (3) GET /p/:slug → 200 + content + hook applied. (4) GET /p/:slug + custom filter → hook mutation visible. (5) GET /p/nonexistent → 404 HTML. (6) GET /p/draft-post → 404 (no leak). **Date:** 2026-04-18
+- **Mock DB:** In-memory store con 2 posts fixture (publish + draft). Mock returns array para todos WHERE queries, handlers filtran manualmente por status/slug. **Date:** 2026-04-18
+- **Tests:** 145/148 verde (new 6 public + existing 139 posts/hooks/conformance + 1 skipped + 2 todo). Sin regressions. **Date:** 2026-04-18
+- **Ficheros creados:** `packages/server/src/routes/public/index.ts`, `packages/server/src/routes/public/handlers.ts`, `packages/server/src/routes/public/__tests__/public.integration.test.ts`. **Ficheros modificados:** `packages/server/src/index.ts` (import + register publicPlugin). **Date:** 2026-04-18

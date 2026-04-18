@@ -64,8 +64,8 @@ if ! docker info &>/dev/null; then
   err "Docker daemon is not running. Start Docker Desktop and retry."
   exit 1
 fi
-if ! docker compose ps 2>/dev/null | grep -q "running\|Up"; then
-  err "No running docker-compose services detected."
+if ! docker ps --filter "name=nodepress-postgres" --format '{{.Status}}' 2>/dev/null | grep -q "Up"; then
+  err "Postgres container (nodepress-postgres) is not running."
   err "Run:  docker compose up -d"
   err "Then retry this script."
   exit 1

@@ -49,6 +49,12 @@ test.describe("NodePress 30-04 Demo Flow", () => {
     const demoTitle = `Hello from demo ${Date.now()}`;
     await page.getByLabel(/title/i).fill(demoTitle);
     await page.getByLabel(/content/i).fill("This content will get a footer.");
+
+    // Change status from draft (default) → publish so it shows on the public home.
+    // Radix Select: click the trigger (combobox role), then the option.
+    await page.getByRole("combobox", { name: /status/i }).click();
+    await page.waitForTimeout(300);
+    await page.getByRole("option", { name: /^published$/i }).click();
     await page.waitForTimeout(500);
 
     // ── 6. Submit → POST /wp/v2/posts → hook mutates title + content ──────────
@@ -102,6 +108,55 @@ test.describe("NodePress 30-04 Demo Flow", () => {
     });
 
     // Hold the final frame long enough for a viewer to read the footer.
+    await page.waitForTimeout(3500);
+
+    // ── PUBLIC SITE STEPS (pending-carmen) ───────────────────────────────────
+    // These steps depend on Carmen's public-facing handlers:
+    //   GET /        → HTML home with list of published posts
+    //   GET /p/:slug → HTML individual post page
+    // Both routes apply the_content hook → footer appears in public view.
+    //
+    // STATUS: pending-carmen — handlers not yet merged. Do NOT run this spec
+    // until Carmen's public routes are in main. Selectors below are written
+    // against the expected HTML structure. Adjust if Carmen's output differs.
+    // Playwright config baseURL is :5173 (admin). The gotos below use absolute
+    // URLs to :3000 — this is intentional and valid (no cross-origin restriction
+    // in Playwright for page.goto with absolute URLs). CORS is permissive on the
+    // backend (origin: true) so XHR/fetch from :5173 → :3000 is also fine.
+
+    // ── 11. Open public home page — show the new post in the blog ────────────
+    await page.goto("http://localhost:3000/");
+    // Carmen's home renders an <h1> with the site name (NodePress).
+    // Use exact match to avoid ambiguity with post titles like "Welcome to NodePress".
+    await expect(
+      page.getByRole("heading", { name: "NodePress", exact: true, level: 1 }),
+    ).toBeVisible();
+    await page.waitForTimeout(1200); // let viewer read the home
+
+    // ── 12. Scroll to our demo post in the list + hold ────────────────────────
+    // Carmen renders posts as <a> links with the post title as link text.
+    // The hook has mutated the title → "[DEMO] Hello from demo <timestamp>".
+    const demoLink = page.getByRole("link", {
+      name: new RegExp(`\\[DEMO\\] ${demoTitle}`, "i"),
+    });
+    await demoLink.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(1000);
+
+    // ── 13. Click the demo post → opens its individual public page ────────────
+    await demoLink.click();
+    await page.waitForURL(/\/p\/.+/);
+    await page.waitForTimeout(800);
+
+    // ── 14. Assert public page: mutated title + NodePress footer ─────────────
+    // Carmen's post page renders the title in <h1> and applies the_content
+    // hook → <footer>Powered by NodePress</footer> appears in the page body.
+    await expect(
+      page.getByRole("heading", {
+        name: new RegExp(`\\[DEMO\\] ${demoTitle}`, "i"),
+      }),
+    ).toBeVisible();
+    await expect(page.getByText(/Powered by NodePress/i).first()).toBeVisible();
+    // Hold the final frame — this is the punchline of the demo.
     await page.waitForTimeout(3500);
   });
 });
