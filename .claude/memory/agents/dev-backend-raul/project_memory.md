@@ -116,3 +116,10 @@
 - **D-008 intacto:** CMS nativo Node, NO orquestador WP. **Date:** 2026-04-18
 - **ADRs Helena (security + observability) MANTIENEN:** saludables con independencia del scope. **Date:** 2026-04-18
 - **Lección:** "no vale" del PO puede significar "no vale esta solución" O "no vale el tema". Próxima vez, preguntar binaria antes de re-abrir. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Kickoff Sprint 2
+
+- **GC stale entries CircuitBreaker = ticket S2-W1,** ownership Raúl, code review Román obligatorio. **Date:** 2026-04-18
+- **cURL sync documentada como limitación ADR-008, fuera Sprint 2.** Los 3 pilotos (Footnotes, Shortcodes, Display Posts) no usan HTTP — están limpios. **Date:** 2026-04-18
+- **ADR-017 es precondición para harness Tier 2.** Raúl provee findings spike a Román el lunes para que pueda escribirlo. **Date:** 2026-04-18
+- **Singleton PHP-WASM recomendado para prod** — cold start 40-50ms por instancia nueva. Implementar PoC si load testing revela latency. **Date:** 2026-04-18

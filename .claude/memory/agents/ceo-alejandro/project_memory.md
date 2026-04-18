@@ -93,3 +93,11 @@
 - **D-008 intacto:** CMS nativo Node, NO orquestador WP. **Date:** 2026-04-18
 - **ADRs Helena (security + observability) MANTIENEN:** saludables con independencia del scope. **Date:** 2026-04-18
 - **Lección:** "no vale" del PO puede significar "no vale esta solución" O "no vale el tema". Próxima vez, preguntar binaria antes de re-abrir. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Kickoff Sprint 2
+
+- **Sprint Goal Sprint 2:** "NodePress operable en producción — migraciones con historial, clean-clone <5 min, ADRs sellados, Tier 2 surface congelado." **Date:** 2026-04-18
+- **Gates innegociables Sprint 2:** ADR bridge security Helena (jueves 23-04), CLA Assistant (jueves 23-04 con Eduardo), outreach viernes 24-04 pregunta neutral. **Date:** 2026-04-18
+- **Scope freeze confirmado:** CF7 y plugins con network requieren ADR + señal outreach antes de entrar al backlog. ADRs 010/011/012 permanecen Proposed. **Date:** 2026-04-18
+- **Outreach 24-04:** 15 calls CTOs ICP-1, pregunta neutral sobre dolor/stack real. NO sobre plugins compat. Eduardo + Alejandro redactan. **Date:** 2026-04-18
+- **Lección comunicación consolidada:** "no vale" del PO = preguntar binaria antes de re-scope. Registrado en comunicado 2026-04-18. **Date:** 2026-04-18

@@ -210,3 +210,10 @@
 - **D-008 intacto:** CMS nativo Node, NO orquestador WP. **Date:** 2026-04-18
 - **ADRs Helena (security + observability) MANTIENEN:** saludables con independencia del scope. **Date:** 2026-04-18
 - **Lección:** "no vale" del PO puede significar "no vale esta solución" O "no vale el tema". Próxima vez, preguntar binaria antes de re-abrir. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Kickoff Sprint 2
+
+- **drizzle:generate + migrate con journal = prioridad Sprint 2 día 1.** Brief Carmen, medio día de trabajo. Sin journal no se aprueba despliegue DB. **Date:** 2026-04-18
+- **ADR-017 es gate para código Tier 2:** sin ADR firmado no arranca implementación bridge. Esperamos a lunes 21-04. **Date:** 2026-04-18
+- **Bug excerpt.raw en serialize.ts:** ticket S2-W1, Carmen cierra. Ingrid anota ticket. **Date:** 2026-04-18
+- **ADR-013 → Accepted hoy EOD.** GC CircuitBreaker entra como ticket Sprint 2 semana 1. **Date:** 2026-04-18

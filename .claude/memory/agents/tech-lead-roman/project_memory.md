@@ -229,3 +229,12 @@
 - **D-008 intacto:** CMS nativo Node, NO orquestador WP. **Date:** 2026-04-18
 - **ADRs Helena (security + observability) MANTIENEN:** saludables con independencia del scope. **Date:** 2026-04-18
 - **Lección:** "no vale" del PO puede significar "no vale esta solución" O "no vale el tema". Próxima vez, preguntar binaria antes de re-abrir. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Kickoff Sprint 2
+
+- **ADR-013 → Accepted hoy EOD 18-04.** Firma Román. GC stale entries = ticket S2-W1 Raúl. **Date:** 2026-04-18
+- **ADRs 010/011/012 permanecen Proposed** — no aceptar contratos sin implementación. Theme engine y plugin-api loader real son Sprint 3+. **Date:** 2026-04-18
+- **ADR-015 Tooling runtime boundary:** Sprint 2 semana 1. No toca bridge php-wasm — capa tooling independiente. **Date:** 2026-04-18
+- **ADR-017 Tier 2 Bridge Surface:** escribir lunes 21-04 tras findings Raúl. Sin ADR firmado, nadie escribe código bridge. **Date:** 2026-04-18
+- **ADR bridge security boundary (Helena):** independiente de ADR-015. Confirmado que no hay dependencia. **Date:** 2026-04-18
+- **cURL sync fuera de Sprint 2:** CF7 requiere ADR nuevo + señal outreach antes de entrar al backlog. **Date:** 2026-04-18

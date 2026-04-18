@@ -124,3 +124,10 @@ type: project
 - **D-008 intacto:** CMS nativo Node, NO orquestador WP. **Date:** 2026-04-18
 - **ADRs Helena (security + observability) MANTIENEN:** saludables con independencia del scope. **Date:** 2026-04-18
 - **Lección:** "no vale" del PO puede significar "no vale esta solución" O "no vale el tema". Próxima vez, preguntar binaria antes de re-abrir. **Date:** 2026-04-18
+
+## Meet 2026-04-18 — Kickoff Sprint 2
+
+- **ADR bridge security boundary: deadline jueves 23-04.** Gate para CLA Assistant y para Tier 2 en staging. Sin dependencia de ADR-015 (capas distintas confirmado con Román). **Date:** 2026-04-18
+- **ADR bridge observability: Sprint 2 semana 1.** Cada bridge call = span traceable. Si se difiere a Sprint 3, Tier 2 ship sin observability = rework. **Date:** 2026-04-18
+- **CI gaps (coverage artefact, PR lint, npm audit) → S2-infra-backlog.** No Sprint Goal pero visibles en GitHub antes del lunes. **Date:** 2026-04-18
+- **drizzle:push = no apruebo despliegue DB sin journal.** Bloqueo hasta que Ingrid/Carmen recuperen migrate con journal S2-W1. **Date:** 2026-04-18
