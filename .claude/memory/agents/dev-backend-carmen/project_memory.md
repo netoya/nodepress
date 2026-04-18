@@ -4,6 +4,14 @@ description: Project memory for Carmen (Dev Backend) in NodePress
 type: project
 ---
 
+## Meet 2026-04-18 — Kickoff Sprint 5
+
+- **WP Import CLI Sprint 5:** Estimación 4 días. Scope: posts + terms + users + comments. Sin media. Dry-run + idempotencia obligatorios. ADR-022 (Román) debe estar antes del primer commit. **Date:** 2026-04-18
+- **Hotfix GET /wp/v2/users paginación:** Cerrar hoy 2026-04-18. Patrón `page` + `per_page` con `limit().offset()` en Drizzle, igual que /categories. **Date:** 2026-04-18
+- **Bug PUT /wp/v2/posts + taxonomías:** Fix incluido como subtarea del ticket WP Import CLI — PUT no aplicaba taxonomías del body. **Date:** 2026-04-18
+- **`nodepress plugin list` command:** 0.5 días. Lee plugins/ local, imprime metadata (nombre, versión, estado). Sin infra de registry. **Date:** 2026-04-18
+- **"CLI completo" necesita lista cerrada antes de estimar:** Sin lista de subcomandos acordada (serve, migrate, import-wp, plugin install/build, user create...) no puedo estimar bien. Exigir spec en planning. **Date:** 2026-04-18
+
 ## Sprint 1 día 1 — #15 + #16 Posts REST endpoints (2026-04-17)
 
 - **5 endpoints WP-compat v2 en `packages/server/src/routes/posts/`:** index.ts (plugin), handlers.ts (lógica), serialize.ts (`toWpPost`), schemas.ts (Fastify JSON schemas), **tests**/posts.integration.test.ts (14/14 green). **Date:** 2026-04-17

@@ -1,3 +1,12 @@
+## Meet 2026-04-18 — Kickoff Sprint 5
+
+- **D-030 Techo Sprint 5:** 10 tickets (8 slots nuevos + #60 + #61 heredados). Velocity 80% en Sprint 4 — no comprometer más. **Date:** 2026-04-18
+- **#60 y #61 son P0:** Entran en los primeros 2 días del sprint. #60 = debrief ICP-1 con Alejandro, determina si Nico y marketplace ADR entran. #61 = CLA webhook + triage externo con Helena. **Date:** 2026-04-18
+- **CLA webhook estado:** Acordado activarlo el 23-04-2026 pero sin confirmación registrada. Martín coordina con Helena antes del EOD 2026-04-18 para confirmar operativo. **Date:** 2026-04-18
+- **D-038 Nico activación:** Solo si debrief ICP-1 confirma ≥5 calls mencionando plugins de terceros. De lo contrario Sprint 6. **Date:** 2026-04-18
+- **Tickets Sprint 5 (#66-#73 aprox):** Martín los crea en PROJECT_STATUS antes del planning del martes 2026-04-20. **Date:** 2026-04-18
+- **Sprint 5 milestone:** "NodePress adoptable: CLI funcional, importación WP real, repo abierto a contribuidores con CLA y licencia definida." **Date:** 2026-04-18
+
 ## Meet 2026-04-09 — Flujo de trabajo y documentación
 
 - **GitHub Projects:** Martín crea tablero hoy. Columnas: Backlog/Sprint/In Progress/Review/Done. Labels por componente. **Date:** 2026-04-09

@@ -1,3 +1,11 @@
+## Meet 2026-04-18 — Kickoff Sprint 5
+
+- **D-035 React Router v7 migración:** Entra como ticket Sprint 5. Hash routing manual con split('/') no escala con /plugins + /apariencia pages. 3 días (1 implementación + 2 tests con Marta). **Date:** 2026-04-18
+- **Fix pre-sprint (fuera de sprint):** browser.confirm() → modal propio (1h). TODO comments en PostEditorPage → convertir a GitHub issues linkados (30min). Hacer antes del repo público. **Date:** 2026-04-18
+- **Nico activación condicionada:** Nico se activa en Sprint 5 solo si debrief ICP-1 confirma señal de marketplace (≥5 de 15 calls mencionando plugins terceros). De lo contrario, Sprint 6. **Date:** 2026-04-18
+- **Plugin UI Sprint 5 (condicional):** Si hay señal ICP-1, Lucas + Nico hacen /plugins page (lista local, enable/disable) conectada a GET /wp/v2/plugins. No es marketplace browseable — es gestión local. **Date:** 2026-04-18
+- **Sofía wireframes pendientes desde Sprint 1:** El layout dashboard es placeholder de Lucas. Antes de beta pública hay que hacer un paso de diseño. Bloqueante para ThemeEngine frontend integration y plugin UI. **Date:** 2026-04-18
+
 ## Meet 2026-04-09 — Cómo llevar NodePress al siguiente paso
 
 - **Sprint 0 (Lucas):** Scaffolding admin/ con Vite + React 19 + tokens CSS custom properties. Días 1-3. **Date:** 2026-04-09

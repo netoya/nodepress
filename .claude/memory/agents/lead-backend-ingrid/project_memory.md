@@ -1,3 +1,11 @@
+## Meet 2026-04-18 — Kickoff Sprint 5
+
+- **Bug activo: paginación en memoria GET /wp/v2/users:** La query carga toda la tabla y pagina en JS. Fix: `db.select().from(users).limit(perPage).offset((page-1)*perPage)`. Carmen cierra como hotfix 2026-04-18. Patrón: igual que /categories. **Date:** 2026-04-18
+- **D-032 Scope WP Import CLI Sprint 5:** posts publicados + terms + users + comments. Media/attachments fuera. Custom post types fuera (log warning). Serialización PHP meta fuera (skip + advertencia). Idempotencia obligatoria. **Date:** 2026-04-18
+- **Bug: PUT /wp/v2/posts no aplica taxonomías:** Creación OK (Sprint 3), actualización inconsistente. Carmen incluye el fix como subtarea del ticket WP Import CLI. **Date:** 2026-04-18
+- **OpenAPI a actualizar Sprint 5 semana 1:** Incluir taxonomías, users/me, context=edit (ADR-009). Contribuidores externos necesitan contrato claro. **Date:** 2026-04-18
+- **ADR-022 WP Import Strategy:** Román lo escribe día 1 de Sprint 5. Ingrid valida el scope y las exclusiones. **Date:** 2026-04-18
+
 ## Meet 2026-04-09 — Cómo llevar NodePress al siguiente paso
 
 - **Sprint 0 (Ingrid):** Schema Drizzle para posts y users en packages/db. Días 3-5 (depende de docker-compose de Román). **Date:** 2026-04-09

@@ -1,3 +1,12 @@
+## Meet 2026-04-18 — Kickoff Sprint 5
+
+- **D-037 Regla de proceso:** Ningún kickoff arranca sin retro del sprint anterior cerrada. Acordado por todo el equipo. **Date:** 2026-04-18
+- **Retro Sprint 4 pendiente:** Lanzar hoy 2026-04-18 como `docs/process/retros/sprint-4-retro.md`. Cierre lunes. Planning formal Sprint 5 el martes tras retro cerrada. **Date:** 2026-04-18
+- **Velocity histórica Sprint 5:** S1=13, S2=15, S3=11, S4=8. Tendencia descendente. Techo Sprint 5: 10 tickets (8 nuevos + #60 + #61 heredados). No comprometer más. **Date:** 2026-04-18
+- **Sprint 5 fechas propuestas:** 2026-06-02 → 2026-06-13. Feature freeze: 2026-06-11 12:00. **Date:** 2026-04-18
+- **P0 ordering acordado:** #60 (debrief ICP-1, días 1-2) y #61 (CLA + triage) entran primero. WP Import CLI, React Router migración, plugin list command = siguientes en prioridad. **Date:** 2026-04-18
+- **ADR-020 y ADR-021 corregir en PROJECT_STATUS:** Estaban como Proposed, ya son Accepted desde Sprint 3 y Sprint 4. Tomás los actualiza hoy. **Date:** 2026-04-18
+
 ## Meet 2026-04-09 — Cómo llevar NodePress al siguiente paso
 
 - **Sprint 0 arranca 2026-04-10:** 1 semana. Scaffolding monorepo, docker, CI, packages init. **Date:** 2026-04-09

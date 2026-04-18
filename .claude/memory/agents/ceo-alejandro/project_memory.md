@@ -1,3 +1,11 @@
+## Meet 2026-04-18 — Kickoff Sprint 5
+
+- **Sprint Goal Sprint 5:** "NodePress adoptable: CLI funcional, importación WP real, repo abierto a contribuidores con CLA y licencia definida." **Date:** 2026-04-18
+- **D-034 Licencia:** Alejandro decide dual (GPL+Commercial) vs GPL puro con Eduardo antes del planning del martes 2026-04-20. Sin decisión, el planning no arranca. **Date:** 2026-04-18
+- **D-033 Marketplace Sprint 5 = signal only:** GitHub topic `nodepress-plugin` + README sección + `nodepress plugin list`. Infra/registry = Sprint 6+ condicionado a ICP-1 signal (≥5 calls mencionando plugins terceros). **Date:** 2026-04-18
+- **Debrief ICP-1 (#60):** Alejandro y Martín cierran en días 1-2 del sprint. Determina si Nico se activa y si el ADR de marketplace se escribe en Sprint 5. **Date:** 2026-04-18
+- **Techo Sprint 5:** 10 tickets (8 nuevos + #60 + #61 heredados de Sprint 4). **Date:** 2026-04-18
+
 ## Meet 2026-04-09 — Cómo llevar NodePress al siguiente paso
 
 - **MVP definido:** Blog funcional con CRUD posts + hook system + REST API WP-compatible. **Date:** 2026-04-09

@@ -108,3 +108,5 @@
 | 2026-05-19 | carmen          | #64 GET /wp/v2/users readonly (4 tests) + #62 docs/guides/plugin-api.md                                                       | 4 files   | e7cac27 | ✅     |
 | 2026-05-19 | lucas           | #59 theme templates mejorados (nav, footer, date) + #65 dashboard last-update indicator (8 tests)                             | 4 files   | e7cac27 | ✅     |
 | 2026-05-19 | carmen          | #63 import-wp CLI stub + help text (2 tests, 388 total) + PROJECT_STATUS Sprint 4 closed                                      | 3 files   | done    | ✅     |
+| 2026-04-18 | orchestrator    | /meet kickoff sprint 5 — acta + 7 memorias + retro S4 + PROJECT_STATUS Sprint 5 sección + ADRs 020/021 → Accepted             | 12 files  | pending | ✅     |
+| 2026-04-18 | carmen          | hotfix: GET /wp/v2/users paginación en query (limit/offset) — bug activo OOM con volumen                                      | 2 files   | d64e4b3 | ✅     |

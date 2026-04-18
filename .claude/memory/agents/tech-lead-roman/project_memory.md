@@ -4,6 +4,15 @@
 
 ---
 
+## Meet 2026-04-18 — Kickoff Sprint 5
+
+- **D-031 ADR-022 WP Import Strategy:** Román escribe el ADR día 1 de Sprint 5 antes de cualquier código. SAX parser (no DOM — performance en dumps grandes), scope mínimo posts+terms+users+comments, idempotencia `--mode=reset|upsert`, media/custom post types/PHP-serialized meta = fuera. **Date:** 2026-04-18
+- **PROJECT_STATUS inconsistente:** ADR-020 y ADR-021 estaban marcados como Proposed cuando ya están Accepted. Tomás los corrige 2026-04-18. Regla: status doc debe reflejar ADR folder antes de cerrar cada sprint. **Date:** 2026-04-18
+- **CODEOWNERS:** Crear antes de PRs externos. Regla: packages/core → Román+Ingrid, packages/plugin-api → Román, packages/admin → Lucas. 2 approvals para tocar core. **Date:** 2026-04-18
+- **publish-cli.yml approval gate:** Sin él, un tag accidental publica a npm. Helena debe añadir GitHub environment con approval manual antes del planning del martes. **Date:** 2026-04-18
+- **D-035 React Router v7 migración:** Entra como ticket Sprint 5. Hash routing manual no escala con /plugins + /apariencia. Lucas + Marta, 3 días con tests. **Date:** 2026-04-18
+- **Evaluación commander/yargs:** Spike 0.5d para ver si introducir con subcommands jerárquicos (`plugin install`, `plugin build`). Argv manual de ADR-010/D-028 no escala más allá de 3-4 comandos planos. **Date:** 2026-04-18
+
 ## Decisions
 
 - **2026-04-09:** ADR-001 Architecture Overview — stack definido: Node.js/TS + Fastify + PostgreSQL + Drizzle ORM + React admin. Hook system event-driven con prioridades numéricas WP-compatible.
