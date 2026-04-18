@@ -1,4 +1,5 @@
 import { useState, type FC } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, Spinner, useToast } from "../../components/ui";
 import { PostForm, type PostFormValues } from "./components/PostForm";
 import { usePostQuery } from "./hooks/usePostQuery";
@@ -30,6 +31,7 @@ const EMPTY_FORM: PostFormValues = {
 export const PostEditorPage: FC<PostEditorPageProps> = ({ postId }) => {
   const isEditMode = postId !== null;
   const { show } = useToast();
+  const navigate = useNavigate();
 
   // Fetch post data in edit mode
   const { data: post, isLoading: isLoadingPost } = usePostQuery(postId);
@@ -83,7 +85,7 @@ export const PostEditorPage: FC<PostEditorPageProps> = ({ postId }) => {
       updateMutation.mutate(values, {
         onSuccess: () => {
           show({ type: "success", message: "Post updated" });
-          window.location.hash = "posts";
+          void navigate("/posts");
         },
         onError: () => {
           show({ type: "error", message: "Failed to update post" });
@@ -93,7 +95,7 @@ export const PostEditorPage: FC<PostEditorPageProps> = ({ postId }) => {
       createMutation.mutate(values, {
         onSuccess: (created) => {
           show({ type: "success", message: "Post created" });
-          window.location.hash = `posts/${created.id}/edit`;
+          void navigate(`/posts/${created.id}/edit`);
         },
         onError: () => {
           show({ type: "error", message: "Failed to create post" });
@@ -103,7 +105,7 @@ export const PostEditorPage: FC<PostEditorPageProps> = ({ postId }) => {
   };
 
   const handleCancel = () => {
-    window.location.hash = "posts";
+    void navigate("/posts");
   };
 
   return (

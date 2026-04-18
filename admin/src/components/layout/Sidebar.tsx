@@ -1,4 +1,5 @@
 import type { FC } from "react";
+import { NavLink } from "react-router-dom";
 
 interface NavItem {
   label: string;
@@ -16,6 +17,7 @@ const NAV_ITEMS: NavItem[] = [
 /**
  * Sidebar — static navigation shell.
  * Dynamic plugin-injected items are Sprint 3 scope (Román's protocol).
+ * Uses NavLink from react-router-dom for active-state highlighting.
  */
 export const Sidebar: FC = () => {
   return (
@@ -61,12 +63,18 @@ export const Sidebar: FC = () => {
         <ul role="list" style={{ listStyle: "none", margin: 0, padding: 0 }}>
           {NAV_ITEMS.map((item) => (
             <li key={item.href}>
-              <a
-                href={item.href}
-                style={{
+              <NavLink
+                to={item.href}
+                end={item.href === "/"}
+                style={({ isActive }) => ({
                   display: "block",
                   padding: "var(--space-3) var(--space-6)",
-                  color: "var(--shell-sidebar-fg)",
+                  color: isActive
+                    ? "var(--shell-sidebar-fg-active)"
+                    : "var(--shell-sidebar-fg)",
+                  background: isActive
+                    ? "var(--shell-sidebar-item-hover-bg)"
+                    : "transparent",
                   textDecoration: "none",
                   fontSize: "var(--font-size-sm)",
                   fontWeight: "var(--font-weight-medium)",
@@ -74,7 +82,7 @@ export const Sidebar: FC = () => {
                   margin: "0 var(--space-2)",
                   transition:
                     "background var(--transition-fast), color var(--transition-fast)",
-                }}
+                })}
                 onMouseEnter={(e) => {
                   (e.currentTarget as HTMLAnchorElement).style.background =
                     "var(--shell-sidebar-item-hover-bg)";
@@ -82,14 +90,19 @@ export const Sidebar: FC = () => {
                     "var(--shell-sidebar-fg-active)";
                 }}
                 onMouseLeave={(e) => {
+                  const isCurrent =
+                    e.currentTarget.getAttribute("aria-current") === "page";
                   (e.currentTarget as HTMLAnchorElement).style.background =
-                    "transparent";
-                  (e.currentTarget as HTMLAnchorElement).style.color =
-                    "var(--shell-sidebar-fg)";
+                    isCurrent
+                      ? "var(--shell-sidebar-item-hover-bg)"
+                      : "transparent";
+                  (e.currentTarget as HTMLAnchorElement).style.color = isCurrent
+                    ? "var(--shell-sidebar-fg-active)"
+                    : "var(--shell-sidebar-fg)";
                 }}
               >
                 {item.label}
-              </a>
+              </NavLink>
             </li>
           ))}
         </ul>

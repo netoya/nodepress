@@ -62,7 +62,11 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         textarea.style.height = "auto";
         textarea.style.height = `${textarea.scrollHeight}px`;
       }
-      props.onInput?.(e as React.FormEvent<HTMLTextAreaElement>);
+      // Cast needed: @types/react 19.1 changed onInput to InputEvent, but the
+      // synthetic event shape is compatible at runtime. The cast avoids the
+      // structural mismatch without changing runtime behavior.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      props.onInput?.(e as any);
     };
 
     return (

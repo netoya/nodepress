@@ -30,6 +30,12 @@ import { PostEditorPage } from "../PostEditorPage";
 //  - Select: plain <select> so @radix-ui/react-select never loads
 // ---------------------------------------------------------------------------
 const mockShow = vi.fn();
+const mockNavigate = vi.fn();
+
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => mockNavigate,
+  useParams: () => ({}),
+}));
 
 vi.mock("../../../components/ui/ToastProvider", () => ({
   useToast: () => ({ show: mockShow }),
@@ -139,6 +145,7 @@ beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => {
   server.resetHandlers();
   mockShow.mockClear();
+  mockNavigate.mockClear();
 });
 afterAll(() => server.close());
 

@@ -1,4 +1,5 @@
 import { useState, type FC } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
@@ -15,13 +16,11 @@ import type { WpPost } from "../../types/wp-post";
 /**
  * PostsListPage — Posts management page.
  * 4 states: loading, error, empty, data.
- * AppShell is applied by App.tsx (same as DashboardPage pattern).
+ * AppShell is applied by AdminLayout via the router outlet.
  * No rich text editor — plain textarea in Sprint 1 per Alejandro's constraint.
- *
- * Routing: handled by App.tsx hash-based routing.
- * React Router added in Sprint 2.
  */
 export const PostsListPage: FC = () => {
+  const navigate = useNavigate();
   const { data, isLoading, isError, error, refetch, isFetching } =
     usePostsQuery({ perPage: 20 });
   const deleteMutation = useDeletePost();
@@ -32,11 +31,11 @@ export const PostsListPage: FC = () => {
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
 
   const handleAddNew = () => {
-    window.location.hash = "posts/new";
+    void navigate("/posts/new");
   };
 
   const handleEdit = (post: WpPost) => {
-    window.location.hash = `posts/${post.id}/edit`;
+    void navigate(`/posts/${post.id}/edit`);
   };
 
   const handleDelete = (post: WpPost) => {

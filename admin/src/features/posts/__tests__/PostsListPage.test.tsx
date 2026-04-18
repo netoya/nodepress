@@ -16,6 +16,12 @@ import React from "react";
 import type { WpPost } from "../../../types/wp-post";
 import { PostsListPage } from "../PostsListPage";
 
+const mockNavigate = vi.fn();
+
+vi.mock("react-router-dom", () => ({
+  useNavigate: () => mockNavigate,
+}));
+
 // ---------------------------------------------------------------------------
 // Mock ToastProvider before any component loads it.
 // Root cause: @radix-ui/react-toast (nodepress/node_modules, React 19.2.5)
