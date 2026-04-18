@@ -1,10 +1,18 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiUrl } from "../../../lib/api";
 
-const API_BASE = "http://localhost:3000";
+// Auth token for DELETE — no Content-Type needed (no body)
+function deleteAuthHeaders(): Record<string, string> {
+  const token =
+    (import.meta.env["VITE_ADMIN_TOKEN"] as string | undefined) ??
+    "dev-admin-token";
+  return { Authorization: `Bearer ${token}` };
+}
 
 async function deletePost(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/wp/v2/posts/${id}`, {
+  const response = await fetch(apiUrl(`/wp/v2/posts/${id}`), {
     method: "DELETE",
+    headers: deleteAuthHeaders(),
   });
   if (!response.ok) {
     throw new Error(`Failed to delete post: ${response.status}`);

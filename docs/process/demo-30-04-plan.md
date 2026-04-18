@@ -26,26 +26,24 @@ All 7 assertions in `packages/server/src/__tests__/demo-end-to-end.test.ts` must
 
 ### Manual via curl
 
-Start the server (requires `DATABASE_URL` env var and a running Postgres):
+Start the server in demo mode (requires `DATABASE_URL` env var and a running
+Postgres). The `NODEPRESS_DEMO_MODE=true` flag auto-registers the two demo
+filters at boot via
+`packages/server/src/demo/register-demo-hooks.ts` — no manual wiring needed.
 
 ```bash
-cd packages/server && npm run dev
-```
+# Arranca el server en modo demo (hooks auto-registrados):
+NODEPRESS_DEMO_MODE=true npm run dev
 
-Register a hook at runtime (demo script — `scripts/register-demo-hooks.ts`):
-
-```bash
-# The demo hooks are registered in index.ts for the demo session only.
-# Remove before production.
-```
-
-Create a post:
-
-```bash
+# En otra terminal:
 curl -s -X POST http://localhost:3000/wp/v2/posts \
   -H "Authorization: Bearer dev-admin-token" \
   -H "Content-Type: application/json" \
   -d '{"title":"Hello","content":"World"}' | jq .
+
+# Esperado:
+# title.rendered   = "[DEMO] Hello"
+# content.rendered = "World<footer>Powered by NodePress</footer>"
 ```
 
 Expected response (abbreviated):
@@ -56,6 +54,9 @@ Expected response (abbreviated):
   "content": { "rendered": "World<footer>Powered by NodePress</footer>" }
 }
 ```
+
+When `NODEPRESS_DEMO_MODE` is unset or `false`, the demo hooks are NOT
+registered — the server boots clean, and posts pass through unchanged.
 
 Retrieve the post (replace `:id` with the ID from the POST response):
 

@@ -66,6 +66,14 @@
 - **Docs:** `docs/tooling/quality-gates.md` extended under "Smoke Fresh-Clone" section with "Local smoke (developer)" subsection including step table and error list. **Date:** 2026-04-18
 - **Helena's CI smoke** covers main + PRs (GitHub Actions, TTFA <5min target). This script gives developer local validation <90s before opening PR. Complementary, not duplicate. **Date:** 2026-04-18
 
+## Sprint 1 día 2 — db seeds (2026-04-18)
+
+- **Seed created:** `packages/db/src/seeds/index.ts` — idempotent seed with 1 admin user, 5 posts (3 published/1 draft/1 pending), 3 options. ON CONFLICT DO NOTHING for user/posts, ON CONFLICT DO UPDATE for options. **Date:** 2026-04-18
+- **Runner pattern:** same .env auto-load as client.ts (resolve 4 levels up to repo root). Entry-point guard via `argv[1]` match — no side effects on import. **Date:** 2026-04-18
+- **`runSeed(db)` exported** — takes a drizzle db instance, returns `{users, posts, options}` counts. Enables Testcontainers idempotency test without spawning a subprocess. **Date:** 2026-04-18
+- **Test:** `packages/db/src/seeds/__tests__/seeds.test.ts` — import guard (1 green) + Testcontainers idempotency (skipIf !DOCKER_AVAILABLE). **Date:** 2026-04-18
+- **Docs:** `docs/guides/seeding.md` created — contents, run command, reset procedure. **Date:** 2026-04-18
+
 ## Session Todos
 
 - move-migrations-to-drizzle: done

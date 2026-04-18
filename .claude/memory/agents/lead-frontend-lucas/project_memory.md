@@ -65,6 +65,18 @@
 - **PostEditorPage — no useEffect para sync:** ESLint react-hooks/set-state-in-effect prohíbe setState en useEffect. Solución: serverValues derivados del post query, localEdits como override en useState. Pattern: `values = { ...serverValues, ...localEdits }`. **Date:** 2026-04-18
 - **Gap componentes — Modal:** Para confirm delete se usa browser.confirm() en v1. Modal pendiente Sprint 2. Flagged. **Date:** 2026-04-18
 
+## Sprint 1 sem 2 — VITE_USE_MSW + VITE_API_URL flags (gap demo 3/3) (2026-04-18)
+
+- **`admin/src/lib/api.ts` creado:** `apiUrl(path)` + `authHeaders()`. `API_BASE_URL` usa `VITE_API_URL` o `window.location.origin` como fallback — garantiza URL absoluta en browser y en jsdom tests. **Date:** 2026-04-18
+- **`server.ts` actualizado:** nueva guard `if (import.meta.env["VITE_USE_MSW"] === "false") return;` antes de importar `./browser`. Backward-compat: MSW activo cuando `VITE_USE_MSW` no está definido. **Date:** 2026-04-18
+- **6 hooks actualizados:** `usePostsList`, `usePostsQuery`, `usePostQuery`, `useCreatePost`, `useUpdatePost`, `useDeletePost` — todos usan `apiUrl()`. Mutation hooks (POST/PUT/DELETE) usan `authHeaders()`. **Date:** 2026-04-18
+- **`admin/.env.example` creado:** documenta las 3 variables. **Date:** 2026-04-18
+- **`admin/README.md` creado:** tabla de env flags + demo mode bash snippet. **Date:** 2026-04-18
+- **Tests 88/88 verdes:** 2 tests nuevos en `src/mocks/__tests__/server.test.ts` — VITE_USE_MSW=false early return + non-DEV early return. **Date:** 2026-04-18
+- **Playwright 8/8 verdes.** TypeCheck + ESLint 0 errores. **Date:** 2026-04-18
+- **Gotcha — ESLint @typescript-eslint/no-unused-vars:** Destructured `{ "Content-Type": _ct, ...rest }` no acepta vars con \_ en este ESLint config. Fix: extraer `deleteAuthHeaders()` local en useDeletePost sin Content-Type. **Date:** 2026-04-18
+- **Gotcha — api.ts URL resolution:** `window.location.origin` en jsdom = `http://localhost:3000` → tests existentes con MSW node handlers en esa base no requieren cambios. **Date:** 2026-04-18
+
 ## Sprint 1 sem 2 día 0 — /posts scaffold + brief forms L2 (2026-04-18)
 
 - **Brief Marta L2 entregado:** `admin/docs/brief-marta-design-system-l2.md` con Input/Textarea/Select/Toast — props API, estructura JSX, a11y, tests mínimos, deps pinned a instalar por Marta (@radix-ui/react-select@2.1.2, @radix-ui/react-toast@1.2.4). **Date:** 2026-04-18

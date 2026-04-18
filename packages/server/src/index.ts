@@ -22,6 +22,15 @@ await registerBearerAuth(server);
 // access app.hooks at definition time.
 await registerHooks(server);
 
+// Demo hooks — opt-in via NODEPRESS_DEMO_MODE=true. Dynamic import keeps the
+// demo module out of the hot path when the flag is off. See
+// docs/process/demo-30-04-plan.md.
+if (process.env["NODEPRESS_DEMO_MODE"] === "true") {
+  const { registerDemoHooks } = await import("./demo/register-demo-hooks.js");
+  registerDemoHooks(server.hooks);
+  server.log.info("Demo hooks registered (pre_save_post + the_content).");
+}
+
 // Register the posts plugin
 await server.register(postsPlugin);
 

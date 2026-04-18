@@ -1,7 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { WpPost } from "../../../types/wp-post";
-
-const API_BASE = "http://localhost:3000";
+import { apiUrl, authHeaders } from "../../../lib/api";
 
 export interface CreatePostPayload {
   title: string;
@@ -12,9 +11,9 @@ export interface CreatePostPayload {
 }
 
 async function createPost(payload: CreatePostPayload): Promise<WpPost> {
-  const response = await fetch(`${API_BASE}/wp/v2/posts`, {
+  const response = await fetch(apiUrl("/wp/v2/posts"), {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: authHeaders(),
     body: JSON.stringify(payload),
   });
   if (!response.ok) {

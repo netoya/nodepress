@@ -7,6 +7,8 @@
  */
 export async function startMswWorker(): Promise<void> {
   if (!import.meta.env.DEV) return;
+  // Allow opting out of MSW to hit the real backend (e.g. demo mode)
+  if (import.meta.env["VITE_USE_MSW"] === "false") return;
 
   const { worker } = await import("./browser");
   // Catch SW registration failures gracefully (e.g. when blocked by E2E test config)

@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { PostsListResult, WpPost } from "../../../types/wp-post";
-
-const API_BASE = "http://localhost:3000";
+import { apiUrl } from "../../../lib/api";
 
 interface UsePostsListOptions {
   page?: number;
@@ -13,7 +12,7 @@ async function fetchPosts(
   options: UsePostsListOptions,
 ): Promise<PostsListResult> {
   const { page = 1, perPage = 10, status = "publish" } = options;
-  const url = new URL(`${API_BASE}/wp/v2/posts`);
+  const url = new URL(apiUrl("/wp/v2/posts"));
   url.searchParams.set("page", String(page));
   url.searchParams.set("per_page", String(perPage));
   url.searchParams.set("status", status);
