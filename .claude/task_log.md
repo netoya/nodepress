@@ -33,3 +33,4 @@
 | 2026-04-17 | helena          | tooling: ESLint flat config + vitest coverage-v8                                                                    | 5 files   | bb3e442 | ✅     |
 | 2026-04-17 | carmen          | #15 + #16 — 5 posts REST endpoints + integration tests (14/14 green)                                                | 7 files   | bb3e442 | ✅     |
 | 2026-04-17 | roman           | commit Wave 3 (Helena tooling + Carmen endpoints)                                                                   | 33 files  | bb3e442 | ✅     |
+| 2026-04-17 | raul            | push main Wave 3 (bb3e442 + 4533ad4)                                                                               | —         | —       | ✅     |
