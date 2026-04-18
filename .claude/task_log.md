@@ -52,3 +52,4 @@
 | 2026-04-18 | helena          | R-6 husky prototype + R-7 db coverage threshold (warn-only)                                                         | 6 files   | done    | ✅     |
 | 2026-04-18 | raul            | sync GitHub Issues + board con estado Sprint 1 día 2 (10 closed + 3 updated)                                        | 1 file    | pending | ✅     |
 | 2026-04-18 | lucas           | #23 dashboard 4 states (draft — MSW + React Query, pending Sofía wireframes)                                        | 11 files  | pending | ✅     |
+| 2026-04-18 | ingrid          | wire HookRegistry → REST handlers + demo end-to-end integration test                                                | 9 files   | pending | ✅     |

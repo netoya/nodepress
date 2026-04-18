@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import { registerBearerAuth } from "./auth/index.js";
+import { registerHooks } from "./hooks.js";
 import postsPlugin from "./routes/posts/index.js";
 
 const server = Fastify({ logger: true });
@@ -8,6 +9,10 @@ const server = Fastify({ logger: true });
 // Routes that require admin should use:  { preHandler: [server.requireAdmin] }
 // Public routes (e.g. GET /wp/v2/posts) omit the preHandler entirely.
 await registerBearerAuth(server);
+
+// Register the hook registry decorator before route plugins so handlers can
+// access app.hooks at definition time.
+await registerHooks(server);
 
 // Register the posts plugin
 await server.register(postsPlugin);

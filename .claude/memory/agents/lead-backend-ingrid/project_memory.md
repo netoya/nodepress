@@ -41,10 +41,20 @@
 
 - **Harness location:** `packages/server/src/__tests__/wp-conformance/` — 3 files: `fixtures.ts`, `contract.ts`, `post.contract.test.ts`. **Date:** 2026-04-17
 - **contract.ts design:** Pure functions only, no Jest matchers. `assertPostShape`, `assertListShape`, `assertHeaders` — each throws descriptive error (`Missing field \`date\` in post response`). Exportable — can be used by any future test without importing Vitest. **Date:** 2026-04-17
-- **Divergence regression coverage:** DIV-001 (no date_gmt/modified_gmt), DIV-002 (rendered objects not plain strings), DIV-003 (absent WP v1 fields), DIV-005 (_nodepress namespace required). DIV-004 (taxonomies) deferred — no endpoints yet. **Date:** 2026-04-17
+- **Divergence regression coverage:** DIV-001 (no date_gmt/modified_gmt), DIV-002 (rendered objects not plain strings), DIV-003 (absent WP v1 fields), DIV-005 (\_nodepress namespace required). DIV-004 (taxonomies) deferred — no endpoints yet. **Date:** 2026-04-17
 - **26 tests, 26 green.** Typecheck clean, ESLint 0 errors, Prettier applied. **Date:** 2026-04-17
 - **Bug flag in serialize.ts (Carmen):** `excerpt` field serialized with `raw` key (`{rendered, raw, protected}`) but the OpenAPI spec RenderedField schema only declares `rendered` and `protected` — `raw` is an undocumented extra field. Not a breaking issue but diverges from spec schema. Flagged, NOT fixed — Carmen's ownership. **Date:** 2026-04-17
 - **quality-gates.md updated:** Section "## WP Conformance Harness" added to `docs/tooling/quality-gates.md`. **Date:** 2026-04-17
+
+## Sprint 1 día 2 — hooks wiring + demo test
+
+- **HookRegistry singleton exposed via Fastify decorator `app.hooks`:** `packages/server/src/hooks.ts` — `getHookRegistry()` singleton + `registerHooks(app, registry?)` decorator. Optional `registry` param enables per-test isolation without touching the singleton. **Date:** 2026-04-18
+- **`@nodepress/core` added to server deps + `packages/core/src/index.ts` populated:** Core had an empty `index.ts` — nothing exported from the package's main entry. Added re-exports of all hooks public API. Built `dist/index.js`. **Date:** 2026-04-18
+- **`pre_save_post` filter wired in `createPost` + `updatePost`:** Applied via `request.server.hooks.applyFilters` before every DB write. `createPost` receives full `PostPayload`; `updatePost` receives partial `Record<string, unknown>`. Slug recomputed if title mutated and no explicit slug provided. **Date:** 2026-04-18
+- **`the_content` filter wired in `serialize.ts`:** `toWpPost(dbRow, hooks?)` — second param optional, defaults to no-op. Applied to `dbRow.content` before placing in `content.rendered`. All existing callers pass `request.server.hooks`; tests without a real registry pass nothing (no-op default). **Date:** 2026-04-18
+- **Demo integration test — 8 tests, 8 green:** `packages/server/src/__tests__/demo-end-to-end.test.ts`. Scenario 1: happy path — `[DEMO]` prefix on title, footer on content, GET re-applies `the_content`. Scenario 2: resilience — busted plugin throws, circuit breaker contains error, post still created, values unmutated. **Date:** 2026-04-18
+- **OpenAPI updated:** POST `/wp/v2/posts` notes `pre_save_post`; GET `/wp/v2/posts/:id` notes `the_content`. **Date:** 2026-04-18
+- **`docs/process/demo-30-04-plan.md` created:** 3 demo assertions, curl commands, admin panel instructions, fallback. **Date:** 2026-04-18
 
 ## Session Todos
 

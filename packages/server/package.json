@@ -11,6 +11,7 @@
     "dev": "tsx --watch src/index.ts"
   },
   "dependencies": {
+    "@nodepress/core": "*",
     "@nodepress/db": "*",
     "drizzle-orm": "^0.40.0",
     "fastify": "^5.0.0",

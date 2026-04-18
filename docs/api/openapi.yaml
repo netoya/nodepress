@@ -298,7 +298,14 @@ paths:
     post:
       operationId: createPost
       summary: Create a post
-      description: Creates a new post. Requires admin authentication.
+      description: |
+        Creates a new post. Requires admin authentication.
+
+        **Hooks applied (server-side, sync):**
+        - `pre_save_post` filter: applied to the full post payload immediately before
+          the DB insert. Signature: `(postData: PostPayload, meta: { action: 'create'; userId?: string }) => PostPayload`.
+          Allows plugins to mutate title, content, status, excerpt, or slug before persistence.
+          If the filter throws, the circuit breaker contains the error and the original payload is used.
       tags:
         - Posts
       security:
@@ -341,7 +348,14 @@ paths:
     get:
       operationId: getPost
       summary: Retrieve a post
-      description: Retrieves a single post by ID. Public endpoint.
+      description: |
+        Retrieves a single post by ID. Public endpoint.
+
+        **Hooks applied at serialize time (sync):**
+        - `the_content` filter: applied to `content.rendered` when building the response.
+          Signature: `(content: string, post: Post) => string`.
+          Plugins can transform HTML content (e.g. shortcode expansion, syntax highlighting).
+          If the filter throws, the circuit breaker contains the error and the raw DB content is returned.
       tags:
         - Posts
       responses:

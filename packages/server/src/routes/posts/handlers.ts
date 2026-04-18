@@ -2,6 +2,10 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { db, posts } from "@nodepress/db";
 import { eq, and, or, ilike } from "drizzle-orm";
 import { toWpPost } from "./serialize.js";
+// hooks.ts registers the `hooks` decorator — import side-effect ensures the
+// FastifyInstance type augmentation is in scope even though we access the
+// registry via request.server.hooks rather than a direct import.
+import "../../hooks.js";
 
 /**
  * GET /wp/v2/posts — List posts with pagination and filtering.
@@ -44,7 +48,8 @@ export async function listPosts(request: FastifyRequest, reply: FastifyReply) {
   const totalPages = Math.ceil(total / perPage);
 
   const paginatedPosts = allMatchingPosts.slice(offset, offset + perPage);
-  const serialized = paginatedPosts.map(toWpPost);
+  const hooks = request.server.hooks;
+  const serialized = paginatedPosts.map((p) => toWpPost(p, hooks));
 
   reply.header("X-WP-Total", total.toString());
   reply.header("X-WP-TotalPages", totalPages.toString());
@@ -68,7 +73,7 @@ export async function getPost(request: FastifyRequest, reply: FastifyReply) {
     });
   }
 
-  return toWpPost(post);
+  return toWpPost(post, request.server.hooks);
 }
 
 /**
@@ -92,27 +97,58 @@ export async function createPost(request: FastifyRequest, reply: FastifyReply) {
   };
 
   // Auto-generate slug from title if not provided
-  const finalSlug =
+  const rawSlug =
     slug || title.toLowerCase().replace(/\s+/g, "-").slice(0, 200);
 
   // For now, default authorId to 1 (admin user).
   // In production, this should come from the authenticated user context.
   const authorId = 1;
 
+  /**
+   * Apply the `pre_save_post` filter (sync) before writing to the DB.
+   * Signature: (postData: PostPayload, meta: PreSavePostMeta) => PostPayload
+   * PostPayload carries the mutable fields; meta is read-only context.
+   */
+  interface PostPayload {
+    title: string;
+    content: string;
+    status: string;
+    excerpt: string;
+    slug: string;
+    authorId: number;
+  }
+  const rawPayload: PostPayload = {
+    title,
+    content,
+    status,
+    excerpt: excerpt ?? "",
+    slug: rawSlug,
+    authorId,
+  };
+  const payload = request.server.hooks.applyFilters<PostPayload>(
+    "pre_save_post",
+    rawPayload,
+    { action: "create", userId: request.user?.id },
+  );
+  // Recompute slug if title was mutated by a filter but no slug was provided
+  const finalSlug = slug
+    ? payload.slug
+    : payload.title.toLowerCase().replace(/\s+/g, "-").slice(0, 200);
+
   try {
     const [created] = await db
       .insert(posts)
       .values({
-        title,
-        content,
-        status,
-        excerpt,
+        title: payload.title,
+        content: payload.content,
+        status: payload.status,
+        excerpt: payload.excerpt,
         slug: finalSlug,
-        authorId,
+        authorId: payload.authorId,
       })
       .returning();
 
-    return reply.status(201).send(toWpPost(created!));
+    return reply.status(201).send(toWpPost(created!, request.server.hooks));
   } catch (err: unknown) {
     // Handle duplicate slug
     if (err instanceof Error && err.message.includes("unique")) {
@@ -157,10 +193,22 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
     });
   }
 
+  /**
+   * Apply the `pre_save_post` filter (sync) before writing to the DB.
+   * Only the provided (partial) fields are mutated; absent fields remain undefined.
+   * Signature: (postData: Record<string, unknown>, meta: PreSavePostMeta) => Record<string, unknown>
+   */
+  const mutatedData = request.server.hooks.applyFilters<
+    Record<string, unknown>
+  >("pre_save_post", updateData, {
+    action: "update",
+    userId: request.user?.id,
+  });
+
   try {
     const [updated] = await db
       .update(posts)
-      .set(updateData)
+      .set(mutatedData)
       .where(eq(posts.id, id))
       .returning();
 
@@ -171,7 +219,7 @@ export async function updatePost(request: FastifyRequest, reply: FastifyReply) {
       });
     }
 
-    return toWpPost(updated);
+    return toWpPost(updated, request.server.hooks);
   } catch (err: unknown) {
     // Handle duplicate slug
     if (err instanceof Error && err.message.includes("unique")) {
@@ -205,12 +253,14 @@ export async function deletePost(request: FastifyRequest, reply: FastifyReply) {
     });
   }
 
+  const hooks = request.server.hooks;
+
   if (force) {
     // Hard delete
     await db.delete(posts).where(eq(posts.id, id));
     return {
       deleted: true,
-      previous: toWpPost(post),
+      previous: toWpPost(post, hooks),
     };
   } else {
     // Soft delete: set status to trash
@@ -220,6 +270,6 @@ export async function deletePost(request: FastifyRequest, reply: FastifyReply) {
       .where(eq(posts.id, id))
       .returning();
 
-    return toWpPost(trashed!);
+    return toWpPost(trashed!, hooks);
   }
 }
