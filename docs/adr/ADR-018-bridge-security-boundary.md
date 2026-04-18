@@ -1,10 +1,9 @@
 # ADR-018 — Bridge Security Boundary
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-04-18
 **Deciders:** Helena (IT Manager), Román (Tech Lead)
-**Deadline co-sign:** 2026-04-23 (jueves). Bloqueante para Tier 2 en staging.
-**Related:** ADR-003 (PHP Compatibility Strategy), ADR-008 (PHP-WASM Extension Matrix), ADR-017 (Tier 2 Bridge Surface — Román, pendiente)
+**Related:** ADR-003 (PHP Compatibility Strategy), ADR-008 (PHP-WASM Extension Matrix), ADR-017 (Tier 2 Bridge Surface)
 
 ## Context
 
@@ -26,7 +25,7 @@ El bridge PHP-WASM opera bajo un modelo de **sandbox estático de datos**: el ú
 
 Cualquier función PHP que intente salir de este perímetro es interceptada en el bootstrap del bridge y sustituida por un stub que devuelve un valor seguro (vacío o `null`) y registra el intento con nivel `warn`. No se lanza excepción: los plugins existentes no deben romper, pero el intento queda auditado.
 
-La VM es stateless entre invocaciones: cada shortcode render parte de un estado PHP limpio. No hay estado PHP persistente entre requests.
+La VM es stateless entre invocaciones a nivel lógico: cada invocación del bridge parte de un estado PHP limpio. En v1 esto se implementa mediante **scope reset sobre una VM PHP-WASM singleton** (ADR-017 §Runtime Model) — la VM no se re-bootea por coste de latencia, pero el scope PHP (superglobales, shortcodes registrados, filtros PHP-locales, warnings buffer) se reinicia antes de cada `php.run`. El efecto observable para los plugins es el mismo que una VM nueva: no hay estado PHP persistente entre invocaciones ni entre requests.
 
 ## Attack Surface
 
@@ -52,7 +51,7 @@ cURL está en el bundle de `@php-wasm/node@3.1.20`. El stub de `curl_exec` inter
 La VM PHP-WASM corre en el mismo proceso Node.js. Un bug catastrófico en el runtime WASM (no en el código PHP) podría afectar el proceso. Riesgo aceptado para Tier 2 Proof of Concept. Producción a escala requiere evaluación de process isolation (worker_threads o subprocess). Documentado como deuda técnica Sprint 4+.
 
 **R3 — Timeout de 3 segundos puede bloquear el event loop si el wrapper no está correctamente implementado.**
-Si el bridge llama `php.run()` de forma sincrónica (sin Worker Thread), un plugin que tarde 2.9 segundos bloquea el event loop 2.9 segundos. Riesgo aceptado para Sprint 2 piloto (carga baja, contenido controlado). Worker Thread isolation es requisito antes de producción con carga real. Gate: ADR-017 debe especificar si el bridge es sync o async.
+Si el bridge llama `php.run()` de forma sincrónica (sin Worker Thread), un plugin que tarde 2.9 segundos bloquea el event loop 2.9 segundos. Riesgo aceptado para Sprint 2 piloto (carga baja, contenido controlado). Worker Thread isolation es requisito antes de producción con carga real. **Gate resuelto:** ADR-017 §Runtime Model congela el modelo de ejecución como singleton async (`Promise.race([php.run(...), timeout(3000)])`) con serialización vía mutex interno — `php.run` es async a nivel JS aunque PHP ejecute sincrónicamente, por lo que el event loop no queda bloqueado entre invocaciones. La migración a Worker Thread queda documentada como Out of Scope en ADR-017 y deuda técnica Sprint 4+.
 
 **R4 — Output HTML no sanitizado si el consumidor no aplica DOMPurify.**
 El bridge devuelve HTML string. Si el caller lo inyecta directamente en el DOM sin sanitizar, hay XSS. El bridge NO puede garantizar que el caller sanitice. Mitigación documentada: el bridge DEBE documentar que el output es HTML confiado condicionalmente (el PHP plugin que lo generó es código de terceros). Responsabilidad de sanitización: capa de renderizado del admin/frontend, no el bridge.
@@ -148,7 +147,7 @@ Este ADR NO cubre:
 
 - El stubbing de funciones en PHP bootstrap añade complejidad al setup de la VM. Raúl debe validar que los stubs no rompen los 3 pilotos (test de humo obligatorio Sprint 2 día 1).
 - `memory_limit = 32M` puede ser demasiado bajo para Shortcodes Ultimate con contenido denso. El valor es ajustable por plugin via configuración, pero el default conservador puede provocar errores en pruebas iniciales. Monitorizar en Sprint 2.
-- El timeout de 3 segundos en el wrapper JS requiere que `php.run()` sea cancelable o que se implemente con Worker Thread. Si el bridge actual es sincrónico, el timeout no es efectivo. Gate: Román confirma en ADR-017 el modelo de ejecución antes de que este constraint sea implementable.
+- El timeout de 3 segundos en el wrapper JS requiere que `php.run()` sea cancelable o que se implemente con Worker Thread. **Gate cerrado en ADR-017 §Runtime Model:** el bridge es async a nivel JS (singleton + `Promise.race`), el mutex libera al vencer el timeout externo aunque la VM siga ejecutando hasta `max_execution_time = 2s`. El constraint es implementable en v1. Worker Thread isolation sigue siendo requisito para producción con carga real (Sprint 4+).
 
 ## References
 
@@ -156,8 +155,14 @@ Este ADR NO cubre:
 - ADR-005: Hook System Semantics (sync filters, el bridge debe respetar esto — no puede llamar applyFilters async desde PHP)
 - ADR-008: PHP-WASM Extension Matrix (inventario de extensiones confirmadas, incluyendo cURL)
 - ADR-014: Developer Quickstart Invariant
-- ADR-017: Tier 2 Bridge Surface (Román — pendiente, deadline lunes 2026-04-22)
+- ADR-017: Tier 2 Bridge Surface (Román — Proposed, contrato de entry point + runtime model congelado)
 - D-008: CMS nativo Node, NO orquestador WP
 - `@php-wasm/node@3.1.20` — runtime PHP-WASM utilizado
 - OWASP: [Server-Side Request Forgery Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)
 - PHP Manual: [disable_functions](https://www.php.net/manual/en/ini.core.php#ini.disable-functions), [open_basedir](https://www.php.net/manual/en/ini.core.php#ini.open-basedir)
+
+## Sign-off
+
+- **Date:** 2026-04-18
+- **Helena (IT Manager) — authored.** Threat model, stubs, php.ini overrides, logging obligations.
+- **Román (Tech Lead) — co-signed:** arquitectura coherente con ADR-017 (entry point único, flujo de datos IN/OUT idéntico, timeouts compatibles, statelessness implementable vía scope reset sobre singleton). Constraints implementables sin cambiar la arquitectura definida en ADR-017. Gates previamente abiertos (§R3, §Negative) cerrados por referencia a ADR-017 §Runtime Model.

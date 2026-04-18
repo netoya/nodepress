@@ -1,0 +1,25 @@
+name: Security Audit
+on:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 9 * * 1" # Every Monday 9am
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - name: Run npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: true
+      - name: Run npm audit (workspaces)
+        run: |
+          for pkg in packages/*/; do
+            echo "=== Auditing $pkg ==="
+            npm audit --prefix "$pkg" --audit-level=high || true
+          done
