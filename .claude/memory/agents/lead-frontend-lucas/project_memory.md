@@ -155,6 +155,17 @@
 - **Tests ajustados:** aserciones actualizadas para nuevo HTML — `<h1>Posts</h1>` → `<h1>NodePress</h1>`, `<ul></ul>` → "No posts yet.", 3 tests nuevos (archive date, single nav/main/footer, single viewport meta). Total theme-engine: 8 tests verdes. **Date:** 2026-04-18
 - **TypeCheck + ESLint:** 0 errores en packages/theme-engine. **Date:** 2026-04-18
 
+## Sprint 5 — D-038 /plugins page (ICP-1 signal confirmed) (2026-04-18)
+
+- **WpPlugin type added** to `admin/src/types/wp-post.ts`: `{ plugin, name, version, status, description, author }`. status: "active" | "inactive". **Date:** 2026-04-18
+- **`usePluginsQuery`** created at `admin/src/features/plugins/hooks/usePluginsQuery.ts`. React Query wrapper for GET /wp/v2/plugins. queryKey: `["plugins-list"]`. **Date:** 2026-04-18
+- **`PluginsPage.tsx`** created at `admin/src/features/plugins/PluginsPage.tsx`. 4 states (loading/error/empty/data). Optimistic enable/disable toggle via `statusOverrides` local state (Record keyed by plugin.plugin). Toast on toggle. No real mutation — Sprint 6. **Date:** 2026-04-18
+- **MSW handler added:** `GET /wp/v2/plugins` with 3 mock plugins (2 active, 1 inactive) in `admin/src/mocks/handlers.ts`. **Date:** 2026-04-18
+- **Router updated:** `{ path: "plugins", element: <PluginsPage /> }` added to AdminLayout children in `admin/src/router.tsx`. **Date:** 2026-04-18
+- **Sidebar already had /plugins NavLink** — no change needed. **Date:** 2026-04-18
+- **6 tests green** in `admin/src/features/plugins/__tests__/PluginsPage.test.tsx`: loading, empty, data render, error, disable toggle toast, enable toggle toast. Total: 101/101 admin tests. **Date:** 2026-04-18
+- **Sprint 6 TODO:** wire real PATCH /wp/v2/plugins/:plugin endpoint for status toggle. Replace statusOverrides state with mutation. **Date:** 2026-04-18
+
 ## Sprint 4 — #65 Dashboard refinement (2026-04-18)
 
 - **Indicador "Actualizado:"** añadido en DashboardPage sobre PostsList cuando hay datos. Usa `dataUpdatedAt` de React Query (timestamp) formateado con `toLocaleTimeString("es-ES")`. `aria-label="Last updated"` para a11y. **Date:** 2026-04-18

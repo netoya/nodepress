@@ -83,6 +83,26 @@ export interface WpTerm {
 }
 
 /**
+ * WP REST API v2 — Plugin shape as returned by GET /wp/v2/plugins.
+ * Subset of the WP Plugins REST API spec.
+ * Sprint 5 scope: list + enable/disable UI only (no install, no search).
+ */
+export interface WpPlugin {
+  /** Plugin file identifier (e.g. "woocommerce/woocommerce.php"). */
+  plugin: string;
+  /** Human-readable plugin name. */
+  name: string;
+  /** Plugin version string. */
+  version: string;
+  /** Plugin status — active | inactive. */
+  status: "active" | "inactive";
+  /** Short plugin description. */
+  description: string;
+  /** Plugin author name. */
+  author: string;
+}
+
+/**
  * Pagination metadata extracted from WP REST API response headers.
  * X-WP-Total and X-WP-TotalPages.
  */

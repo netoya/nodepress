@@ -1,5 +1,5 @@
 import { http, HttpResponse } from "msw";
-import type { WpPost, WpTerm } from "../types/wp-post";
+import type { WpPlugin, WpPost, WpTerm } from "../types/wp-post";
 
 const BASE_URL = "http://localhost:3000";
 
@@ -84,6 +84,35 @@ const mockCategories: WpTerm[] = [
     count: 3,
   },
   { id: 3, name: "Releases", slug: "releases", taxonomy: "category", count: 2 },
+];
+
+const mockPlugins: WpPlugin[] = [
+  {
+    plugin: "nodepress-seo/nodepress-seo.php",
+    name: "NodePress SEO",
+    version: "1.2.0",
+    status: "active",
+    description:
+      "Adds SEO meta tags, sitemaps and structured data to your NodePress site.",
+    author: "NodePress Team",
+  },
+  {
+    plugin: "contact-form-lite/contact-form-lite.php",
+    name: "Contact Form Lite",
+    version: "0.9.4",
+    status: "inactive",
+    description: "Simple drag-and-drop contact forms with spam protection.",
+    author: "FormCraft",
+  },
+  {
+    plugin: "nodepress-analytics/nodepress-analytics.php",
+    name: "NodePress Analytics",
+    version: "2.0.1",
+    status: "active",
+    description:
+      "Privacy-friendly page-view analytics dashboard integrated into the admin panel.",
+    author: "NodePress Team",
+  },
 ];
 
 const mockTags: WpTerm[] = [
@@ -193,6 +222,16 @@ export const handlers = [
     return HttpResponse.json(mockTags, {
       headers: {
         "X-WP-Total": String(mockTags.length),
+        "X-WP-TotalPages": "1",
+      },
+    });
+  }),
+
+  // GET /wp/v2/plugins — list installed plugins (Sprint 5 stub)
+  http.get(`${BASE_URL}/wp/v2/plugins`, () => {
+    return HttpResponse.json(mockPlugins, {
+      headers: {
+        "X-WP-Total": String(mockPlugins.length),
         "X-WP-TotalPages": "1",
       },
     });

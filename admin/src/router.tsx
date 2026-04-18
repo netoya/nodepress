@@ -3,6 +3,7 @@ import { AdminLayout } from "./layouts/AdminLayout";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
 import { PostsListPage } from "./features/posts/PostsListPage";
 import { PostEditorRoute } from "./features/posts/PostEditorRoute";
+import { PluginsPage } from "./features/plugins/PluginsPage";
 import { AuthGuard } from "./features/auth/AuthGuard";
 import { LoginPage } from "./features/auth/LoginPage";
 
@@ -29,6 +30,7 @@ export const router = createHashRouter([
           { path: "posts", element: <PostsListPage /> },
           { path: "posts/new", element: <PostEditorRoute /> },
           { path: "posts/:id/edit", element: <PostEditorRoute /> },
+          { path: "plugins", element: <PluginsPage /> },
         ],
       },
     ],

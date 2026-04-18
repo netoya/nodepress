@@ -116,3 +116,4 @@
 | 2026-06-02 | roman           | #70 ADR-022 WP Import Strategy + #71 CODEOWNERS + publish-cli.yml production gate                                             | 3 files   | 48596f5 | ✅     |
 | 2026-06-02 | lucas           | fix(admin): auth flow — LoginPage + AuthGuard + localStorage token + DashboardError network msg                               | 8 files   | ee257cf | ✅     |
 | 2026-06-02 | orchestrator    | #69 LICENSE (GPL-3.0) + COMMERCIAL-LICENSE.md + CONTRIBUTING.md — dual license + CLA docs                                     | 3 files   | pending | ✅     |
+| 2026-04-18 | lucas           | D-038 /plugins page — list + enable/disable UI (ICP-1 signal, Sprint 5) — 6 tests, MSW handler, WpPlugin type, router updated | 6 files   | pending | ✅     |
