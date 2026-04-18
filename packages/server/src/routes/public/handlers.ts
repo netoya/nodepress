@@ -1,25 +1,20 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { db, posts } from "@nodepress/db";
+import { InlineThemeEngine } from "@nodepress/theme-engine";
 import { eq } from "drizzle-orm";
 import { renderShortcodes } from "../../bridge/index.js";
 import "../../hooks.js";
 
 /**
- * HTML entities escape for safe text interpolation.
- * Only escapes <, >, &, ", and ' to prevent XSS in title and attributes.
+ * Module-level singleton ThemeEngine (ADR-021 Sprint 4).
+ * Swap to Fastify decorator when a second engine impl lands (Sprint 5+).
  */
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+const engine = new InlineThemeEngine();
 
 /**
- * Inline CSS for minimal styling.
- * Blog-ish appearance: centered, readable font, subtle colors.
+ * Inline CSS for the 404 error page. The article/archive chrome moved to the
+ * ThemeEngine in Sprint 4 (ADR-021); 404 is a server-level error response
+ * and stays inline until Sprint 5 introduces template-keyed dispatch for it.
  */
 const INLINE_CSS = `
   * {
@@ -121,13 +116,13 @@ const INLINE_CSS = `
 
 /**
  * GET / — Home page with list of published posts.
+ * Delegates HTML rendering to the ThemeEngine (ADR-021).
  */
 export async function getHome(
   _request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<string> {
   // Fetch all posts and filter for published status
-
   const allPosts = (await db
     .select()
     .from(posts)
@@ -141,56 +136,12 @@ export async function getHome(
     (a: any, b: any) =>
       new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
-  const postsList = sortedPosts.slice(0, 10);
+  const postsList = sortedPosts.slice(0, 10).map((p: any) => ({
+    title: p.title,
+    slug: p.slug,
+  }));
 
-  // Build article HTML for each post
-  const articlesHtml = postsList
-    .map((post) => {
-      const excerpt =
-        post.excerpt || post.content.substring(0, 200).replace(/<[^>]*>/g, "");
-      const titleEscaped = escapeHtml(post.title);
-
-      return `
-    <article>
-      <h2><a href="/p/${escapeHtml(post.slug)}">${titleEscaped}</a></h2>
-      <div class="meta">
-        <time datetime="${post.createdAt.toISOString()}">
-          ${post.createdAt.toLocaleDateString()}
-        </time>
-        — by Author ${post.authorId}
-      </div>
-      <p class="excerpt">${escapeHtml(excerpt)}</p>
-    </article>
-  `;
-    })
-    .join("");
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NodePress</title>
-  <style>${INLINE_CSS}</style>
-</head>
-<body>
-  <header>
-    <h1>NodePress</h1>
-    <p class="tagline">A WordPress-compatible CMS built on Node.js</p>
-  </header>
-
-  <main>
-    ${articlesHtml || '<p style="text-align: center; color: #999;">No posts yet.</p>'}
-  </main>
-
-  <footer>
-    <p>
-      <a href="/wp/v2/posts">REST API</a> — 
-      Powered by <a href="https://nodepress.example">NodePress</a>
-    </p>
-  </footer>
-</body>
-</html>`;
+  const html = await engine.render("archive", { posts: postsList });
 
   return reply.type("text/html").send(html);
 }
@@ -277,44 +228,10 @@ export async function getPost(
     post,
   );
 
-  const titleEscaped = escapeHtml(post.title);
-
-  const html = `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${titleEscaped} | NodePress</title>
-  <style>${INLINE_CSS}</style>
-</head>
-<body>
-  <header>
-    <h1><a href="/">NodePress</a></h1>
-  </header>
-
-  <main>
-    <article>
-      <h1>${titleEscaped}</h1>
-      <div class="meta">
-        <time datetime="${post.createdAt.toISOString()}">
-          ${post.createdAt.toLocaleDateString()}
-        </time>
-        — by Author ${post.authorId}
-      </div>
-      <div class="content">
-        ${renderedContent}
-      </div>
-    </article>
-  </main>
-
-  <footer>
-    <p><a href="/">← Back to home</a></p>
-    <p style="margin-top: 1rem; font-size: 0.85rem;">
-      Powered by <a href="https://nodepress.example">NodePress</a>
-    </p>
-  </footer>
-</body>
-</html>`;
+  const html = await engine.render("single", {
+    title: post.title,
+    content: renderedContent,
+  });
 
   return reply.type("text/html").send(html);
 }

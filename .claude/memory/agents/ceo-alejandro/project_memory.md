@@ -110,3 +110,9 @@
 - **CLA Assistant:** 23-04 (jueves) 90 min con Eduardo. Bloquea contribuciones externas hasta que esté activo. **Date:** 2026-04-18
 - **Demo ≤3 min README + dual license docs:** Alejandro + Valentina, deadline 12-05. **Date:** 2026-04-18
 - **Outreach signal review:** 05-05 PM tras planning AM. Ajuste backlog 06-05 si hay cambio material en señal ICP-1. **Date:** 2026-04-18
+
+## Kickoff Sprint 4 — 2026-05-19
+
+- **Sprint Goal aprobado:** "NodePress extensible: vm.Context sandbox, ThemeEngine MVP, gestión post-lanzamiento issues externos, primera iteración feedback ICP-1." **Date:** 2026-05-19
+- **Acción Alejandro:** Backlog adjustment post-ICP-1 signal (#60) con Martín, 19-05 PM. Signal de 15 calls outreach se integra en backlog. **Date:** 2026-05-19
+- **Feature freeze Sprint 4:** 28-05 12:00. Sin excepciones. **Date:** 2026-05-19

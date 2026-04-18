@@ -148,3 +148,12 @@ type: project
 - **Workflow `.github/workflows/publish-cli.yml` creado:** trigger `push tags v*`, setup-node 22 + cache npm, `npm run build --workspace=packages/cli`, `npm publish --workspace=packages/cli --access public`. Secret requerido: `NPM_TOKEN` en repo settings. **Date:** 2026-04-18
 - **`packages/cli/package.json` — `"private": true` eliminado:** CLI ahora publicable. Sin otros cambios (name, version, bin conservados). **Date:** 2026-04-18
 - **`docs/process/release-readiness-checklist.md` creado:** Owner Helena + Martín. Deadline 2026-05-13 EOD. Secciones: pre-release (freeze, CI verde, coverage >80%, TS strict, ESLint, audit), demo/docs (README, TTFA, video, dual license), infraestructura (CLA Assistant, npm publish, CI workflows), go-live (repo público, release GitHub, anuncio). **Date:** 2026-04-18
+
+## Sprint 4 — CI/Coverage fix (2026-04-18)
+
+- **Root cause CI failure:** 5 test files in `packages/server` used `vi.mock("@nodepress/db", async (importOriginal) => {...})`. The `importOriginal()` call loads the real module, which evaluates `packages/db/src/client.ts` at import time. `client.ts` throws `"DATABASE_URL environment variable is required"` if the env var is absent. CI had no Postgres service and no `DATABASE_URL` → all server tests that mock `@nodepress/db` with `importOriginal` failed at module load time. **Date:** 2026-04-18
+- **Root cause Coverage failure:** Postgres service was present but `db:drizzle:push` was never run → DB tables didn't exist → `requireAdmin` decorator queried the `users` table → query threw → POST /wp/v2/posts returned 500 instead of 201. 7 tests in `post.contract.test.ts` failed for this reason. **Date:** 2026-04-18
+- **Fix applied — ci.yml:** Added `postgres:16` service (same credentials as coverage.yml), `Push DB schema` step (`npm run db:drizzle:push`), and `DATABASE_URL` env var on both the push step and the Test step. **Date:** 2026-04-18
+- **Fix applied — coverage.yml:** Added `Push DB schema` step (`npm run db:drizzle:push` with `DATABASE_URL`) before `Run tests with coverage`. **Date:** 2026-04-18
+- **`npx tsc --build` local:** clean (0 errors). **Date:** 2026-04-18
+- **Pattern documented:** Any workflow that runs tests touching `@nodepress/db` (directly or via `importOriginal`) MUST have Postgres service + `DATABASE_URL` + `db:drizzle:push` before the test step. No exceptions. **Date:** 2026-04-18

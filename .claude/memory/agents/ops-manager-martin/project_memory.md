@@ -59,3 +59,10 @@
 - **Repo público 14-05:** owner del checklist = Helena + Martín. Demo video Playwright regenerado antes del 14-05. **Date:** 2026-04-18
 - **Call-log template listo** (commit 8beb2fd): outreach 15 calls ICP-1 arranca 24-04. **Date:** 2026-04-18
 - **Capacity Sprint 3:** mismo equipo, 14 días (05-05 → 16-05), ~12 efectivos con 15% buffer. Sin nuevos miembros hasta Sprint 4. **Date:** 2026-04-18
+
+## Kickoff Sprint 4 — 2026-05-19
+
+- **Acción Martín 20-05:** Crear GitHub Issues #56-#65 con labels P0/P1/P2. **Date:** 2026-05-19
+- **Backlog adjustment post-ICP-1 (#60):** Martín + Alejandro, 19-05 PM. **Date:** 2026-05-19
+- **Issues externos triage:** Martín + Helena, SLA <48h. CLA obligatorio primer PR externo. **Date:** 2026-05-19
+- **Velocity baseline Sprint 4:** Sprint 3 = 11/12. Techo: 10 tickets + 2 buffer. **Date:** 2026-05-19

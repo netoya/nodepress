@@ -3,6 +3,7 @@ import { pathToFileURL } from "node:url";
 import { existsSync } from "node:fs";
 import type { HookRegistry } from "../hooks/types.js";
 import type { PluginContext } from "../hooks/types.js";
+import { runInSandbox } from "./sandbox.js";
 
 /**
  * Plugin module shape — implements the activation contract.
@@ -82,7 +83,8 @@ export async function loadPlugins(
         typeof (mod as PluginModule).default === "function"
       ) {
         const pluginModule = mod as PluginModule;
-        await pluginModule.default(hooks, context);
+        // Run plugin in sandbox with 5 second timeout to prevent hangs
+        await runInSandbox(pluginModule.default, hooks, context, 5000);
         loaded.push(file);
         console.info(`[PluginLoader] loaded ${file}`);
       } else {

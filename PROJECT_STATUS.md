@@ -45,13 +45,13 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado     | Objetivo                                                     |
-| ------------ | ----------------------- | ---------- | ------------------------------------------------------------ |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO | Scaffolding: monorepo, CI, docker, packages init             |
-| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
-| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
-| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO | Roles/capabilities + taxonomías + admin edit flow + CLI init |
-| Sprint 4     | 2026-05-19 → 2026-05-30 | ⚪ BACKLOG | Plugin API + vm.Context + primer plugin + piloto outreach    |
+| Sprint       | Fechas                  | Estado      | Objetivo                                                     |
+| ------------ | ----------------------- | ----------- | ------------------------------------------------------------ |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init             |
+| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO  | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
+| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO  | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
+| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO  | Roles/capabilities + taxonomías + admin edit flow + CLI init |
+| **Sprint 4** | 2026-05-19 → 2026-05-30 | 🟡 PLANNING | Plugin system + Theme engine + post-launch ICP-1 signal      |
 
 ---
 
@@ -370,4 +370,35 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint 3 cerrado)_
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-05-19 (Sprint 4 kickoff)_
+
+---
+
+## Sprint 4 — Plugin System + Theme Engine + Post-Launch (2026-05-19 → 2026-05-30)
+
+**Sprint Goal:** "NodePress extensible: primer plugin JS/TS real con vm.Context sandbox, ThemeEngine MVP, gestión post-lanzamiento de issues externos y primera iteración basada en feedback ICP-1."
+
+**DoD Sprint 4:** Plugin Loader en producción con al menos 1 plugin demo funcional, vm.Context sandbox implementado (ADR-004), ThemeEngine interface implementada (ADR-021), issues externos atendidos en <48h, feedback ICP-1 integrado en backlog.
+
+### Ticket Mapping Sprint 4 (preliminary)
+
+| PROJECT_STATUS # | GitHub Issue | Short title                                            | Responsable        | Estado  |
+| ---------------- | ------------ | ------------------------------------------------------ | ------------------ | ------- |
+| 56               | —            | vm.Context sandbox para plugins (ADR-004)              | Raúl + Román       | ⬜ TODO |
+| 57               | —            | Plugin demo "Hello World" (JS/TS, via loadPlugins)     | Raúl               | ⬜ TODO |
+| 58               | —            | ThemeEngine interface MVP (ADR-021 implementación)     | Román + Lucas      | ⬜ TODO |
+| 59               | —            | Primer template theme (single post + archive)          | Lucas + Marta      | ⬜ TODO |
+| 60               | —            | Backlog adjustment post-ICP-1 signal                   | Alejandro + Martín | ⬜ TODO |
+| 61               | —            | Issues externos triage + CLA checks (post-lanzamiento) | Martín + Helena    | ⬜ TODO |
+| 62               | —            | Plugin API docs (ADR-012 → README plugin authors)      | Román              | ⬜ TODO |
+| 63               | —            | WP Import CLI básico (import-wp subcommand stub)       | Carmen             | ⬜ TODO |
+| 64               | —            | users readonly endpoint GET /wp/v2/users               | Ingrid + Carmen    | ⬜ TODO |
+| 65               | —            | Dashboard #23 visual refinement (defer de Sprint 3)    | Lucas + Marta      | ⬜ TODO |
+
+### Sprint 4 — Kickoff (2026-05-19)
+
+- Retro Sprint 3 async: lanzar 17-05, cerrar 19-05 AM, consolidar antes del planning.
+- Planning Sprint 4: 19-05 AM. Backlog ajustado post signal ICP-1 (calls 24-04 → 02-05).
+- Feature freeze Sprint 4: 28-05 12:00 (2 días QA antes de cierre 30-05).
+- Velocity baseline: Sprint 3 completó 11/12 tickets. Sprint 4 = 10 tickets máx + 2 buffer.
+- P0: vm.Context sandbox + Plugin demo + ThemeEngine interface. Sin estas 3, Sprint 4 no cumple su objetivo.

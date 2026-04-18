@@ -1,0 +1,7 @@
+{
+  "name": "@nodepress/plugin-hello-world",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.js",
+  "description": "Demo plugin for NodePress — appends a comment to post content"
+}

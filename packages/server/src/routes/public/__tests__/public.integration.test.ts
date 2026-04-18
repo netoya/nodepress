@@ -63,7 +63,9 @@ describe("Public HTML Routes", () => {
     await app.register(publicPlugin);
   });
 
-  it("GET / returns 200 with text/html and contains NodePress", async () => {
+  it("GET / returns 200 with text/html archive rendered by ThemeEngine", async () => {
+    // ADR-021 Sprint 4: home delegates to InlineThemeEngine.render("archive", ...)
+    // which emits a <ul><li><a href="/p/:slug">title</a></li></ul> list.
     const response = await app.inject({
       method: "GET",
       url: "/",
@@ -71,8 +73,10 @@ describe("Public HTML Routes", () => {
 
     expect(response.statusCode).toBe(200);
     expect(response.headers["content-type"]).toMatch(/text\/html/);
-    expect(response.body).toContain("NodePress");
-    expect(response.body).toContain("<article>");
+    expect(response.body).toContain("<!DOCTYPE html>");
+    expect(response.body).toContain("<h1>Posts</h1>");
+    expect(response.body).toContain("<ul>");
+    expect(response.body).toContain('<a href="/p/');
   });
 
   it("GET / lists published posts only", async () => {

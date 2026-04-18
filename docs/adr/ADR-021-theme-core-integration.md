@@ -1,7 +1,8 @@
 # ADR-021: Theme↔Core Integration Contract
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-04-18
+- **Accepted:** 2026-04-18
 - **Author:** Román (Tech Lead)
 - **Related:** ADR-005 (Hook System Semantics — sync filters at render), ADR-011 (Theme Engine Architecture), ADR-020 (Plugin Loader Runtime)
 
@@ -82,9 +83,48 @@ Core stays pristine (respects the "core no importa de DB, ni de theme-engine, ni
 
 ## References
 
-- `packages/theme-engine/src/types.ts` — `ThemeEngine` interface location
-- `packages/theme-engine/src/inline.ts` — Sprint 3 MVP implementation (to be added in implementation phase)
-- `packages/server/src/server.ts` — where the engine is registered as a Fastify decorator
+- `packages/theme-engine/src/index.ts` — `ThemeEngine` interface + `InlineThemeEngine` implementation
+- `packages/theme-engine/src/__tests__/theme-engine.test.ts` — MVP contract tests
+- `packages/server/src/routes/public/handlers.ts` — where the engine is instantiated and consumed
 - ADR-005 § Hook System Semantics — sync filters at render time
 - ADR-011 § Theme Engine Architecture — type surface and rationale
 - ADR-020 § Plugin Loader Runtime — plugins register filters that the engine invokes
+
+## Implementation (Sprint 4)
+
+Sprint 4 ships the contract agreed above with the smallest viable footprint. The goal is to validate the integration end-to-end — handlers call `engine.render(...)`, HTML comes out — without committing to a template language, asset pipeline, or resolver.
+
+### What landed
+
+1. **`ThemeEngine` interface** lives in `packages/theme-engine/src/index.ts` (not `types.ts` — co-located with the MVP impl to keep the public entry point single-file for the Sprint 4 iteration; extraction to `types.ts` becomes trivial if a second implementation arrives). Signature is exactly as specified in § Decision:
+
+   ```ts
+   export interface ThemeEngine {
+     render(
+       templateName: string,
+       context: Record<string, unknown>,
+     ): Promise<string>;
+   }
+   ```
+
+2. **`InlineThemeEngine`** — the MVP implementation. Dispatches on `templateName` via a `switch`:
+   - `"single"` → minimal article HTML wrapper around `{ title, content }`.
+   - `"archive"` → minimal `<ul>` of `<a href="/p/:slug">title</a>`.
+   - unknown slug → JSON-dumped fallback `<pre>${JSON.stringify(context, null, 2)}</pre>`. The fallback is deliberate: it makes misrouted handlers visible during development instead of silently returning empty HTML.
+
+3. **Server wiring.** `packages/server/src/routes/public/handlers.ts` imports `InlineThemeEngine` from `@nodepress/theme-engine` and instantiates a module-level singleton: `const engine = new InlineThemeEngine()`. `getHome` calls `engine.render("archive", { posts })` and `getPost` calls `engine.render("single", { title, content })` where `content` is the result of the `the_content` filter chain (ADR-005). The engine returns a full HTML document — handlers no longer assemble their own layout, CSS, or markup; they are reduced to data loading + filter application + delegation. The 404 page stays as an inline string in the handler (it is a server-level error response, not a theme concern); Sprint 5 can promote it to a `"404"` template once real templating lands.
+
+4. **Tests.** `packages/theme-engine/src/__tests__/theme-engine.test.ts` covers the three dispatch branches (single renders title, archive renders slugs, unknown returns JSON fallback). `vitest.config.ts` added to the package, `package.json` test script switched to `vitest run`.
+
+### What did NOT land (still deferred per § Decision)
+
+- Fastify decorator-based injection (instantiation is a module-level singleton in `handlers.ts` for Sprint 4). The switch from singleton to decorator is a Sprint 5 concern when a second engine (swap candidate) exists; today there is nothing to swap and the indirection would be premature.
+- Template-keyed dispatch beyond `single` and `archive`. A third template (e.g. `search`) would land as a `case` in the switch, not a resolver. Explicitly documented in § Consequences.
+- Real renderer (Gutenberg, template files, asset bundling). Sprint 5+.
+- Error handling contract (`TemplateNotFoundError` vs `Result<string>`). Sprint 5+ per § Open Questions — the unknown-slug fallback is a deliberate placeholder, not the final contract.
+
+### Trade-offs realised
+
+- **Ganamos:** handlers are now trivially unit-testable against a stub engine; swap path for the real renderer in Sprint 5 is a single-file change (`const engine = new FullThemeEngine(...)`); filter pipeline stays in the handler which keeps the engine stateless and free of core dependencies; the site chrome (CSS, layout) now lives in one place (the engine) instead of being duplicated per handler.
+- **Perdemos:** the MVP HTML emitted by `InlineThemeEngine` is intentionally minimal — an integration probe, not presentation-quality output. The richer CSS/layout that previously lived in the handlers is dropped for Sprint 4 and will be re-introduced by the real template system in Sprint 5. Product (Martín) signed off on the temporary presentation regression.
+- **Riesgos aceptados:** module-level singleton means every consumer of `handlers.ts` shares the same engine instance — acceptable for the MVP where the engine is stateless; if state ever lands (caches, theme switch hooks), the singleton becomes a liability and we promote to Fastify decorator at that point.

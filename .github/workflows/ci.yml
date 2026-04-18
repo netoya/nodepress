@@ -11,6 +11,20 @@ jobs:
     name: Build, Lint & Test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: nodepress
+          POSTGRES_PASSWORD: nodepress
+          POSTGRES_DB: nodepress_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -31,5 +45,12 @@ jobs:
         run: npm run lint
         continue-on-error: true
 
+      - name: Push DB schema
+        run: npm run db:drizzle:push
+        env:
+          DATABASE_URL: postgresql://nodepress:nodepress@localhost:5432/nodepress_test
+
       - name: Test
         run: npx vitest run
+        env:
+          DATABASE_URL: postgresql://nodepress:nodepress@localhost:5432/nodepress_test

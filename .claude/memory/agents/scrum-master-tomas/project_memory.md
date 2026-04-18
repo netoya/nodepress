@@ -154,3 +154,12 @@
 - **14 tickets máximo + 2 buffer:** si Alejandro añade más, hay que quitar algo equivalente. Techo acordado con el equipo. **Date:** 2026-04-18
 - **Retro Sprint 1 async:** lanzar 30-04, cerrar 04-05, consolidar 05-05 AM. **Date:** 2026-04-18
 - **#23 dashboard visual → Sprint 4 opcional:** admin editor funcional tiene prioridad. **Date:** 2026-04-18
+
+## Kickoff Sprint 4 — 2026-05-19
+
+- **Sprint 4 arranca:** 2026-05-19 → 2026-05-30. Estado: 🟡 PLANNING. **Date:** 2026-05-19
+- **Sprint Goal:** "NodePress extensible: primer plugin JS/TS real con vm.Context sandbox, ThemeEngine MVP, gestión post-lanzamiento de issues externos y primera iteración basada en feedback ICP-1." **Date:** 2026-05-19
+- **P0 inamovibles Sprint 4:** vm.Context sandbox (ADR-004) + Plugin demo "Hello World" + ThemeEngine interface (ADR-021). **Date:** 2026-05-19
+- **Velocity baseline:** Sprint 3 = 11/12. Sprint 4 = 10 tickets máx + 2 buffer. **Date:** 2026-05-19
+- **Feature freeze Sprint 4:** 28-05 12:00. Tomás + Román enforzan. **Date:** 2026-05-19
+- **Retro Sprint 3 async:** lanzar 17-05, cerrar 19-05 AM, consolidar antes del planning. **Date:** 2026-05-19

@@ -27,6 +27,10 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npx tsc --build
+      - name: Push DB schema
+        run: npm run db:drizzle:push
+        env:
+          DATABASE_URL: postgresql://nodepress:nodepress@localhost:5432/nodepress_test
       - name: Run tests with coverage
         run: npx vitest run --coverage
         env:

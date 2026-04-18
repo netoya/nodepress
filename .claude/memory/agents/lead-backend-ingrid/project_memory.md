@@ -267,3 +267,9 @@
 - **Taxonomías mínimas sin jerarquía:** categorías y tags planas en Sprint 3. Jerarquía = deuda documentada en ADR. **Date:** 2026-04-18
 - **Timeout `renderShortcodes` bridge:** sin timeout = riesgo de producción (request cuelga si php-wasm se congela). Raúl añade AbortSignal 5s. **Date:** 2026-04-18
 - **`context=edit` circular dependency resuelta:** requireAdmin real (roles DB) necesario para que context=edit sea seguro. Sprint 3 #44 cierra el círculo. **Date:** 2026-04-18
+
+## Kickoff Sprint 4 — 2026-05-19
+
+- **Sprint 4 arranca 2026-05-19:** Goal = NodePress extensible con vm.Context sandbox, ThemeEngine MVP y gestión post-lanzamiento. **Date:** 2026-05-19
+- **Ingrid en P2:** GET /wp/v2/users readonly (#64) con Carmen. Unblocked tras cierre P1. **Date:** 2026-05-19
+- **Issues externos triage <48h:** proceso activo desde 19-05. CLA obligatorio en primer PR externo. **Date:** 2026-05-19

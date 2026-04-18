@@ -27,3 +27,6 @@ export {
 // Plugin loader (ADR-020)
 export { loadPlugins } from "./plugins/loader.js";
 export type { PluginModule } from "./plugins/loader.js";
+
+// Plugin sandbox (ADR-004 § Crash Isolation)
+export { runInSandbox } from "./plugins/sandbox.js";

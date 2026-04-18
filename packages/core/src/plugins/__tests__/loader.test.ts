@@ -204,4 +204,36 @@ export default function register(hooks, context) {
     expect(registry.hasFilter("filter1")).toBe(true);
     expect(registry.hasFilter("filter2")).toBe(true);
   });
+
+  it("loads hello-world demo plugin from packages/plugins/hello-world", async () => {
+    // Path to the actual hello-world plugin in the workspace
+    const helloWorldDir = path.join(
+      __dirname,
+      "../../../../plugins/hello-world",
+    );
+
+    // Skip test if hello-world plugin not found (CI environment)
+    if (!fs.existsSync(helloWorldDir)) {
+      console.log(`[SKIP] hello-world plugin dir not found: ${helloWorldDir}`);
+      return;
+    }
+
+    const registry = createHookRegistry();
+    const context = new DisposableRegistryImpl() as any;
+
+    const loaded = await loadPlugins(registry, context, helloWorldDir);
+
+    expect(loaded).toContain("index.js");
+    expect(registry.hasFilter("the_content")).toBe(true);
+
+    // Verify the filter works
+    const result = registry.applyFilters(
+      "the_content",
+      "Hello World",
+      {} as any,
+    );
+    expect(result).toContain(
+      "<!-- Hello from NodePress Hello World Plugin! -->",
+    );
+  });
 });
