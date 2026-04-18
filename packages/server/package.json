@@ -13,6 +13,7 @@
   "dependencies": {
     "@nodepress/core": "*",
     "@nodepress/db": "*",
+    "dotenv": "16.4.5",
     "drizzle-orm": "^0.40.0",
     "fastify": "^5.0.0",
     "fastify-plugin": "^4.5.0"

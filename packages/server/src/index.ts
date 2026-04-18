@@ -1,3 +1,11 @@
+import { config } from "dotenv";
+import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+// Load .env from repo root before any other module touches process.env.
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+config({ path: resolve(__dirname, "../../../.env") });
+
 import Fastify from "fastify";
 import { registerBearerAuth } from "./auth/index.js";
 import { registerHooks } from "./hooks.js";

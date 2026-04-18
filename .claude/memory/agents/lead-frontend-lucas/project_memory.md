@@ -51,6 +51,20 @@
 - **Messaging A/B test parqueado** a cierre Sprint — un frente abierto cada vez. **Date:** 2026-04-18
 - **Temperature check equipo: sin señales burnout hoy** — Tomás sondea cada 3-4 días, no asume que flow = sostenible. **Date:** 2026-04-18
 
+## Sprint 1 sem 2 — /posts editor (new+edit) completo (2026-04-18)
+
+- **PostEditorPage.tsx:** 2 modos (new/edit via postId prop). postId=null → crear; number → editar. Formulario se muestra cuando datos están listos (edit) o inmediatamente (new). **Date:** 2026-04-18
+- **PostForm.tsx:** Form controlado reutilizable. Input(title,slug), Textarea(content autoResize, excerpt), Select(status). No rich text — constraint Alejandro. **Date:** 2026-04-18
+- **3 hooks nuevos:** useCreatePost (POST), useUpdatePost (PUT), usePostQuery (GET single). useDeletePost (DELETE) también añadido para PostsListPage. **Date:** 2026-04-18
+- **Hash routing extendido (App.tsx):** `#posts/new` → PostEditorPage(null), `#posts/:id/edit` → PostEditorPage(id). Parsing con split('/') sin React Router. **Date:** 2026-04-18
+- **PostsListPage integrado:** "Add new" → #posts/new, Edit → #posts/:id/edit, Delete → useDeletePost + browser confirm() + toast. Modal pending Sprint 2. **Date:** 2026-04-18
+- **Toast feedback:** 4 mensajes — Post created/updated (success), Failed to create (error), Post moved to trash (success). Usando useToast() de Marta. **Date:** 2026-04-18
+- **Tests 86/86 verdes:** 4 nuevos en PostEditorPage.test.tsx (new mode render, create success, create error, edit mode pre-fill). **Date:** 2026-04-18
+- **Gotcha crítico — React dual instance:** admin/node_modules/react 19.0.0 vs nodepress/node_modules/react 19.2.5. @testing-library/react (hoisted) usa react-dom 19.2.5; componentes con useState directo usaban React 19.0.0 → null dispatcher. Fix: `npm install react@19.2.5 react-dom@19.2.5` en admin/. **Date:** 2026-04-18
+- **Gotcha tests — vi.mock de Radix:** En tests de PostEditorPage, vi.mock("../../../components/ui/ToastProvider") Y vi.mock("../../../components/ui/Select") previenen que sus respectivos paquetes Radix se carguen. Los mocks deben ser static (no await import) para que Vitest los hoise correctamente. **Date:** 2026-04-18
+- **PostEditorPage — no useEffect para sync:** ESLint react-hooks/set-state-in-effect prohíbe setState en useEffect. Solución: serverValues derivados del post query, localEdits como override en useState. Pattern: `values = { ...serverValues, ...localEdits }`. **Date:** 2026-04-18
+- **Gap componentes — Modal:** Para confirm delete se usa browser.confirm() en v1. Modal pendiente Sprint 2. Flagged. **Date:** 2026-04-18
+
 ## Sprint 1 sem 2 día 0 — /posts scaffold + brief forms L2 (2026-04-18)
 
 - **Brief Marta L2 entregado:** `admin/docs/brief-marta-design-system-l2.md` con Input/Textarea/Select/Toast — props API, estructura JSX, a11y, tests mínimos, deps pinned a instalar por Marta (@radix-ui/react-select@2.1.2, @radix-ui/react-toast@1.2.4). **Date:** 2026-04-18
