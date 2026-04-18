@@ -251,3 +251,53 @@ These tests are intended for local pre-merge validation and developer confidence
 | `packages/server/src/routes/posts/__tests__/posts.real-db.test.ts` | 9 real-DB tests (5 endpoints × ~2 tests each)                       |
 | `packages/server/vitest.integration.config.ts`                     | Dedicated config — no workspace, correct include/exclude            |
 | `packages/server/vitest.config.ts`                                 | Default server config — excludes `*.real-db.test.ts`                |
+
+---
+
+## Smoke Fresh-Clone (post-mortem e1b7fbf)
+
+Verifica que el invariante de quickstart se mantiene:
+`git clone && cp .env.example .env && npm i && docker-compose up -d && npm run db:drizzle:push && npm run dev` funciona siempre en main.
+
+- **Workflow:** `.github/workflows/smoke-fresh-clone.yml`
+- **Trigger:** push a main + PRs que tocan db/tooling.
+- **Target TTFA:** <5 min (300s). Warn >2 min (120s).
+- **Falla en:** typecheck, lint, DB migrate, server boot, curl /wp/v2/posts.
+
+### Local smoke (developer)
+
+Antes de abrir un PR que toque tooling, ejecuta localmente:
+
+```bash
+npm run smoke:fresh-clone
+```
+
+Arranca Postgres efímero via Testcontainers, aplica schema, arranca server,
+hace POST + GET end-to-end. TTFA reportado al final. <90s en hardware reciente.
+
+Docker debe estar corriendo. Si no, el script falla con mensaje claro.
+
+**Script:** `scripts/smoke-fresh-clone.ts`
+
+**Steps cubiertos:**
+
+| Step | What                                      | Pass condition                            |
+| ---- | ----------------------------------------- | ----------------------------------------- |
+| 0    | Docker check                              | `docker info` exits 0                     |
+| 1    | Ephemeral Postgres container              | Container starts, URI exported            |
+| 2    | Schema push (`db:drizzle:push`)           | Exit 0                                    |
+| 3    | Dev server spawn (port 3099)              | Process starts                            |
+| 4    | Poll `GET /` (30s timeout)                | Body includes "Hello NodePress"           |
+| 5    | `GET /wp/v2/posts`                        | 200 + `[]`                                |
+| 6    | `POST /wp/v2/posts` with Bearer token     | 201 + numeric `id`                        |
+| 7    | `GET /wp/v2/posts/:id` + shape validation | 200 + required fields + DIV-002 + DIV-005 |
+
+**Errors handled:**
+
+- Docker not running → clear message, exit 1
+- Container start failure → step label + Docker error
+- `db:drizzle:push` non-zero exit → last 800 chars of stderr shown
+- Server boot timeout → last poll error displayed
+- HTTP non-200 responses → status + truncated body
+- Missing shape fields → field name + all keys present listed
+- Unexpected JS error → caught at top level, exit 1

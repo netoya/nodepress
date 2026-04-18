@@ -13,6 +13,7 @@
 - [ ] Rutas en `PROJECT_STATUS.md` coinciden con rutas reales del repo (si aplica)
 - [ ] Si se modifica tooling (tsconfig, vitest, build): matriz canary `build + typecheck + test` verde en core, db, admin (R-1 retro Sprint 0)
 - [ ] Si se añade/modifica desviación de semántica WP: ADR obligatoria antes de merge (regla kickoff Sprint 1)
+- [ ] Smoke fresh-clone: `smoke-fresh-clone` CI job green (auto-verified for tooling/db PRs)
 
 ## Referencias
 

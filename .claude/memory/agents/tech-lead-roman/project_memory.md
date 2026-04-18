@@ -124,3 +124,34 @@
 - **ADR-010 (cli), ADR-011 (theme-engine), ADR-012 (plugin-api) creados en Proposed.** Cada ADR es scoping doc para el Sprint que implementa, no record de shipped behaviour. Estructura coherente con ADRs 005-009: Status, Context, Decision, Open Questions, References. **Date:** 2026-04-18
 - **Regla latente:** sprints futuros — nunca dejar un paquete declarado en monorepo con solo `export {}` más de un sprint. Es deuda latente que se convierte en contrato vacuum para los paquetes vecinos. **Date:** 2026-04-18
 - **Typecheck 3 paquetes nuevos: verde.** `tsc -b --force packages/cli packages/theme-engine packages/plugin-api` compila limpio. Los 9 errores pre-existentes en `packages/server/src/__tests__` y `routes/posts/__tests__` son de las last waves (demo-end-to-end.test.ts, posts.real-db.test.ts) — no introducidos por este trabajo. Tickets pendientes para Ingrid/Carmen. **Date:** 2026-04-18
+
+## Meet 2026-04-18 (noche) — Post-mortem e1b7fbf quickstart roto
+
+- **Diagnóstico:** 7 errores en cadena al arrancar desde clean clone. Ninguno detectado en 2 días por CI mockeado. Fallo SISTÉMICO, no personal. **Date:** 2026-04-18
+- **Causa raíz arquitectónica:** ADR-001 NodeNext ESM no validó operacionalmente vs drizzle-kit CJS. Los 3 fixes tsconfig Sprint 0 fueron señal recurrente ignorada. **Date:** 2026-04-18
+- **Causa raíz táctica:** migration manual `plugin_registry.sql` (Sprint 0 #21) silenció síntoma — sin journal, drizzle-kit no reconocía el dir como snapshot válido. **Date:** 2026-04-18
+- **NodeNext se mantiene.** Workaround `NODE_OPTIONS="--import tsx"` para tooling CJS queda documentado en ADR-014. **Date:** 2026-04-18
+- **CI verde ≠ proyecto arrancable:** "108 tests verdes" generó falso confort. Coverage sobre mocks no certifica sistema real. **Date:** 2026-04-18
+- **Scope freeze NO aplica a hotfix restaurativo:** restaurar invariante ≠ feature nueva. Regla formalizada por Tomás. **Date:** 2026-04-18
+- **TTFA (Time to First API Call) <5 min:** métrica operativa oficial desde este meet. Integrada en burndown semanal de Martín. **Date:** 2026-04-18
+- **CI `smoke-fresh-clone` es hotfix bloqueante antes del jueves 23-04** (CLA Assistant con Eduardo). Helena ejecuta miércoles 22. **Date:** 2026-04-18
+- **ADR-014 "Developer Quickstart Invariant"** — contrato escrito: `git clone && cp .env.example .env && docker-compose up -d && npm i && npm run db:drizzle:push && npm run dev` pasa en cualquier commit main. Román, jueves. **Date:** 2026-04-18
+- **ADR-015 "Tooling runtime boundary"** — Sprint 2. Separación runtime / CI / developer tools con contratos explícitos. **Date:** 2026-04-18
+- **Sprint 2 ticket:** recuperar `drizzle:generate + migrate` con journal comiteado. Ingrid brief + Carmen ejec. **Date:** 2026-04-18
+- **`drizzle:push` es deuda de prod** — historial migraciones perdido hoy para desbloquear. **Date:** 2026-04-18
+- **Regla contributing.md:** PRs que tocan packages/db/**, drizzle.config.ts, tsconfig\*, .env.example exigen smoke fresh-clone en PR body. **Date:\*\* 2026-04-18
+- **DoD updated:** "Clean-clone test executed, documented in PR body". **Date:** 2026-04-18
+- **Señal equipo sana:** 4 de 5 participantes asumieron responsabilidad sin ser forzados. Tomás indicador de madurez. **Date:** 2026-04-18
+- **Martín asume fallo de governance:** commit no pasó por trío (Martín+Román+Tomás) pese a protocolo aprobado esa mañana. No se repite. **Date:** 2026-04-18
+
+## Sprint 1 sem 2 día 0 noche — ADR-014 + R-5 entregados (2026-04-18)
+
+- **ADR-014 "Developer Quickstart Invariant" creado en `Proposed`.** Invariante textual + flujo bash verbatim + TTFA <5 min como métrica operativa. Contrato verificable: cualquier commit en `main` pasa `git clone → curl http://localhost:3000/wp/v2/posts` sin intervención manual. **Date:** 2026-04-18
+- **Alternativas registradas y descartadas con rationale:** `moduleResolution: "bundler"` (rompe `node dist/index.js` + fuerza bundler a consumers), CI mockeado (status quo, falló probadamente), script `quickstart.sh` (mitiga pero no garantiza — se mantiene como companion). **Date:** 2026-04-18
+- **Scope de archivos que rompen el invariante congelado en ADR-014:** `packages/db/**`, `drizzle.config.ts`, `tsconfig*.json`, `package.json` (scripts tooling), `.env.example`, `docker-compose.yml`, `packages/server/src/index.ts`. Es el mismo scope que R-5 y el CI job de Helena — triángulo consistente. **Date:** 2026-04-18
+- **Enforcement triángulo:** (1) CI `smoke-fresh-clone` (Helena, miércoles 22-04 antes CLA session), (2) R-5 en contributing.md (fresh-clone smoke en PR body), (3) TTFA en burndown semanal de Martín desde lunes 21-04. Tres mecanismos, tres modos de fallo distintos. **Date:** 2026-04-18
+- **Workaround `NODE_OPTIONS="--import tsx"` queda documentado en ADR-014 como contrato explícito, no hack.** Todo script futuro que bridge NodeNext ↔ CJS sigue el mismo patrón. **Date:** 2026-04-18
+- **`drizzle:push` sigue siendo deuda de prod** — ADR-014 lo reconoce pero no reabre la decisión; recuperar `drizzle:generate + migrate` con journal comiteado es ticket Sprint 2. **Date:** 2026-04-18
+- **R-5 añadida a contributing.md** después de R-2, TOC actualizado (entrada 9), footer firmado Román. Formato coherente con R-2: when to trigger → how it runs → PR body format → anti-patterns. **Date:** 2026-04-18
+- **Rollback trivial documentado en ADR-014:** si el invariante prueba ser inviable, revert + delete CI workflow + delete R-5 section. Partial rollback: mantener CI (cubre 5/7 failure classes), relajar R-5 humano. Opción registrada por si Tomás/Martín detectan fricción excesiva tras 2 semanas. **Date:** 2026-04-18
+- **Sign-off propio en `Proposed`** — el ADR pasa a `Accepted` tras la primera ronda de CI `smoke-fresh-clone` verde en `main`, no antes. Evita certificar un contrato que aún no ha corrido una vez. **Date:** 2026-04-18

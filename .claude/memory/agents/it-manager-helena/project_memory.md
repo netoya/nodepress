@@ -45,3 +45,34 @@ type: project
 - **R-6 husky prototype:** husky@9.1.7 + lint-staged@16.4.0 instalados (pinned). `.husky/pre-commit` = `npx lint-staged`. Config `lint-staged` en root `package.json`: `*.{ts,tsx}` → eslint --fix + prettier, `*.{md,yaml,yml,json}` → prettier. NO typecheck en pre-commit (lento). `prepare: husky` añadido automáticamente por `husky init`. Status: opt-in, evaluate retro Sprint 1.
 - **R-7 db coverage threshold:** `packages/db/vitest.config.ts` creado con thresholds 75/75/70/75 (stmts/branches/funcs/lines). Modo: **warn-only** — CI debe usar `continue-on-error: true` en el job de db hasta Sprint 2. Smoke test placeholder creado en `packages/db/src/__tests__/smoke.test.ts` (`it.todo`).
 - **quality-gates.md actualizado:** sección "## Husky (prototype / opt-in)" añadida + tabla thresholds actualizada con packages/db.
+
+## Meet 2026-04-18 (noche) — Post-mortem e1b7fbf quickstart roto
+
+- **Diagnóstico:** 7 errores en cadena al arrancar desde clean clone. Ninguno detectado en 2 días por CI mockeado. Fallo SISTÉMICO, no personal. **Date:** 2026-04-18
+- **Causa raíz arquitectónica:** ADR-001 NodeNext ESM no validó operacionalmente vs drizzle-kit CJS. Los 3 fixes tsconfig Sprint 0 fueron señal recurrente ignorada. **Date:** 2026-04-18
+- **Causa raíz táctica:** migration manual `plugin_registry.sql` (Sprint 0 #21) silenció síntoma — sin journal, drizzle-kit no reconocía el dir como snapshot válido. **Date:** 2026-04-18
+- **NodeNext se mantiene.** Workaround `NODE_OPTIONS="--import tsx"` para tooling CJS queda documentado en ADR-014. **Date:** 2026-04-18
+- **CI verde ≠ proyecto arrancable:** "108 tests verdes" generó falso confort. Coverage sobre mocks no certifica sistema real. **Date:** 2026-04-18
+- **Scope freeze NO aplica a hotfix restaurativo:** restaurar invariante ≠ feature nueva. Regla formalizada por Tomás. **Date:** 2026-04-18
+- **TTFA (Time to First API Call) <5 min:** métrica operativa oficial desde este meet. Integrada en burndown semanal de Martín. **Date:** 2026-04-18
+- **CI `smoke-fresh-clone` es hotfix bloqueante antes del jueves 23-04** (CLA Assistant con Eduardo). Helena ejecuta miércoles 22. **Date:** 2026-04-18
+- **ADR-014 "Developer Quickstart Invariant"** — contrato escrito: `git clone && cp .env.example .env && docker-compose up -d && npm i && npm run db:drizzle:push && npm run dev` pasa en cualquier commit main. Román, jueves. **Date:** 2026-04-18
+- **ADR-015 "Tooling runtime boundary"** — Sprint 2. Separación runtime / CI / developer tools con contratos explícitos. **Date:** 2026-04-18
+- **Sprint 2 ticket:** recuperar `drizzle:generate + migrate` con journal comiteado. Ingrid brief + Carmen ejec. **Date:** 2026-04-18
+- **`drizzle:push` es deuda de prod** — historial migraciones perdido hoy para desbloquear. **Date:** 2026-04-18
+- **Regla contributing.md:** PRs que tocan packages/db/**, drizzle.config.ts, tsconfig\*, .env.example exigen smoke fresh-clone en PR body. **Date:\*\* 2026-04-18
+- **DoD updated:** "Clean-clone test executed, documented in PR body". **Date:** 2026-04-18
+- **Señal equipo sana:** 4 de 5 participantes asumieron responsabilidad sin ser forzados. Tomás indicador de madurez. **Date:** 2026-04-18
+- **Martín asume fallo de governance:** commit no pasó por trío (Martín+Román+Tomás) pese a protocolo aprobado esa mañana. No se repite. **Date:** 2026-04-18
+
+## Sprint 1 sem 2 día 0 — CI smoke-fresh-clone (2026-04-18)
+
+- **Workflow creado:** `.github/workflows/smoke-fresh-clone.yml`. Job `smoke-fresh-clone`. **Date:** 2026-04-18
+- **Trigger:** `push` a main + `pull_request` paths: `packages/db/**`, `drizzle.config.ts`, `tsconfig*.json`, `package.json`, `.env.example`, `docker-compose.yml`, `packages/server/**/index.ts`. **Date:** 2026-04-18
+- **Service Postgres 16-alpine:** usuario/pass/db = nodepress/nodepress/nodepress. Sin docker-compose manual — GitHub Actions service nativo. Health check via `pg_isready`. **Date:** 2026-04-18
+- **TTFA medido:** `date +%s` antes de `db:drizzle:push` → `date +%s` tras smoke curl. Reportado en logs. Falla si >300s, warn si >120s. **Date:** 2026-04-18
+- **Steps:** checkout → setup-node 22 + cache npm → npm ci → cp .env.example .env (falla si no existe) → db:drizzle:push → build packages/db → start server bg → poll localhost:3000 30s → curl /wp/v2/posts espera `[]` → TTFA report → kill bg server. **Date:** 2026-04-18
+- **PR template actualizado:** checklist item `Smoke fresh-clone` añadido. **Date:** 2026-04-18
+- **docs/tooling/quality-gates.md:** sección "Smoke Fresh-Clone (post-mortem e1b7fbf)" añadida. **Date:** 2026-04-18
+- **Constraint aplicada:** ci.yml NO modificado. Workflow nuevo independiente. **Date:** 2026-04-18
+- **Deadline:** miércoles 22-04 (bloquea CLA Assistant jueves 23 + outreach privado viernes 24). Artefactos entregados 2026-04-18. **Date:** 2026-04-18

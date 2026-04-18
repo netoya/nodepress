@@ -63,3 +63,7 @@
 | 2026-04-18 | marta           | #24-L2 forms: Input + Textarea + Select + Toast (4 componentes, 28 tests green, 82/82 admin total)                  | 13 files  | pending | ✅     |
 | 2026-04-19 | raul            | spike #25 day 3 verdict final — benchmark 50 invocations + memory profile + ADR-008 Accepted                        | 3 files   | pending | ✅     |
 | 2026-04-18 | lucas           | /posts editor (new+edit) + PostForm + 3 mutations + toast feedback + 4 new tests (86/86 green)                      | 14 files  | pending | ✅     |
+| 2026-04-18 | helena          | CI smoke-fresh-clone (post-mortem action #1) + PR template + docs                                                   | 3 files   | done    | ✅     |
+| 2026-04-18 | roman           | ADR-014 Quickstart Invariant + R-5 contributing.md (post-mortem action #2+#5)                                       | 2 files   | pending | ✅     |
+| 2026-04-18 | ingrid          | smoke:fresh-clone local script + docs (post-mortem action #4)                                                       | 4 files   | pending | ✅     |
+| 2026-04-18 | tomas           | DoD update + R-6 hotfix protocol + incident log (post-mortem #6+#7)                                                 | 3 files   | pending | ✅     |

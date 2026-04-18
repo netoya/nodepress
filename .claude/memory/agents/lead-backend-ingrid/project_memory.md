@@ -56,6 +56,16 @@
 - **OpenAPI updated:** POST `/wp/v2/posts` notes `pre_save_post`; GET `/wp/v2/posts/:id` notes `the_content`. **Date:** 2026-04-18
 - **`docs/process/demo-30-04-plan.md` created:** 3 demo assertions, curl commands, admin panel instructions, fallback. **Date:** 2026-04-18
 
+## Sprint 1 día 2 — smoke:fresh-clone local script (post-mortem action #4)
+
+- **Script:** `scripts/smoke-fresh-clone.ts` — runs via `npm run smoke:fresh-clone` (tsx hoisted from workspace). **Date:** 2026-04-18
+- **Port isolation:** server spawned on 3099 (not 3000) to avoid collisions with running dev instance. **Date:** 2026-04-18
+- **8 steps end-to-end:** docker check → Postgres container → drizzle:push → dev server spawn → poll / → GET /wp/v2/posts=[] → POST /wp/v2/posts → GET + shape verify (DIV-002 title.rendered, DIV-005 \_nodepress). **Date:** 2026-04-18
+- **Errors handled cleanly:** Docker not running, container start failure, drizzle:push non-zero (shows last 800 chars stderr), server boot timeout (shows last poll error), HTTP non-200, missing shape fields. **Date:** 2026-04-18
+- **TTFA output example:** `✅ PASS — TTFA 42.3s` (estimated; actual depends on Docker pull cache). **Date:** 2026-04-18
+- **Docs:** `docs/tooling/quality-gates.md` extended under "Smoke Fresh-Clone" section with "Local smoke (developer)" subsection including step table and error list. **Date:** 2026-04-18
+- **Helena's CI smoke** covers main + PRs (GitHub Actions, TTFA <5min target). This script gives developer local validation <90s before opening PR. Complementary, not duplicate. **Date:** 2026-04-18
+
 ## Session Todos
 
 - move-migrations-to-drizzle: done
@@ -125,3 +135,22 @@
 - **Exclusión del test run por defecto:** `packages/server/vitest.config.ts` añade `exclude: ["**/*.real-db.test.ts"]`. Script `test:integration` usa `vitest run --root packages/server --config vitest.integration.config.ts`. **Date:** 2026-04-18
 - **Tests default: 108 verdes (sin cambio).** Tests integration: 9 tests, pasan cuando Docker disponible. **Date:** 2026-04-18
 - **`docs/tooling/quality-gates.md` actualizado** con sección "Real-DB Integration Tests (#28)". **Date:** 2026-04-18
+
+## Meet 2026-04-18 (noche) — Post-mortem e1b7fbf quickstart roto
+
+- **Diagnóstico:** 7 errores en cadena al arrancar desde clean clone. Ninguno detectado en 2 días por CI mockeado. Fallo SISTÉMICO, no personal. **Date:** 2026-04-18
+- **Causa raíz arquitectónica:** ADR-001 NodeNext ESM no validó operacionalmente vs drizzle-kit CJS. Los 3 fixes tsconfig Sprint 0 fueron señal recurrente ignorada. **Date:** 2026-04-18
+- **Causa raíz táctica:** migration manual `plugin_registry.sql` (Sprint 0 #21) silenció síntoma — sin journal, drizzle-kit no reconocía el dir como snapshot válido. **Date:** 2026-04-18
+- **NodeNext se mantiene.** Workaround `NODE_OPTIONS="--import tsx"` para tooling CJS queda documentado en ADR-014. **Date:** 2026-04-18
+- **CI verde ≠ proyecto arrancable:** "108 tests verdes" generó falso confort. Coverage sobre mocks no certifica sistema real. **Date:** 2026-04-18
+- **Scope freeze NO aplica a hotfix restaurativo:** restaurar invariante ≠ feature nueva. Regla formalizada por Tomás. **Date:** 2026-04-18
+- **TTFA (Time to First API Call) <5 min:** métrica operativa oficial desde este meet. Integrada en burndown semanal de Martín. **Date:** 2026-04-18
+- **CI `smoke-fresh-clone` es hotfix bloqueante antes del jueves 23-04** (CLA Assistant con Eduardo). Helena ejecuta miércoles 22. **Date:** 2026-04-18
+- **ADR-014 "Developer Quickstart Invariant"** — contrato escrito: `git clone && cp .env.example .env && docker-compose up -d && npm i && npm run db:drizzle:push && npm run dev` pasa en cualquier commit main. Román, jueves. **Date:** 2026-04-18
+- **ADR-015 "Tooling runtime boundary"** — Sprint 2. Separación runtime / CI / developer tools con contratos explícitos. **Date:** 2026-04-18
+- **Sprint 2 ticket:** recuperar `drizzle:generate + migrate` con journal comiteado. Ingrid brief + Carmen ejec. **Date:** 2026-04-18
+- **`drizzle:push` es deuda de prod** — historial migraciones perdido hoy para desbloquear. **Date:** 2026-04-18
+- **Regla contributing.md:** PRs que tocan packages/db/**, drizzle.config.ts, tsconfig\*, .env.example exigen smoke fresh-clone en PR body. **Date:\*\* 2026-04-18
+- **DoD updated:** "Clean-clone test executed, documented in PR body". **Date:** 2026-04-18
+- **Señal equipo sana:** 4 de 5 participantes asumieron responsabilidad sin ser forzados. Tomás indicador de madurez. **Date:** 2026-04-18
+- **Martín asume fallo de governance:** commit no pasó por trío (Martín+Román+Tomás) pese a protocolo aprobado esa mañana. No se repite. **Date:** 2026-04-18

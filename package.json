@@ -31,6 +31,7 @@
     "spike:phpwasm": "npm run dev --workspace=packages/spike-phpwasm",
     "test:coverage": "vitest run --coverage",
     "test:integration": "DOCKER_AVAILABLE=true vitest run --root packages/server --config vitest.integration.config.ts && DOCKER_AVAILABLE=true vitest run --root packages/db --config vitest.integration.config.ts",
+    "smoke:fresh-clone": "tsx scripts/smoke-fresh-clone.ts",
     "prepare": "husky"
   },
   "devDependencies": {
