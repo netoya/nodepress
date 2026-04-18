@@ -1,6 +1,6 @@
 # ADR-013: Circuit Breaker Stress Test Findings
 
-**Status:** Proposed
+**Status:** Accepted
 
 **Date:** 2026-04-18
 
@@ -228,10 +228,15 @@ The CircuitBreaker implementation passes all unit tests and stress tests. The si
 
 ---
 
-## Sign-Off
-
-**Approved by:** Raúl (Dev Backend)
+## Sign-off
 
 **Date:** 2026-04-18
 
-**Next Steps:** Merge #30, update project memory with findings, schedule Sprint 2 distributed consensus spike.
+**Signed by:**
+
+- Román (Tech Lead)
+- Raúl (Dev Backend 2)
+
+**Rationale:** Empirical findings confirmed across the 6 stress tests and 11 baseline unit tests (17/17 green). The single-threaded event-loop safety assumption is validated under concurrent load, pluginId isolation holds across parallel workloads, and the HookRegistry integration short-circuits correctly on threshold breach. Known limitations (unbounded Map growth, per-process scope, fixed threshold/window) are explicitly documented and understood by the team; each has a scheduled follow-up (GC ticket S2-W1 assigned to Raúl per kickoff Sprint 2, distributed consensus in Sprint 3). No blocking gaps remain for PoC ship.
+
+**Next Steps:** Merge #30, update project memory with findings, schedule Sprint 2 distributed consensus spike, and land the stale-entry GC ticket in Sprint 2 week 1.
