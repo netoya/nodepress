@@ -59,6 +59,40 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
       });
     });
 
+    it("should omit raw fields when context=view (default)", () => {
+      const post = createSamplePost();
+      const result = toWpPost(post, noopHooks, "view");
+
+      expect(result.title).not.toHaveProperty("raw");
+      expect(result.content).not.toHaveProperty("raw");
+      expect(result.excerpt).not.toHaveProperty("raw");
+    });
+
+    it("should include raw fields when context=edit", () => {
+      const post = createSamplePost();
+      const result = toWpPost(post, noopHooks, "edit");
+
+      expect((result.title as any).raw).toBe("Test Post");
+      expect((result.content as any).raw).toBe(post.content);
+      expect((result.excerpt as any).raw).toBe("Test excerpt");
+    });
+
+    it("raw in context=edit reflects unrendered source, not filtered content", () => {
+      const post = createSamplePost();
+      const hooksThatMutate = {
+        applyFilters<T>(name: string, value: T): T {
+          if (name === "the_content" && typeof value === "string")
+            return (value + " [FILTERED]") as T;
+          return value;
+        },
+      };
+      const result = toWpPost(post, hooksThatMutate, "edit");
+
+      expect(result.content.rendered).toContain("[FILTERED]");
+      expect((result.content as any).raw).toBe(post.content);
+      expect((result.content as any).raw).not.toContain("[FILTERED]");
+    });
+
     it("should apply the_content filter if hooks provided", () => {
       const post = createSamplePost();
       const customHooks = {
@@ -199,6 +233,30 @@ describe("serialize.ts — toWpPost and toWpPostAsync", () => {
         menu_order: 10,
         meta: {},
       });
+    });
+
+    it("should include raw fields when context=edit (async)", async () => {
+      const post = createSamplePost();
+      const result = await toWpPostAsync(post, noopHooks, undefined, "edit");
+
+      expect((result.title as any).raw).toBe("Test Post");
+      expect((result.content as any).raw).toBe(post.content);
+      expect((result.excerpt as any).raw).toBe("Test excerpt");
+    });
+
+    it("raw in context=edit reflects bridge input, not bridge output", async () => {
+      const post = createSamplePost();
+      const mockBridge = {
+        renderShortcodes: vi.fn(async () => ({
+          html: "<p>rendered</p>",
+          warnings: [],
+          error: null,
+        })),
+      };
+      const result = await toWpPostAsync(post, noopHooks, mockBridge, "edit");
+
+      expect(result.content.rendered).toBe("<p>rendered</p>");
+      expect((result.content as any).raw).toBe(post.content);
     });
   });
 });

@@ -2,6 +2,8 @@ import type { Post } from "@nodepress/db";
 import type { HookRegistry } from "@nodepress/core";
 import type { BridgeOutput } from "../../bridge/index.js";
 
+export type SerializeContext = "view" | "edit";
+
 /**
  * No-op HookRegistry used as the default when no registry is provided.
  * Filters pass the value through unchanged; actions are no-ops.
@@ -16,15 +18,8 @@ const noopHooks: Pick<HookRegistry, "applyFilters"> = {
 /**
  * Renders a Post row from Drizzle into WordPress REST API v2 shape.
  * Maps DB columns to WP fields and wraps title/content/excerpt in {rendered, protected}.
- * Omits raw field (only exposed via ?context=edit in WP; NodePress v1 uses context=view).
+ * When context='edit', adds `raw` to title/content/excerpt (WP compat, ADR-009).
  * Omits date_gmt and modified_gmt per DIV-001.
- * NOTE: Full context support (?context=edit with auth) deferred to Sprint 2 (ADR-009).
- *
- * @param dbRow  The Drizzle Post row to serialize.
- * @param hooks  Optional HookRegistry. When provided, the `the_content` filter
- *               (sync) is applied to `content` before building the response.
- *               Defaults to a no-op so existing tests continue to pass without
- *               passing a registry.
  *
  * Hook applied:
  *   - **`the_content`** (filter, sync): `(content: string, post: Post) => string`
@@ -33,12 +28,15 @@ const noopHooks: Pick<HookRegistry, "applyFilters"> = {
 export function toWpPost(
   dbRow: Post,
   hooks: Pick<HookRegistry, "applyFilters"> = noopHooks,
+  context: SerializeContext = "view",
 ) {
   const renderedContent = hooks.applyFilters<string>(
     "the_content",
     dbRow.content,
     dbRow,
   );
+
+  const isEdit = context === "edit";
 
   return {
     id: dbRow.id,
@@ -48,14 +46,17 @@ export function toWpPost(
     status: dbRow.status,
     title: {
       rendered: dbRow.title,
+      ...(isEdit && { raw: dbRow.title }),
       protected: false,
     },
     content: {
       rendered: renderedContent,
+      ...(isEdit && { raw: dbRow.content }),
       protected: false,
     },
     excerpt: {
       rendered: dbRow.excerpt,
+      ...(isEdit && { raw: dbRow.excerpt }),
       protected: false,
     },
     author: dbRow.authorId,
@@ -92,6 +93,7 @@ export async function toWpPostAsync(
   dbRow: Post,
   hooks: Pick<HookRegistry, "applyFilters"> = noopHooks,
   bridge?: { renderShortcodes: (input: any) => Promise<BridgeOutput> },
+  context: SerializeContext = "view",
 ): Promise<ReturnType<typeof toWpPost>> {
   let contentForFilter = dbRow.content;
 
@@ -122,6 +124,8 @@ export async function toWpPostAsync(
     dbRow,
   );
 
+  const isEdit = context === "edit";
+
   return {
     id: dbRow.id,
     date: dbRow.createdAt.toISOString(),
@@ -130,14 +134,17 @@ export async function toWpPostAsync(
     status: dbRow.status,
     title: {
       rendered: dbRow.title,
+      ...(isEdit && { raw: dbRow.title }),
       protected: false,
     },
     content: {
       rendered: renderedContent,
+      ...(isEdit && { raw: dbRow.content }),
       protected: false,
     },
     excerpt: {
       rendered: dbRow.excerpt,
+      ...(isEdit && { raw: dbRow.excerpt }),
       protected: false,
     },
     author: dbRow.authorId,

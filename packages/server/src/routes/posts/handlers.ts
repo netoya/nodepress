@@ -1,7 +1,8 @@
 import type { FastifyReply, FastifyRequest } from "fastify";
 import { db, posts } from "@nodepress/db";
 import { eq, and, or, ilike } from "drizzle-orm";
-import { toWpPost, toWpPostAsync } from "./serialize.js";
+import { toWpPost, toWpPostAsync, type SerializeContext } from "./serialize.js";
+import { requireAdmin } from "../../auth/bearer.js";
 import { deriveSlug, findAvailableSlug } from "./slug.js";
 import { renderShortcodes } from "../../bridge/index.js";
 // hooks.ts registers the `hooks` decorator — import side-effect ensures the
@@ -24,6 +25,14 @@ export async function listPosts(request: FastifyRequest, reply: FastifyReply) {
   );
   const search = (query["search"] as string) ?? "";
   const status = (query["status"] as string) ?? "publish";
+  const rawContext = (query["context"] as string) ?? "view";
+
+  // context=edit exposes raw fields — requires admin auth (ADR-009)
+  if (rawContext === "edit") {
+    await requireAdmin(request, reply);
+    if (reply.sent) return;
+  }
+  const context: SerializeContext = rawContext === "edit" ? "edit" : "view";
 
   // Build WHERE conditions
   const conditions = [];
@@ -59,10 +68,10 @@ export async function listPosts(request: FastifyRequest, reply: FastifyReply) {
   const serialized = useBridge
     ? await Promise.all(
         paginatedPosts.map((p) =>
-          toWpPostAsync(p, hooks, { renderShortcodes }),
+          toWpPostAsync(p, hooks, { renderShortcodes }, context),
         ),
       )
-    : paginatedPosts.map((p) => toWpPost(p, hooks));
+    : paginatedPosts.map((p) => toWpPost(p, hooks, context));
 
   reply.header("X-WP-Total", total.toString());
   reply.header("X-WP-TotalPages", totalPages.toString());
@@ -77,7 +86,16 @@ export async function listPosts(request: FastifyRequest, reply: FastifyReply) {
  */
 export async function getPost(request: FastifyRequest, reply: FastifyReply) {
   const params = request.params as Record<string, unknown>;
+  const query = request.query as Record<string, unknown>;
   const id = parseInt(params["id"] as string, 10);
+  const rawContext = (query["context"] as string) ?? "view";
+
+  // context=edit exposes raw fields — requires admin auth (ADR-009)
+  if (rawContext === "edit") {
+    await requireAdmin(request, reply);
+    if (reply.sent) return;
+  }
+  const context: SerializeContext = rawContext === "edit" ? "edit" : "view";
 
   const [post] = await db.select().from(posts).where(eq(posts.id, id));
 
@@ -91,8 +109,13 @@ export async function getPost(request: FastifyRequest, reply: FastifyReply) {
   // Use async version if Tier 2 bridge is active
   const useBridge = process.env["NODEPRESS_TIER2"] === "true";
   return useBridge
-    ? await toWpPostAsync(post, request.server.hooks, { renderShortcodes })
-    : toWpPost(post, request.server.hooks);
+    ? await toWpPostAsync(
+        post,
+        request.server.hooks,
+        { renderShortcodes },
+        context,
+      )
+    : toWpPost(post, request.server.hooks, context);
 }
 
 /**
