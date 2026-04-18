@@ -35,7 +35,7 @@ describe("WP REST API v2 Contract Harness — Posts", () => {
     app = Fastify();
     await registerBearerAuth(app);
 
-    await app.register(async (fastify) => {
+    await app.register(async (fastify: any) => {
       // GET /wp/v2/posts — returns full WP-shape list with pagination headers
       fastify.get(
         "/wp/v2/posts",

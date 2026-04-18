@@ -13,3 +13,7 @@
 - **Reporte semanal Sprint 0 pendiente:** lo unifico con reporte cierre Sprint 0 + arranque Sprint 1, publicado hoy. **Date:** 2026-04-17
 - **Velocity Sprint 1 = estimación, no predicción:** sin baseline real, primer burndown es hipotético. **Date:** 2026-04-17
 - **Capacity Sprint 1:** 13 tickets / 14 días / ~9 días efectivos por persona con 15% buffer. **Date:** 2026-04-17
+
+## Sprint 1 día 2 — ticket numbering reconciliation (2026-04-18)
+
+- **Ticket numbering reconciliation:** Opción B adoptada. Mapping table en top de PROJECT_STATUS.md. **Why:** todos los commits de 2026-04-17 referencian #14-#27; renumerar invalida histórico sin beneficio real. **How to apply:** en commits/code = PROJECT_STATUS #. En PR footers `Closes #N` = GitHub Issue #. Consultar tabla si duda. **Date:** 2026-04-18

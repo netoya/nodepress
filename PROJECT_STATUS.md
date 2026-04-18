@@ -1,7 +1,35 @@
 # NodePress — Project Status
 
 > Documento vivo. Actualizado en cada Sprint Review.
-> Última actualización: 2026-04-17
+> Última actualización: 2026-04-18
+
+---
+
+## Ticket Numbering
+
+> PROJECT_STATUS is the canonical source. GitHub Issues are tracking artifacts only.
+> Internal numbers (#1-#13 Sprint 0, #14-#27 Sprint 1) are used in commit history and this document.
+> GitHub Issue numbers follow their own sequence (#1-#14 for Sprint 1).
+
+| PROJECT_STATUS # | GitHub Issue | Short title                                        |
+| ---------------- | ------------ | -------------------------------------------------- |
+| 14               | #1           | HookRegistry + removeAllByPlugin                   |
+| 15               | #2           | Content engine posts CRUD                          |
+| 16               | #3           | 5 endpoints REST WP-compatible                     |
+| 17               | #4           | Test harness WP API conformance                    |
+| 18               | #5           | Auth simplificado Bearer=admin                     |
+| 19               | #6           | PluginContext + DisposableRegistry (types)         |
+| 20               | #7           | wrapSyncFilter + wrapAsyncAction + circuit breaker |
+| 21               | #8           | Schema plugin_registry table                       |
+| 22               | #9           | Admin shell (sidebar, header, layout)              |
+| 23               | #10          | Dashboard 4 estados                                |
+| 24               | #11          | Design system componentes base                     |
+| 25               | #12          | Spike php-wasm: shortcode plugin WP real           |
+| 26               | #13          | Benchmark vm.Context: 50 hooks overhead            |
+| 27               | #14          | Matriz extensiones PHP en php-wasm                 |
+
+> In commits and PRs: **always use PROJECT_STATUS numbers** (e.g., `fix(#14): hook ordering`).
+> GitHub Issue number is only for `Closes #N` in PR descriptions — cross-reference with the table above.
 
 ---
 
@@ -183,4 +211,16 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-17_
+## Ticket numbering reconciliation (2026-04-18)
+
+**Decision:** Option B — explicit mapping table. Both numbering systems preserved.
+
+**Rationale:** All 2026-04-17 commits reference PROJECT_STATUS numbers (#14-#27). Renumbering would invalidate commit history cross-references with zero practical benefit. GitHub Issues are tracking artifacts; PROJECT_STATUS is the canonical source (confirmed D-2026-04-17).
+
+**Canonical rule going forward:** Use PROJECT_STATUS numbers in commit messages and code references. Use GitHub Issue numbers only in PR `Closes #N` footers. See mapping table at top of this document.
+
+**Decided by:** Martín (Ops Manager), 2026-04-18.
+
+---
+
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18_

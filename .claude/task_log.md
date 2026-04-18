@@ -43,3 +43,6 @@
 | 2026-04-17 | ingrid          | #17 WP conformance harness — contract/fixtures/tests (26/26 green)                                                  | 4 files   | 0a2833e | ✅     |
 | 2026-04-17 | tomas           | retro Sprint 0 async + ping Sofía + health check PROJECT_STATUS                                                     | 3 files   | 0a2833e | ✅     |
 | 2026-04-17 | raul            | commit Wave 5 (0a2833e — rama temporal + ff-merge workaround)                                                       | 11 files  | 0a2833e | ✅     |
+| 2026-04-18 | martin          | reconcile numeración tickets PROJECT_STATUS ↔ GitHub Issues — Opción B, mapping table añadida                       | 1 file    | pending | ✅     |
+| 2026-04-18 | carmen          | fix(serialize): remove raw field — OpenAPI alignment + ADR-009 context-param deferral                              | 4 files   | pending | ✅     |
+| 2026-04-18 | raul            | spike #25 day 2 — php-wasm hello world + shortcode + hook interception + extension matrix validation               | 4 files   | pending | ✅     |

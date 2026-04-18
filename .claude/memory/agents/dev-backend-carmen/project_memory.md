@@ -14,3 +14,11 @@ type: project
 - **DELETE soft vs hard:** default soft (status=trash); `?force=true` hard delete. Devuelve Post pre-delete (shape con `deleted: true`). **Date:** 2026-04-17
 - **Pagination headers `X-WP-Total` + `X-WP-TotalPages`:** devueltos en list endpoint. Per_page max 100, default 10. **Date:** 2026-04-17
 - **Schema Drizzle tiene todos los campos necesarios — sin bloqueadores.** **Date:** 2026-04-17
+
+## Sprint 1 día 2 — #20 fix raw field alignment con OpenAPI (2026-04-18)
+
+- **Ingrid detectó desalineamiento en #17 test harness:** `toWpPost()` devolvía `{rendered, raw, protected}` pero OpenAPI schema RenderedField solo declara `{rendered, protected}`. Bug: `raw` expone contenido sin renderizar a clientes públicos. **Date:** 2026-04-18
+- **Fix aplicado (Opción A):** Eliminar campo `raw` de serialize.ts en todos los contextos. NodePress v1 opera en `context=view` exclusivamente. Full `?context=edit` support se pospone a Sprint 2 cuando roles estén implementados. **Date:** 2026-04-18
+- **ADR-009 creado:** Documenta decisión de diferir context param a Sprint 2. Rationale: Sprint 1 no tiene consumidor edit-context; implementación completa agrega ~50 líneas + complexity en routing. Rollback trivial si business demand surge. **Date:** 2026-04-18
+- **Tests:** 43/43 verde (14 Carmen posts integration + 26 Ingrid conformance + 3 bearer auth). Fixtures Ingrid ya omitían `raw`; fix es 100% compatible. **Date:** 2026-04-18
+- **Ficheros:** serialize.ts (cambio principal), post.contract.test.ts (TS strict type fix pre-existente), vitest.workspace.ts (fix config admin ref), ADR-009 creado. **Date:** 2026-04-18

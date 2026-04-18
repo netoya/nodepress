@@ -17,3 +17,14 @@
 - **Hard requirement day 2:** runner ejecuta `<?php echo "test"; ?>` + latencias; shortcode real (Contact Form 7) ejecuta; hook registration interceptada → serializada a JS. **Date:** 2026-04-17
 - **Hard requirement day 3 (si day 2 OK):** benchmark latencias x50, memory profiling, extension matrix, verdict final Tier 2 sí/no/condicional. **Date:** 2026-04-17
 - **Tiempo invertido day 1:** ~50 min, dentro de budget. Continúa 2026-04-18. Hard stop mantenido para 2026-04-19. **Date:** 2026-04-17
+
+## Sprint 1 día 2 — spike #25 php-wasm (2026-04-18)
+
+- **Bloqueador resuelto:** Pattern desde wordpress-playground: pass `processId` via `emscriptenOptions` a `loadNodeRuntime()`. 20 min investigación + validación. **Date:** 2026-04-18
+- **Hello world ejecutable:** `<?php echo "test"; ?>` runs. Cold start 43.16ms, warm 0.98ms average (0.68–1.65ms range). Excelente. **Date:** 2026-04-18
+- **Shortcode POC:** Bespoke `hello-nodepress` shortcode (50KB equivalent). Uses preg_replace, date(), hash(). Output: HTML con timestamp + SHA256. Latency: 7.46ms. **Date:** 2026-04-18
+- **Hook interception:** Demo hook registry via json_encode(). Captures hook name + priority + timestamp. Proof of concept: PHP → JS data serialization works. **Date:** 2026-04-18
+- **Extension matrix surprise:** 44 extensions loaded, NOT 20–21. Includes cURL, GD, Imagick, PDO_MySQL, mysqli, SOAP. **ADR-008 es incompleto.** Helena debe actualizar tabla. **Date:** 2026-04-18
+- **Verdict day 2 = CONTINUAR A DAY 3.** Tier 2 viable confirmed. Todos hard requirements cumplidos. Plan day 3: benchmark ×50, memory profile, decisión final. **Date:** 2026-04-18
+- **Tiempo invertido day 2:** ~2.5 horas (investigación wordpress-playground + implementación runner + bespoke plugin + doc). Dentro de budget. **Date:** 2026-04-18
+- **Deliverable:** docs/spikes/2026-04-18-day2-phpwasm.md (comprehensive findings + blocker resolution + extension matrix delta). **Date:** 2026-04-18
