@@ -1,0 +1,445 @@
+openapi: "3.1.0"
+
+info:
+  title: NodePress REST API
+  version: "1.0.0"
+  description: |
+    WordPress REST API v2-compatible endpoints for NodePress.
+    Base path: /wp/v2 — matches WP REST API routing convention.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+
+x-nodepress-notes:
+  wp-divergences:
+    - id: DIV-001
+      field: date_gmt / modified / modified_gmt
+      status: missing
+      description: |
+        WP exposes date, date_gmt, modified, modified_gmt as separate fields.
+        NodePress schema has createdAt (maps to date) and updatedAt (maps to modified).
+        date_gmt and modified_gmt are absent — no timezone-aware UTC columns exist yet.
+        The REST layer returns date and modified in ISO 8601; gmt variants are omitted.
+      adr_candidate: true
+    - id: DIV-002
+      field: title / content / excerpt
+      status: shape-mismatch
+      description: |
+        WP REST returns title, content, excerpt as objects with {rendered, raw, protected}.
+        The Drizzle schema stores them as plain varchar/text columns.
+        The REST layer MUST wrap them in the WP object shape on serialization.
+        No schema change needed — this is a presentation concern.
+      adr_candidate: false
+    - id: DIV-003
+      field: featured_media / comment_status / ping_status / format / sticky / template
+      status: missing
+      description: |
+        These WP standard fields have no columns in the NodePress posts table.
+        They are omitted from the Post schema. Clients expecting WP compat must
+        treat them as absent (undefined). Add as needed in future sprints.
+      adr_candidate: true
+    - id: DIV-004
+      field: categories / tags
+      status: missing
+      description: |
+        WP exposes taxonomy term arrays (categories, tags) on each post.
+        NodePress has no taxonomy tables yet. Omitted from v1 Post schema.
+      adr_candidate: true
+    - id: DIV-005
+      field: type / menu_order / meta (JSONB)
+      status: extra
+      description: |
+        NodePress schema has extra columns not in WP REST API v2 default response:
+        type (post type), menu_order (integer), meta (JSONB).
+        Exposed under _nodepress namespace in the response to avoid collision.
+      adr_candidate: false
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      description: |
+        Admin Bearer token. Set NODEPRESS_ADMIN_TOKEN env var.
+        Development default: dev-admin-token.
+
+  schemas:
+    RenderedField:
+      type: object
+      description: WP-style wrapper for rendered string content.
+      required:
+        - rendered
+      properties:
+        rendered:
+          type: string
+          description: The rendered (HTML) version of the field.
+        protected:
+          type: boolean
+          description: Whether the field is password-protected.
+          default: false
+
+    Post:
+      type: object
+      description: |
+        A post object following WP REST API v2 shape.
+        See x-nodepress-notes for divergence details.
+      required:
+        - id
+        - date
+        - slug
+        - status
+        - title
+        - content
+        - author
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the post.
+          example: 1
+        date:
+          type: string
+          format: date-time
+          description: |
+            The date the post was published (local time, ISO 8601).
+            Mapped from createdAt. date_gmt omitted — see DIV-001.
+          example: "2026-04-17T10:00:00.000Z"
+        modified:
+          type: string
+          format: date-time
+          description: |
+            The date the post was last modified (local time, ISO 8601).
+            Mapped from updatedAt. modified_gmt omitted — see DIV-001.
+          example: "2026-04-17T12:00:00.000Z"
+        slug:
+          type: string
+          description: URL-friendly post identifier.
+          example: "hello-world"
+        status:
+          type: string
+          enum:
+            - publish
+            - future
+            - draft
+            - pending
+            - private
+            - trash
+          description: Named post status.
+          example: "draft"
+        title:
+          $ref: "#/components/schemas/RenderedField"
+        content:
+          $ref: "#/components/schemas/RenderedField"
+        excerpt:
+          $ref: "#/components/schemas/RenderedField"
+        author:
+          type: integer
+          description: The ID for the author of the post (authorId in DB).
+          example: 1
+        _nodepress:
+          type: object
+          description: NodePress-specific fields not in WP REST API v2 (see DIV-005).
+          properties:
+            type:
+              type: string
+              description: Post type (e.g. "post", "page").
+              example: "post"
+            parent_id:
+              type: integer
+              nullable: true
+              description: ID of the parent post.
+            menu_order:
+              type: integer
+              description: Menu order for ordering posts.
+              example: 0
+            meta:
+              type: object
+              description: Arbitrary JSONB metadata.
+              additionalProperties: true
+
+    PostCreateBody:
+      type: object
+      required:
+        - title
+        - content
+      properties:
+        title:
+          type: string
+          description: Post title (plain text).
+          example: "Hello World"
+        content:
+          type: string
+          description: Post content (HTML allowed).
+          example: "<p>Welcome to NodePress.</p>"
+        status:
+          type: string
+          enum:
+            - publish
+            - future
+            - draft
+            - pending
+            - private
+          default: draft
+          description: Desired post status.
+        excerpt:
+          type: string
+          description: Post excerpt (optional).
+          example: "A short intro."
+        slug:
+          type: string
+          description: URL-friendly identifier. Auto-generated from title if omitted.
+
+    PostUpdateBody:
+      type: object
+      description: Partial update — all fields optional.
+      properties:
+        title:
+          type: string
+        content:
+          type: string
+        status:
+          type: string
+          enum:
+            - publish
+            - future
+            - draft
+            - pending
+            - private
+            - trash
+        excerpt:
+          type: string
+        slug:
+          type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          example: "UNAUTHORIZED"
+        message:
+          type: string
+          example: "Valid Bearer token required"
+        data:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 401
+
+paths:
+  /wp/v2/posts:
+    get:
+      operationId: listPosts
+      summary: List posts
+      description: |
+        Returns a paginated list of posts. Public endpoint — no authentication required.
+        Mirrors WP REST API GET /wp/v2/posts behaviour.
+      tags:
+        - Posts
+      parameters:
+        - name: page
+          in: query
+          description: Current page of the collection.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          description: Maximum number of items to return (max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: search
+          in: query
+          description: Limit results to those matching a string (searches title and content).
+          schema:
+            type: string
+        - name: status
+          in: query
+          description: |
+            Limit to posts with one or more specific statuses.
+            Unauthenticated requests may only see publish status.
+          schema:
+            type: string
+            enum:
+              - publish
+              - future
+              - draft
+              - pending
+              - private
+              - trash
+            default: publish
+      responses:
+        "200":
+          description: A list of posts.
+          headers:
+            X-WP-Total:
+              description: Total number of posts matching the query.
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Post"
+
+    post:
+      operationId: createPost
+      summary: Create a post
+      description: Creates a new post. Requires admin authentication.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostCreateBody"
+      responses:
+        "201":
+          description: Post created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "400":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /wp/v2/posts/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: Unique identifier for the post.
+        schema:
+          type: integer
+
+    get:
+      operationId: getPost
+      summary: Retrieve a post
+      description: Retrieves a single post by ID. Public endpoint.
+      tags:
+        - Posts
+      responses:
+        "200":
+          description: Post found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "404":
+          description: Post not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    put:
+      operationId: updatePost
+      summary: Update a post
+      description: Updates a post. Partial updates allowed — omitted fields are unchanged. Requires admin.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostUpdateBody"
+      responses:
+        "200":
+          description: Post updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Post"
+        "400":
+          description: Invalid request body.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Post not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+    delete:
+      operationId: deletePost
+      summary: Delete a post
+      description: |
+        Soft-deletes a post by setting status to "trash".
+        Pass `?force=true` to permanently delete from the database.
+        Requires admin.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: force
+          in: query
+          description: Whether to bypass trash and force deletion.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: Post deleted (or trashed).
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: "#/components/schemas/Post"
+                  - type: object
+                    properties:
+                      deleted:
+                        type: boolean
+                        example: true
+                      previous:
+                        $ref: "#/components/schemas/Post"
+        "401":
+          description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Post not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"

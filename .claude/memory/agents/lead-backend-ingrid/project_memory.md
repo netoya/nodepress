@@ -50,3 +50,14 @@
 - **Corrección ruta migración plugin_registry en PROJECT_STATUS:** quedó en packages/db/drizzle/ tras cleanup (no en packages/db/src/). **Date:** 2026-04-17
 - **Contrato HookEntry con Román:** { pluginId, priority, fn }. Sesión 30 min post-kickoff para congelar firma. **Date:** 2026-04-17
 - **Cualquier desvío de semántica WP requiere ADR.** Aplicable a API design también: si endpoint devuelve shape no-WP, ADR obligatoria. **Date:** 2026-04-17
+
+## Sprint 1 día 1 — Auth + OpenAPI spec (2026-04-17)
+
+- **Token dev default:** `dev-admin-token`, leído con `process.env["NODEPRESS_ADMIN_TOKEN"] ?? "dev-admin-token"`. **Why:** facilita dev local sin .env fijado; prod sin env fijada falla por falta de token real. **How to apply:** `NODEPRESS_ADMIN_TOKEN` obligatorio en staging/prod. **Date:** 2026-04-17
+- **requireAdmin como preHandler ruta-a-ruta:** NO global. Rutas públicas (GET /wp/v2/posts, GET /wp/v2/posts/:id) no lo llevan; escritura sí (POST/PUT/DELETE). **Why:** WP REST diferencia lectura pública de escritura autenticada. **Date:** 2026-04-17
+- **OpenAPI 3.1 en docs/api/openapi.yaml:** 5 endpoints WP-compat v2 posts. Validado con js-yaml. **Date:** 2026-04-17
+- **Divergencia DIV-001 — date_gmt/modified_gmt ausentes:** schema solo `createdAt`/`updatedAt`. REST mapea `date←createdAt`, `modified←updatedAt`, omite `_gmt`. **ADR candidate.** **Date:** 2026-04-17
+- **Divergencia DIV-002 — title/content/excerpt planos en DB:** WP REST espera `{rendered, raw, protected}`. La REST layer envuelve al serializar, sin cambio de schema. **Date:** 2026-04-17
+- **Divergencia DIV-003 — featured_media, comment_status, ping_status, format, sticky, template inexistentes:** omitidos v1. **ADR candidate** cuando se implementen. **Date:** 2026-04-17
+- **Divergencia DIV-004 — taxonomías sin tablas:** documentado en x-nodepress-notes. Sprint 2+. **Date:** 2026-04-17
+- **Divergencia DIV-005 — campos extra (type, menuOrder, meta) bajo `_nodepress` namespace:** no contaminan contract WP. **Date:** 2026-04-17

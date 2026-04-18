@@ -86,3 +86,13 @@
 - **Cualquier desvío de semántica WP requiere ADR** antes de implementar. Regla impuesta por Alejandro. **How to apply:** en code review, si detecto desvío sin ADR, bloqueo merge. **Date:** 2026-04-17
 - **Testing bar HookRegistry:** 100% coverage, ordering prioridades, removeAllByPlugin, property-based test add→remove→add idempotente. **Date:** 2026-04-17
 - **Merge ci/db-migrations-cleanup → main es bloqueante para Sprint 1.** Lo ejecuto yo tras kickoff, squash. **Date:** 2026-04-17
+
+## Sprint 1 día 1 — HookRegistry implementation (2026-04-17)
+
+- **Estructura de datos HookRegistry:** 2 Map<string, Entry[]> separados (filters/actions). Listas ordenadas por priority asc con **inserción estable FIFO** en add*. Hot path itera data pre-ordenada. **Date:** 2026-04-17
+- **Error handling actual = try/catch + console.warn:** un filter/action que lanza no rompe el pipeline. Es placeholder. **Why:** resilience mínima; wrapSyncFilter + wrapAsyncAction + circuit breaker completo llegan con #20 (Raúl). **Date:** 2026-04-17
+- **Logger inyectable pendiente:** `console.warn` hoy; abstraer en Sprint 2. TODO inline. **Date:** 2026-04-17
+- **Tests 17/17 verdes:** 10 escenarios del brief + variantes (ordering, removeAllByPlugin, idempotencia manual 5 ciclos). `fast-check` no disponible — sustituido por bucle manual. **Date:** 2026-04-17
+- **Coverage no medido formalmente:** `@vitest/coverage-v8` no instalado. Helena debe añadirlo junto al flat config ESLint. **Date:** 2026-04-17
+- **Factory `createHookRegistry()` expuesta junto con la clase:** permite testing aislado sin estado global. **Date:** 2026-04-17
+- **Admin package tests rotos (13 fallos pre-existentes):** `toBeInTheDocument` sin setup `@testing-library/jest-dom`. Ticket para Lucas/Marta — no bloqueo de core. **Date:** 2026-04-17

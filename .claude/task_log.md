@@ -24,3 +24,7 @@
 | 2026-04-17 | raul            | git identity local + untrack tsbuildinfo   | 2 files  | 48891a8 | ✅     |
 | 2026-04-17 | roman           | ADR-005 scope fix + housekeeping commit    | 5 files  | 48891a8 | ✅     |
 | 2026-04-17 | raul            | rewrite authorship + push main (3 commits) | —        | 48891a8 | ✅     |
+| 2026-04-17 | ingrid          | #18 auth Bearer + OpenAPI spec 5 endpoints | 7 files  | pending | ✅     |
+| 2026-04-17 | roman           | #14 HookRegistry impl + tests (17/17 green) | 2 files  | pending | ✅     |
+| 2026-04-17 | raul            | spike #25 day 1 — php-wasm setup + ecosystem scan | 6 files  | pending | ✅     |
+| 2026-04-17 | marta           | #24 design system: 6 components + 46 tests green + jest-dom setup | 17 files | pending | ✅     |

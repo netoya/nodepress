@@ -27,7 +27,8 @@
     "db:drizzle:generate": "npm run drizzle:generate --workspace=packages/db",
     "db:drizzle:push": "npm run drizzle:push --workspace=packages/db",
     "db:drizzle:status": "npm run drizzle:status --workspace=packages/db",
-    "cli": "npm run start --workspace=packages/cli --"
+    "cli": "npm run start --workspace=packages/cli --",
+    "spike:phpwasm": "npm run dev --workspace=packages/spike-phpwasm"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

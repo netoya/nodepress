@@ -1,6 +1,12 @@
 import Fastify from "fastify";
+import { registerBearerAuth } from "./auth/index.js";
 
 const server = Fastify({ logger: true });
+
+// Register the bearer auth decorator.
+// Routes that require admin should use:  { preHandler: [server.requireAdmin] }
+// Public routes (e.g. GET /wp/v2/posts) omit the preHandler entirely.
+await registerBearerAuth(server);
 
 server.get("/", async () => {
   return "Hello NodePress";
