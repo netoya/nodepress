@@ -45,13 +45,13 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado      | Objetivo                                                     |
-| ------------ | ----------------------- | ----------- | ------------------------------------------------------------ |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init             |
-| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO  | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
-| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO  | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
-| Sprint 3     | 2026-05-05 → 2026-05-16 | 🔵 EN CURSO | Roles/capabilities + taxonomías + admin edit flow + CLI init |
-| Sprint 4     | 2026-05-19 → 2026-05-30 | ⚪ BACKLOG  | Plugin API + vm.Context + primer plugin + piloto outreach    |
+| Sprint       | Fechas                  | Estado     | Objetivo                                                     |
+| ------------ | ----------------------- | ---------- | ------------------------------------------------------------ |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO | Scaffolding: monorepo, CI, docker, packages init             |
+| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
+| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
+| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO | Roles/capabilities + taxonomías + admin edit flow + CLI init |
+| Sprint 4     | 2026-05-19 → 2026-05-30 | ⚪ BACKLOG | Plugin API + vm.Context + primer plugin + piloto outreach    |
 
 ---
 
@@ -344,17 +344,17 @@
 | 48               | —            | Bridge timeout 5s + D-014 disposeAll AbortSignal   | Raúl            | ✅ DONE |
 | 49               | —            | GET /wp/v2/categories + /tags REST + OpenAPI       | Ingrid          | ✅ DONE |
 | 50               | —            | TaxonomySelector + PostForm taxonomy assignment    | Lucas           | ✅ DONE |
-| 51               | —            | Backend persist post→taxonomy assignments          | Carmen          | ⬜ TODO |
-| 52               | —            | ADR-020 Plugin Loader → Accepted + implementation  | Román + Raúl    | ⬜ TODO |
-| 53               | —            | ADR-021 Theme↔Core → implementación MVP            | Román + Lucas   | ⬜ TODO |
-| 54               | —            | CI npm publish CLI + release checklist             | Helena + Martín | ⬜ TODO |
-| 55               | —            | Demo video regenerado con features Sprint 3        | Lucas           | ⬜ TODO |
+| 51               | —            | Backend persist post→taxonomy assignments          | Carmen          | ✅ DONE |
+| 52               | —            | ADR-020 Plugin Loader → Accepted + implementation  | Raúl            | ✅ DONE |
+| 53               | —            | ADR-021 Theme↔Core contract (Proposed — Sprint 4)  | Román           | 🔵 S4   |
+| 54               | —            | CI npm publish CLI + release checklist             | Helena + Martín | ✅ DONE |
+| 55               | —            | Demo spec Sprint 3 (TaxonomySelector + categories) | Lucas           | ✅ DONE |
 
-### Sprint 3 — Estado parcial (2026-04-18)
+### Sprint 3 — Estado cierre (2026-04-18)
 
-- **Tickets completados:** 7/12
-- **Tests:** 360 verdes (186 server + 95 admin + 70 core + 5 db + 4 cli)
-- **ADRs:** 12 Accepted (001-012 + 013-019), 2 Proposed (020, 021)
+- **Tickets completados:** 11/12 (#53 ADR-021 implementation → Sprint 4)
+- **Tests:** 368 verdes (189 server + 95 admin + 77 core + 5 db + 4 cli)
+- **ADRs:** 13 Accepted (001-020), 1 Proposed (021 — implementación Sprint 4)
 - **Feature freeze:** 2026-05-12 12:00
 - **Repo público:** 2026-05-14
 
@@ -370,4 +370,4 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint 3 en curso)_
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint 3 cerrado)_

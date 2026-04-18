@@ -97,3 +97,7 @@
 | 2026-04-18 | raul            | GET /wp/v2/media stub + bridge 5s timeout + disposeAll AbortSignal + CLI serve/migrate (9 tests)                              | 7 files   | 17c8cb4 | ✅     |
 | 2026-04-18 | ingrid          | GET /wp/v2/categories + /tags REST + OpenAPI WpTerm schema + spec (9 tests, 355 total)                                        | 5 files   | 734e1ca | ✅     |
 | 2026-04-18 | lucas           | TaxonomySelector + PostForm taxonomy assignment + MSW handlers (8 tests, 360 total)                                           | 9 files   | bcf7a58 | ✅     |
+| 2026-04-18 | carmen          | #51 POST/PUT posts persist categories+tags in term_relationships + toWpPost response (3 tests)                                | 5 files   | 947a1c5 | ✅     |
+| 2026-04-18 | helena          | #54 CI publish-cli.yml (v\* tag trigger) + release-readiness-checklist.md (owner Helena+Martín)                               | 2 files   | 947a1c5 | ✅     |
+| 2026-04-18 | raul            | #52 loadPlugins() Plugin Loader Runtime + ADR-020 → Accepted + 7 tests (368 total)                                            | 4 files   | 3a4b884 | ✅     |
+| 2026-04-18 | lucas           | #55 demo spec Sprint 3 — TaxonomySelector panels + category selection flow                                                    | 1 file    | 3a4b884 | ✅     |
