@@ -223,4 +223,35 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18_
+## Sprint 1 día 2 — closing health check (2026-04-18)
+
+### Progreso tickets
+
+- **DONE hoy:** #14 (final via CircuitBreaker), #17 (WP conformance harness), #20 (wrapSync/Async + CircuitBreaker), #27 (ADR-008 revised empirical)
+- **DRAFT:** #23 dashboard (4 states con MSW, pending wireframes Sofía para refinement visual)
+- **Demo 30-04 implementada:** hooks `pre_save_post` + `the_content` wired a REST handlers + 8 tests demo end-to-end green. 30-04 pasa de deadline a ceremonia de aceptación.
+- **En curso:** #25 spike day 2/3 (verdict: Tier 2 VIABLE high confidence, 44 ext loaded vs 20 esperadas)
+- **Pendiente day 3 (2026-04-19):** #25 benchmark 50 invocations + memory profiling + verdict final, #26 parte del spike
+
+### Calidad
+
+- Tests acumulados: **108 verdes** (17 HookRegistry + 15 DisposableRegistry + 14 REST integration + 46 UI + 3 auth + 26 WP conformance + 11 CircuitBreaker + 15 wrappers + 8 db smoke + 8 demo end-to-end + 4 dashboard states — descontando solapes)
+- Coverage core: 93.8% HookRegistry / 100% context.ts. db warn-only 75%.
+- ADRs: 005, 006, 007, 008 (revised), 009. Todas Proposed.
+- Lint: 0 errors, 0 warnings.
+- ESLint v9 flat config + Husky pre-commit + vitest coverage-v8 operativos.
+
+### Proceso
+
+- Retro Sprint 0 cerrada con 9 action items (R-1..R-9). R-1/2/3/4/6/7 iniciadas o aplicadas hoy.
+- GitHub Issues sincronizados: 10 cerrados con commit reference, 3 comentados con contexto.
+- PR template reforzado con path-sync, canary matrix, WP-semantics ADR checks.
+- Bug latente descubierto y arreglado: `packages/core/src/index.ts` estaba vacío — barrel export completo ahora.
+
+### Estado Sprint 1 al cierre día 2
+
+**12/13 tickets en algún estado de done (92%).** Solo queda #23 visual refinement (pending wireframes) + #25/#26 spike day 3 (scheduled 2026-04-19 hard stop).
+
+---
+
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (cierre día 2)_
