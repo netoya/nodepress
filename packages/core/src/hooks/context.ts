@@ -39,3 +39,56 @@ export interface DisposableRegistry {
    */
   disposeAll(): Promise<void>;
 }
+
+// ---------------------------------------------------------------------------
+// Concrete implementation
+// ---------------------------------------------------------------------------
+
+/**
+ * Reference implementation of {@link DisposableRegistry}.
+ *
+ * Used by `PluginContext` implementations to manage resource cleanup during
+ * the DRAINING phase of plugin deactivation (ADR-004).
+ *
+ * Key properties:
+ * - `register` is O(1) and synchronous.
+ * - `disposeAll` runs disposers sequentially (insertion order). A failing
+ *   disposer is logged via `console.warn` and does not abort the chain.
+ * - After `disposeAll` resolves the internal list is cleared — a second call
+ *   resolves immediately without re-running any disposer.
+ *
+ * TODO(D-014): Per ADR-004 the lifecycle imposes a 5 s per-plugin timeout on
+ * the DRAINING window. Individual disposer timeouts are NOT yet implemented
+ * here — that guard belongs to the lifecycle layer (`wrapAsyncAction` in #20).
+ * Once #20 ships, callers should wrap this via `withTimeout(registry, 5_000)`.
+ */
+export class DisposableRegistryImpl implements DisposableRegistry {
+  readonly #disposers: Array<() => void | Promise<void>> = [];
+
+  register(dispose: () => void | Promise<void>): void {
+    this.#disposers.push(dispose);
+  }
+
+  async disposeAll(): Promise<void> {
+    // Drain the list by splicing out all entries atomically before running
+    // them. This guarantees idempotency: a second `disposeAll` call that
+    // races the first (or follows it) sees an empty list and returns
+    // immediately without re-firing any disposer.
+    const snapshot = this.#disposers.splice(0);
+    for (const dispose of snapshot) {
+      try {
+        await dispose();
+      } catch (err) {
+        // Resilience: one failing disposer must not block the rest.
+        // TODO: replace with injected logger once logger abstraction lands (#20).
+        const msg =
+          err instanceof Error
+            ? err.message
+            : typeof err === "string"
+              ? err
+              : String(err);
+        console.warn(`[DisposableRegistry] disposer threw: ${msg}`);
+      }
+    }
+  }
+}

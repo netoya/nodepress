@@ -62,3 +62,11 @@
 - **Divergencia DIV-003 — featured_media, comment_status, ping_status, format, sticky, template inexistentes:** omitidos v1. **ADR candidate** cuando se implementen. **Date:** 2026-04-17
 - **Divergencia DIV-004 — taxonomías sin tablas:** documentado en x-nodepress-notes. Sprint 2+. **Date:** 2026-04-17
 - **Divergencia DIV-005 — campos extra (type, menuOrder, meta) bajo `_nodepress` namespace:** no contaminan contract WP. **Date:** 2026-04-17
+
+## Sprint 1 día 1 — gap closure (2026-04-17)
+
+- **DisposableRegistryImpl añadida a context.ts:** La interfaz `DisposableRegistry` solo existía como type contract. Se añadió implementación concreta `DisposableRegistryImpl` (clase con `#disposers`, splice atómico para idempotencia, error containment con `console.warn`). Exportada desde `hooks/index.ts`. **Date:** 2026-04-17
+- **Tests DisposableRegistry — 15 verdes, 1 todo:** `packages/core/src/hooks/__tests__/DisposableRegistry.test.ts`. Cubre: register sync/async, FIFO ordering, sequential await, error containment (sync throw, async rejection, string throw, object throw), mixed disposers, idempotencia. `context.ts` a 100% cobertura (stmts/branches/funcs/lines). TODO placeholder D-014 por timeout per-disposer (pendiente lifecycle layer #20). **Date:** 2026-04-17
+- **ADR-006 — `docs/adr/ADR-006-date-modified-gmt-omission.md`:** Documenta DIV-001. Decisión: omitir `date_gmt`/`modified_gmt`. PG TIMESTAMPTZ ya es UTC — `_gmt` variants serían duplicado de storage. Rollback: derivación trivial en serialize.ts sin migración. Estado: Proposed. **Date:** 2026-04-17
+- **ADR-007 — `docs/adr/ADR-007-wp-post-fields-omitted-v1.md`:** Documenta DIV-003. Decisión: omitir `featured_media`, `comment_status`, `ping_status`, `format`, `sticky`, `template` en v1. Cada campo tiene milestone de reintroducción documentado. Alternativa descartada: columnas null-by-default crea superficie de API que luego hay que deprecar. Estado: Proposed. **Date:** 2026-04-17
+- **Typecheck + lint:** Verde. `npx tsc --noEmit` sin errores. ESLint 0 errores, 0 warnings en archivos modificados. **Date:** 2026-04-17

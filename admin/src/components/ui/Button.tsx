@@ -110,12 +110,12 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     // When asChild is true, pass all button props to the child element
     if (asChild) {
-      const SlotComponent = Slot as any;
+      const SlotComponent = Slot as React.ElementType;
       return (
         <SlotComponent
           style={computedStyle}
           className={className}
-          {...(props as any)}
+          {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
         >
           {children}
         </SlotComponent>

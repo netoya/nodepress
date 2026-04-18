@@ -1,16 +1,16 @@
 import type { FC } from "react";
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardProps = React.HTMLAttributes<HTMLDivElement>;
 
-export interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement>;
 
 export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   as?: "h1" | "h2" | "h3" | "h4";
 }
 
-export interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardContentProps = React.HTMLAttributes<HTMLDivElement>;
 
-export interface CardFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
+export type CardFooterProps = React.HTMLAttributes<HTMLDivElement>;
 
 /**
  * Card — Container for grouped content with optional header, content, and footer sections.
@@ -59,7 +59,7 @@ export const CardTitle: FC<CardTitleProps> = ({
   style,
   ...props
 }) => {
-  const Heading = as as any;
+  const Heading = as as React.ElementType;
   return (
     <Heading
       style={{
@@ -68,7 +68,7 @@ export const CardTitle: FC<CardTitleProps> = ({
         margin: 0,
         ...style,
       }}
-      {...(props as any)}
+      {...(props as React.HTMLAttributes<HTMLHeadingElement>)}
     >
       {children}
     </Heading>

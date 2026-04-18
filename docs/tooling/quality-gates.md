@@ -122,3 +122,9 @@ Candidates to evaluate: `husky` + `lint-staged` (lint only changed files), `tsc 
 
 Flag for Sprint 2 planning: Should pre-commit block on `eslint` errors? On `tsc` errors? Or warn-only?
 Bring to team retro before implementing — hooks affect all devs and need consensus.
+
+---
+
+## ESLint config extension
+
+Config file is `eslint.config.mjs` (renamed from `.js` on 2026-04-17). Root `package.json` has no `"type": "module"` on purpose — keeping it absent avoids flipping the default for any future root-level `.js` tooling script. The `.mjs` extension is explicit and surgical: ESLint auto-detects flat config from `.mjs`, and Node stops emitting `MODULE_TYPELESS_PACKAGE_JSON` on lint runs.

@@ -86,5 +86,5 @@ export class ErrorBoundary extends Component<
   }
 }
 
-// @ts-ignore
+// @ts-expect-error — accessing static property on class component instance
 ErrorBoundary.displayName = "ErrorBoundary";

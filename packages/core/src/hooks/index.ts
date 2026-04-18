@@ -4,6 +4,7 @@
  * exported from this module yet — it ships in #14.
  */
 export type { DisposableRegistry } from "./context.js";
+export { DisposableRegistryImpl } from "./context.js";
 
 export type {
   ActionCallback,
