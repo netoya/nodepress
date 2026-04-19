@@ -8,83 +8,84 @@
   /* ============================================
      Colors — Primary (Deep Violet)
      ============================================ */
-  --color-primary-50: #F0EFFE;
-  --color-primary-100: #E0DDFB;
-  --color-primary-200: #C2BCF8;
-  --color-primary-300: #9B91F3;
-  --color-primary-400: #7B6FF0;
-  --color-primary-500: #5B4CF5;
-  --color-primary-600: #4A3CE4;
-  --color-primary-700: #3B2EC0;
-  --color-primary-800: #2D2396;
-  --color-primary-900: #1E1864;
+  --color-primary-50: #f0effe;
+  --color-primary-100: #e0ddfb;
+  --color-primary-200: #c2bcf8;
+  --color-primary-300: #9b91f3;
+  --color-primary-400: #7b6ff0;
+  --color-primary-500: #5b4cf5;
+  --color-primary-600: #4a3ce4;
+  --color-primary-700: #3b2ec0;
+  --color-primary-800: #2d2396;
+  --color-primary-900: #1e1864;
 
   /* ============================================
      Colors — Secondary (Electric Teal)
      ============================================ */
-  --color-secondary-50: #E6FAF7;
-  --color-secondary-100: #C2F3EB;
-  --color-secondary-200: #85E6D6;
-  --color-secondary-300: #42D9C0;
-  --color-secondary-400: #00C9A7;
-  --color-secondary-500: #00A88C;
+  --color-secondary-50: #e6faf7;
+  --color-secondary-100: #c2f3eb;
+  --color-secondary-200: #85e6d6;
+  --color-secondary-300: #42d9c0;
+  --color-secondary-400: #00c9a7;
+  --color-secondary-500: #00a88c;
   --color-secondary-600: #008570;
   --color-secondary-700: #006254;
 
   /* ============================================
      Colors — Neutral (Slate Violet)
      ============================================ */
-  --color-neutral-0: #FFFFFF;
-  --color-neutral-50: #F8F7FF;
-  --color-neutral-100: #F0EFF8;
-  --color-neutral-200: #E4E2F0;
-  --color-neutral-300: #C9C6DC;
-  --color-neutral-400: #9E9BB8;
-  --color-neutral-500: #6E6B8A;
-  --color-neutral-600: #4E4C6A;
-  --color-neutral-700: #35334F;
-  --color-neutral-800: #1E1D35;
-  --color-neutral-900: #0F0E1E;
+  --color-neutral-0: #ffffff;
+  --color-neutral-50: #f8f7ff;
+  --color-neutral-100: #f0eff8;
+  --color-neutral-200: #e4e2f0;
+  --color-neutral-300: #c9c6dc;
+  --color-neutral-400: #9e9bb8;
+  --color-neutral-500: #6e6b8a;
+  --color-neutral-600: #4e4c6a;
+  --color-neutral-700: #35334f;
+  --color-neutral-800: #1e1d35;
+  --color-neutral-900: #0f0e1e;
 
   /* ============================================
      Colors — Semantic: Danger
      ============================================ */
-  --color-danger-50: #FEF2F2;
-  --color-danger-100: #FEE2E2;
-  --color-danger-300: #FCA5A5;
-  --color-danger-500: #EF4444;
-  --color-danger-700: #B91C1C;
+  --color-danger-50: #fef2f2;
+  --color-danger-100: #fee2e2;
+  --color-danger-300: #fca5a5;
+  --color-danger-500: #ef4444;
+  --color-danger-700: #b91c1c;
 
   /* ============================================
      Colors — Semantic: Warning
      ============================================ */
-  --color-warning-50: #FFFBEB;
-  --color-warning-100: #FEF3C7;
-  --color-warning-400: #FBBF24;
-  --color-warning-500: #F59E0B;
-  --color-warning-700: #B45309;
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-400: #fbbf24;
+  --color-warning-500: #f59e0b;
+  --color-warning-700: #b45309;
 
   /* ============================================
      Colors — Semantic: Success
      ============================================ */
-  --color-success-50: #ECFDF5;
-  --color-success-100: #D1FAE5;
-  --color-success-400: #34D399;
-  --color-success-500: #10B981;
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-400: #34d399;
+  --color-success-500: #10b981;
   --color-success-700: #047857;
 
   /* ============================================
      Colors — Semantic: Info
      ============================================ */
-  --color-info-50: #EFF6FF;
-  --color-info-100: #DBEAFE;
-  --color-info-500: #3B82F6;
-  --color-info-700: #1D4ED8;
+  --color-info-50: #eff6ff;
+  --color-info-100: #dbeafe;
+  --color-info-500: #3b82f6;
+  --color-info-700: #1d4ed8;
 
   /* ============================================
      Typography — Font Families
      ============================================ */
-  --font-family-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-ui:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-family-mono: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
 
   /* ============================================
@@ -140,10 +141,16 @@
      ============================================ */
   --shadow-none: none;
   --shadow-xs: 0 1px 2px 0 rgba(91, 76, 245, 0.06);
-  --shadow-sm: 0 1px 3px 0 rgba(91, 76, 245, 0.1), 0 1px 2px -1px rgba(91, 76, 245, 0.1);
-  --shadow-md: 0 4px 6px -1px rgba(91, 76, 245, 0.1), 0 2px 4px -2px rgba(91, 76, 245, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(91, 76, 245, 0.1), 0 4px 6px -4px rgba(91, 76, 245, 0.08);
-  --shadow-xl: 0 20px 25px -5px rgba(91, 76, 245, 0.1), 0 8px 10px -6px rgba(91, 76, 245, 0.08);
+  --shadow-sm:
+    0 1px 3px 0 rgba(91, 76, 245, 0.1), 0 1px 2px -1px rgba(91, 76, 245, 0.1);
+  --shadow-md:
+    0 4px 6px -1px rgba(91, 76, 245, 0.1), 0 2px 4px -2px rgba(91, 76, 245, 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgba(91, 76, 245, 0.1),
+    0 4px 6px -4px rgba(91, 76, 245, 0.08);
+  --shadow-xl:
+    0 20px 25px -5px rgba(91, 76, 245, 0.1),
+    0 8px 10px -6px rgba(91, 76, 245, 0.08);
   --shadow-focus: 0 0 0 3px rgba(91, 76, 245, 0.35);
   --shadow-focus-danger: 0 0 0 3px rgba(239, 68, 68, 0.35);
 
@@ -203,6 +210,46 @@
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
   --breakpoint-2xl: 1536px;
+}
+
+/* ============================================
+   Dark Mode: CSS Custom Properties Override
+   Applied when [data-theme="dark"] on <html>
+   ============================================ */
+[data-theme="dark"] {
+  /* ============================================
+     Dark Mode: Semantic Colors
+     ============================================ */
+  --color-bg: var(--color-neutral-900);
+  --color-surface: var(--color-neutral-800);
+  --color-text-primary: var(--color-neutral-50);
+  --color-text-secondary: var(--color-neutral-400);
+  --color-border: var(--color-neutral-700);
+
+  /* ============================================
+     Dark Mode: Semantic States
+     ============================================ */
+  --color-success: var(--color-success-400);
+  --color-error: var(--color-danger-500);
+  --color-warning: var(--color-warning-400);
+  --color-info: var(--color-info-500);
+
+  /* ============================================
+     Dark Mode: Shell Layout Colors
+     ============================================ */
+  --shell-sidebar-bg: var(--color-neutral-900);
+  --shell-sidebar-fg: var(--color-neutral-400);
+  --shell-sidebar-fg-active: var(--color-neutral-0);
+  --shell-sidebar-item-hover-bg: rgba(255, 255, 255, 0.08);
+  --shell-sidebar-item-active-bg: var(--color-primary-600);
+  --shell-sidebar-border: rgba(255, 255, 255, 0.1);
+
+  --shell-header-bg: var(--color-neutral-800);
+  --shell-header-border: var(--color-neutral-700);
+  --shell-header-fg: var(--color-neutral-100);
+
+  --shell-main-bg: var(--color-neutral-900);
+  --shell-main-fg: var(--color-neutral-100);
 }
 
 @media (prefers-reduced-motion: reduce) {

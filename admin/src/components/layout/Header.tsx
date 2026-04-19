@@ -1,4 +1,6 @@
 import type { FC, ReactNode } from "react";
+import { useDarkMode } from "../../lib/useDarkMode";
+import { DarkModeToggle } from "./DarkModeToggle";
 
 interface HeaderProps {
   /** Slot for user avatar / menu on the right side */
@@ -7,8 +9,10 @@ interface HeaderProps {
 
 /**
  * Header — top bar with brand title on the left and a user slot on the right.
+ * Dark mode toggle available in the right section.
  */
 export const Header: FC<HeaderProps> = ({ userSlot }) => {
+  const { isDark, toggle } = useDarkMode();
   return (
     <header
       className="app-shell__header"
@@ -37,18 +41,17 @@ export const Header: FC<HeaderProps> = ({ userSlot }) => {
         NodePress
       </span>
 
-      {userSlot != null && (
-        <div
-          aria-label="User menu"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "var(--space-3)",
-          }}
-        >
-          {userSlot}
-        </div>
-      )}
+      <div
+        aria-label="Header actions"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "var(--space-3)",
+        }}
+      >
+        <DarkModeToggle isDark={isDark} onToggle={toggle} />
+        {userSlot}
+      </div>
     </header>
   );
 };
