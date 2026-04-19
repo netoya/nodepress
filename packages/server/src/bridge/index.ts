@@ -308,21 +308,44 @@ function fwrite($handle = null, $string = '', $length = null) {
   $np_warnings[] = '[BRIDGE WARN] blocked: fwrite';
   return 0;
 }
-// --- WP HTTP API stubs ---
+// --- WP HTTP API stubs (ADR-018 Amendment — Sprint 6 #83: cURL allowlist) ---
+function wp_http_request($url = '', $args = []) {
+  global $np_warnings, $np_curl_response;
+  $method = isset($args['method']) ? $args['method'] : 'GET';
+  echo '[NP_CURL_REQUEST:' . json_encode(['url' => $url, 'method' => $method]) . ']';
+  // Wait for response injection on next pass.
+  if (isset($np_curl_response) && !empty($np_curl_response)) {
+    return ['body' => $np_curl_response, 'response' => ['code' => 200]];
+  }
+  return new WP_Error('np_curl_blocked', 'cURL request blocked (no allowlist or fetch pending)');
+}
 function wp_remote_get($url = '', $args = []) {
   global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: wp_remote_get';
-  return new WP_Error('http_disabled', 'Network I/O not allowed in Tier 2');
+  // First attempt allowlist check.
+  $response = wp_http_request($url, array_merge($args, ['method' => 'GET']));
+  if (is_wp_error($response)) {
+    $np_warnings[] = '[BRIDGE WARN] blocked: wp_remote_get';
+    return new WP_Error('http_disabled', 'Network I/O not allowed in Tier 2');
+  }
+  return $response;
 }
 function wp_remote_post($url = '', $args = []) {
   global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: wp_remote_post';
-  return new WP_Error('http_disabled', 'Network I/O not allowed in Tier 2');
+  $response = wp_http_request($url, array_merge($args, ['method' => 'POST']));
+  if (is_wp_error($response)) {
+    $np_warnings[] = '[BRIDGE WARN] blocked: wp_remote_post';
+    return new WP_Error('http_disabled', 'Network I/O not allowed in Tier 2');
+  }
+  return $response;
 }
 function wp_remote_request($url = '', $args = []) {
   global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: wp_remote_request';
-  return new WP_Error('http_disabled', 'Network I/O not allowed in Tier 2');
+  $response = wp_http_request($url, $args);
+  if (is_wp_error($response)) {
+    $np_warnings[] = '[BRIDGE WARN] blocked: wp_remote_request';
+    return new WP_Error('http_disabled', 'Network I/O not allowed in Tier 2');
+  }
+  return $response;
 }
 function wp_mail($to, $subject, $message, $headers = '', $attachments = []) {
   global $np_warnings;
@@ -478,6 +501,156 @@ $postContent = "${escapedContent}";
 }
 
 // ---------------------------------------------------------------------------
+// cURL allowlist configuration (ADR-018 Amendment — Sprint 6 #83)
+// ---------------------------------------------------------------------------
+
+function parseCurlAllowlist(): Set<string> {
+  const env = process.env.NODEPRESS_CURL_ALLOWLIST ?? "";
+  if (!env.trim()) return new Set();
+  return new Set(
+    env
+      .split(",")
+      .map((url) => url.trim())
+      .filter((url) => url.length > 0),
+  );
+}
+
+function isUrlAllowed(url: string, allowlist: Set<string>): boolean {
+  if (allowlist.size === 0) return false;
+  for (const allowedPrefix of allowlist) {
+    if (url.startsWith(allowedPrefix)) return true;
+  }
+  return false;
+}
+
+// ---------------------------------------------------------------------------
+// cURL request tracking (Sprint 6 #83)
+// ---------------------------------------------------------------------------
+
+interface CurlRequestMarker {
+  readonly url: string;
+  readonly method: "GET" | "POST";
+}
+
+/**
+ * Extract NP_CURL_REQUEST markers from HTML string.
+ * Format: [NP_CURL_REQUEST:{"url":"...","method":"GET"}]
+ * Called AFTER JSON parsing, so no escaping issues.
+ */
+function extractCurlMarkers(htmlString: string): CurlRequestMarker[] {
+  const markers: CurlRequestMarker[] = [];
+  const regex = /\[NP_CURL_REQUEST:({[^}]*})\]/g;
+  let match: RegExpExecArray | null;
+  while ((match = regex.exec(htmlString)) !== null) {
+    try {
+      const marker = JSON.parse(match[1]) as CurlRequestMarker;
+      if (marker.url && marker.method) {
+        markers.push(marker);
+      }
+    } catch {
+      // Invalid JSON marker — skip.
+    }
+  }
+  return markers;
+}
+
+/**
+ * Process cURL requests from PHP output and re-execute with responses injected.
+ * Max 3 HTTP requests per renderShortcodes() invocation (anti-loop).
+ * Returns the modified runnerCode with $np_curl_response variables injected.
+ */
+async function processCurlRequests(
+  phpOutput: string,
+  runnerCode: string,
+  allowlist: Set<string>,
+  _invocationId: string,
+  requestCount: number = 0,
+): Promise<{ phpOutput: string; runnerCode: string; requestCount: number }> {
+  const MAX_REQUESTS = 3;
+
+  if (requestCount >= MAX_REQUESTS) {
+    // Limit reached. Return as-is.
+    return { phpOutput, runnerCode, requestCount };
+  }
+
+  const markers = extractCurlMarkers(phpOutput);
+  if (markers.length === 0) {
+    // No cURL requests detected.
+    return { phpOutput, runnerCode, requestCount };
+  }
+
+  // Process first marker.
+  const marker = markers[0];
+
+  if (!isUrlAllowed(marker.url, allowlist)) {
+    // URL not in allowlist. Inject error marker and don't retry.
+    const errorMarker = `[NP_CURL_RESPONSE:{"error":"np_curl_blocked","url":"${marker.url.replace(/"/g, '\\"')}"}]`;
+    const nextOutput = phpOutput.replace(
+      /\[NP_CURL_REQUEST:({.*?})\]/,
+      errorMarker,
+    );
+    // Continue processing (might have more markers).
+    return processCurlRequests(
+      nextOutput,
+      runnerCode,
+      allowlist,
+      _invocationId,
+      requestCount + 1,
+    );
+  }
+
+  // URL is allowed. Fetch it.
+  let response: string;
+  try {
+    const fetchRes = await fetch(marker.url, {
+      method: marker.method,
+      timeout: 5000,
+    });
+    response = await fetchRes.text();
+  } catch (err: unknown) {
+    const errMsg = err instanceof Error ? err.message : String(err);
+    // Inject error response.
+    const errorMarker = `[NP_CURL_RESPONSE:{"error":"fetch_failed","message":"${errMsg.replace(/"/g, '\\"')}","url":"${marker.url.replace(/"/g, '\\"')}"}]`;
+    const nextOutput = phpOutput.replace(
+      /\[NP_CURL_REQUEST:({.*?})\]/,
+      errorMarker,
+    );
+    return processCurlRequests(
+      nextOutput,
+      runnerCode,
+      allowlist,
+      _invocationId,
+      requestCount + 1,
+    );
+  }
+
+  // Inject response into runnerCode for next PHP invocation.
+  const escapedResponse = response
+    .replace(/\\/g, "\\\\")
+    .replace(/"/g, '\\"')
+    .replace(/\$/g, "\\$")
+    .replace(/\r/g, "\\r")
+    .replace(/\n/g, "\\n");
+
+  const injectedRunnerCode =
+    runnerCode + `\n$np_curl_response = "${escapedResponse}";\n`;
+
+  // Mark the request as processed and continue.
+  const nextOutput = phpOutput.replace(
+    /\[NP_CURL_REQUEST:({.*?})\]/,
+    `[NP_CURL_RESPONSE:{"url":"${marker.url.replace(/"/g, '\\"')}","status":"ok"}]`,
+  );
+
+  return processCurlRequests(
+    injectedRunnerCode,
+    nextOutput,
+    allowlist,
+    _invocationId,
+    requestCount + 1,
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Timeout helper
 // ---------------------------------------------------------------------------
 
@@ -533,7 +706,7 @@ export async function renderShortcodes(
           input.context,
         );
         const pilotCode = ACTIVE_PILOTS.map((p) => p.buildPhpCode()).join("\n");
-        const runnerCode =
+        let runnerCode =
           bootstrapCode +
           "\n" +
           pilotCode +
@@ -551,8 +724,10 @@ export async function renderShortcodes(
           createTimeout(5000),
         ]);
 
-        // --- Parse output ---
+        // --- Parse output & handle cURL requests (Sprint 6 #83) ---
         const rawText = (raceResult as { text: string }).text ?? "";
+
+        // Parse JSON first to extract HTML.
         let parsed: { html?: string; warnings?: string[] } = {};
         try {
           parsed = JSON.parse(rawText) as {
@@ -570,7 +745,46 @@ export async function renderShortcodes(
           return output;
         }
 
-        const rawHtml = parsed.html;
+        let rawHtml = parsed.html ?? "";
+
+        // Check for cURL requests in the parsed HTML.
+        const curlAllowlist = parseCurlAllowlist();
+        if (curlAllowlist.size > 0 && rawHtml.includes("[NP_CURL_REQUEST:")) {
+          const curlResult = await processCurlRequests(
+            rawHtml,
+            runnerCode,
+            curlAllowlist,
+            invocationId,
+          );
+          if (curlResult.requestCount > 0) {
+            // Re-execute PHP with injected responses.
+            runnerCode = curlResult.runnerCode;
+            const phpRunPromise2: Promise<{ text: string }> = php.run({
+              code: runnerCode,
+            });
+            const raceResult2 = await Promise.race([
+              phpRunPromise2,
+              createTimeout(5000),
+            ]);
+            const rawText2 = (raceResult2 as { text: string }).text ?? "";
+            try {
+              parsed = JSON.parse(rawText2) as {
+                html?: string;
+                warnings?: string[];
+              };
+            } catch {
+              output = {
+                html: input.postContent,
+                warnings: [rawText2.slice(0, 512)],
+                error: "BRIDGE_FATAL",
+              };
+              emitSpanFor(t0, traceId, invocationId, input, output);
+              return output;
+            }
+            rawHtml = parsed.html ?? "";
+          }
+        }
+
         if (typeof rawHtml !== "string") {
           output = {
             html: input.postContent,

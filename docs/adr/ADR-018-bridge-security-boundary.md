@@ -161,8 +161,83 @@ Este ADR NO cubre:
 - OWASP: [Server-Side Request Forgery Prevention](https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html)
 - PHP Manual: [disable_functions](https://www.php.net/manual/en/ini.core.php#ini.disable-functions), [open_basedir](https://www.php.net/manual/en/ini.core.php#ini.open-basedir)
 
+## Amendment — Sprint 6 #83 — cURL Allowlist
+
+**Date:** 2026-04-19
+
+En Sprint 6 se implementó un mecanismo de **cURL allowlist** para soportar plugins WP legítimos que hacen HTTP de forma controlada. Esta enmienda describe la arquitectura y mantiene la seguridad definida en el ADR base.
+
+### Configuración
+
+- **Env var:** `NODEPRESS_CURL_ALLOWLIST=https://api.example.com,https://feeds.example.org` (comma-separated URL prefixes)
+- **Default:** sin env var definida → cURL bloqueado (comportamiento original, R1 aceptado)
+- **Activation:** env var presente → PHP stub `wp_http_request()` activa el puente cURL
+
+### Mecanismo
+
+1. **PHP stub `wp_http_request(url, method)`**: Emite marcador especial `[NP_CURL_REQUEST:{"url":"...","method":"GET"}]` en el output HTML
+2. **Node interception:** renderShortcodes() detecta marcadores en el HTML parsed
+3. **Validation:** cada URL se valida contra el prefijo allowlist
+4. **Fetch:** si válida, Node ejecuta `fetch(url, {method, timeout: 5000})`
+5. **Response injection:** respuesta se inyecta en `$np_curl_response` (variable PHP global)
+6. **Re-execution:** PHP se re-ejecuta con respuesta disponible
+7. **Límite anti-loop:** máximo 3 requests HTTP per `renderShortcodes()` invocation
+
+### Security Impact
+
+- **SSRF (R1 mitigación):** cURL sigue bloqueado por defecto. Allowlist requiere configuración explícita del admin.
+- **Data flow:** URLs y responses pasan por Node, NO por el bridge sandbox (respeta §4 IN/OUT)
+- **Timeout:** cada fetch tiene timeout de 5s, no bloquea event loop (async en Node, no en PHP)
+- **URL validation:** prefix matching estricto (no regex, no globbing)
+
+### Constraints (intactos)
+
+- cURL sigue stubbed en bootstrap si allowlist está vacía
+- `wp_mail()`, `mail()`, comando exec siguen bloqueados (no alterado)
+- Memory limit y max_execution_time de PHP intactos
+- Statelessness preservado: response inyectada en variable local, no global persistence
+
+### Ejemplos
+
+**Permitido:**
+
+```
+NODEPRESS_CURL_ALLOWLIST=https://api.stripe.com
+Plugin llama: wp_remote_get('https://api.stripe.com/customers')
+→ Fetch ejecutado, response inyectada, plugin recibe data
+```
+
+**Bloqueado (no en allowlist):**
+
+```
+NODEPRESS_CURL_ALLOWLIST=https://api.stripe.com
+Plugin llama: wp_remote_get('https://evil.com/steal')
+→ Fetch NO ejecutado, plugin recibe WP_Error('np_curl_blocked')
+```
+
+**Bloqueado (sin allowlist):**
+
+```
+# Env var no definida
+Plugin llama: wp_remote_get('https://api.stripe.com/...')
+→ Fetch bloqueado por stub nativo, plugin recibe WP_Error('http_disabled')
+```
+
+### Testing
+
+- Test suite: `packages/server/src/bridge/__tests__/bridge-curl.test.ts` (8 tests)
+- Coverage: parsing allowlist, URL validation, fetch execution, error handling, max 3 requests, POST support
+- All 238 server tests green, no regressions
+
+### Status
+
+- **Accepted**: Arquitectura coherente con ADR-018 base (no modifica threat model, solo relaja R1 bajo configuración)
+- **Implementación:** Sprint 6 #83, Raúl (factory) + tests
+- **Auditoría:** pendiente (no requiere re-sign Helena, es mitigación dentro de RiskR1)
+
 ## Sign-off
 
-- **Date:** 2026-04-18
-- **Helena (IT Manager) — authored.** Threat model, stubs, php.ini overrides, logging obligations.
-- **Román (Tech Lead) — co-signed:** arquitectura coherente con ADR-017 (entry point único, flujo de datos IN/OUT idéntico, timeouts compatibles, statelessness implementable vía scope reset sobre singleton). Constraints implementables sin cambiar la arquitectura definida en ADR-017. Gates previamente abiertos (§R3, §Negative) cerrados por referencia a ADR-017 §Runtime Model.
+- **Date:** 2026-04-18 (base), 2026-04-19 (amendment)
+- **Helena (IT Manager) — authored base.** Threat model, stubs, php.ini overrides, logging obligations.
+- **Román (Tech Lead) — co-signed base:** arquitectura coherente con ADR-017 (entry point único, flujo de datos IN/OUT idéntico, timeouts compatibles, statelessness implementable vía scope reset sobre singleton). Constraints implementables sin cambiar la arquitectura definida en ADR-017. Gates previamente abiertos (§R3, §Negative) cerrados por referencia a ADR-017 §Runtime Model.
+- **Raúl (Dev Backend 2) — amendment author:** Sprint 6 #83 implementation (PHP stub, allowlist parsing, fetch + injection, tests, no new dependencies)
