@@ -127,6 +127,9 @@
 | 2026-04-19 | raul               | R-S5-2 + R-S5-3 — su_do_nested_shortcodes recursion depth guard (max 10) + Test 9 su_add_shortcode overwrite regression (197t)  | 3 files   | 3d2a890 | ✅     |
 | 2026-04-19 | roman              | #77 ADR-023 Plugin Registry Architecture → Accepted (Status promoted from Proposed; Sprint 6 P0 gate open)                      | 3 files   | pending | ✅     |
 
+| 2026-04-19 | martin | docs: Sprint 7 backlog draft — marketplace UI + dependency resolution + uninstall (#84-#93, 10 tickets) | 1 file | pending | ✅ |
+| 2026-04-19 | scrum-master-tomas | Sprint 6 cierre — PROJECT_STATUS 10/10 DONE + retro async | 2 files | 050bd60 | ✅ |
+
 ## 2026-04-19 — Ticket #74: Plugin Registry service — schema migration + list/get/register API
 
 - **Schema:** `packages/db/src/schema/plugin-registry.ts` — added 4 nullable columns: `registryUrl`, `tarballUrl`, `publishedAt`, `author`
