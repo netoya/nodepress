@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@fastify/cors": "11.1.0",
+    "@fastify/multipart": "^9.0.0",
     "@nodepress/core": "*",
     "@nodepress/db": "*",
     "@nodepress/theme-engine": "*",

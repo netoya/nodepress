@@ -1,10 +1,12 @@
 import { describe, it, expect } from "vitest";
 import Fastify from "fastify";
 import mediaPlugin from "../index.js";
+import { registerBearerAuth } from "../../../auth/index.js";
 
 describe("GET /wp/v2/media", () => {
   it("returns 200 with empty array", async () => {
     const app = Fastify();
+    await registerBearerAuth(app);
     await app.register(mediaPlugin);
 
     const response = await app.inject({
