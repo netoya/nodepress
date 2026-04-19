@@ -45,14 +45,15 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado         | Objetivo                                                     |
-| ------------ | ----------------------- | -------------- | ------------------------------------------------------------ |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO     | Scaffolding: monorepo, CI, docker, packages init             |
-| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO     | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
-| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO     | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
-| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO     | Roles/capabilities + taxonomías + admin edit flow + CLI init |
-| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO     | Plugin system + Theme engine + post-launch ICP-1 signal      |
-| **Sprint 5** | 2026-06-02 → 2026-06-13 | 🟢 IN PROGRESS | CLI funcional, WP Import real, CLA + contribuidores          |
+| Sprint       | Fechas                  | Estado       | Objetivo                                                     |
+| ------------ | ----------------------- | ------------ | ------------------------------------------------------------ |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO   | Scaffolding: monorepo, CI, docker, packages init             |
+| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO   | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
+| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO   | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
+| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO   | Roles/capabilities + taxonomías + admin edit flow + CLI init |
+| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO   | Plugin system + Theme engine + post-launch ICP-1 signal      |
+| **Sprint 5** | 2026-06-02 → 2026-06-13 | ✅ CERRADO   | CLI funcional, WP Import real, CLA + contribuidores          |
+| **Sprint 6** | 2026-06-16 → 2026-06-27 | ⬜ PENDIENTE | Plugin Registry MVP + vm.Context hardening + OpenAPI         |
 
 ---
 
@@ -371,7 +372,7 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint 5 kickoff)_
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-19 (Sprint 5 cierre)_
 
 ---
 
@@ -452,14 +453,56 @@ _Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-18 (Sprint
 
 ### Decisiones Sprint 5
 
-| ID    | Fecha      | Decisión                                                                                         | Responsable         |
-| ----- | ---------- | ------------------------------------------------------------------------------------------------ | ------------------- |
-| D-030 | 2026-04-18 | Techo Sprint 5 = 10 tickets (8 nuevos + #60 + #61 heredados)                                     | Tomás + Alejandro   |
-| D-031 | 2026-04-18 | ADR-022 WP Import Strategy — Román escribe día 1 antes de cualquier código                       | Román + Ingrid      |
-| D-032 | 2026-04-18 | Scope WP Import CLI S5 = posts+terms+users+comments. Media, custom post types, PHP-meta = fuera  | Ingrid + Carmen     |
-| D-033 | 2026-04-18 | Plugin marketplace S5 = signal only (topic + docs + plugin list). Infra = Sprint 6+ condicionado | Alejandro + Román   |
-| D-034 | 2026-04-18 | Licencia dual vs GPL puro — Alejandro decide con Eduardo antes del planning 2026-04-21           | Alejandro           |
-| D-035 | 2026-04-18 | React Router v7 migración entra como ticket Sprint 5                                             | Lucas + Román       |
-| D-036 | 2026-04-18 | CLA webhook + publish-cli approval gate = bloqueantes del planning. Helena antes del martes      | Martín + Helena     |
-| D-037 | 2026-04-18 | Regla proceso: ningún kickoff arranca sin retro del sprint anterior cerrada                      | Tomás + todo equipo |
-| D-038 | 2026-04-18 | Nico se activa en S5 solo si ICP-1 confirma ≥5 mentions de plugins terceros                      | Martín + Lucas      |
+| ID    | Fecha      | Decisión                                                                                           | Responsable         |
+| ----- | ---------- | -------------------------------------------------------------------------------------------------- | ------------------- |
+| D-030 | 2026-04-18 | Techo Sprint 5 = 10 tickets (8 nuevos + #60 + #61 heredados)                                       | Tomás + Alejandro   |
+| D-031 | 2026-04-18 | ADR-022 WP Import Strategy — Román escribe día 1 antes de cualquier código                         | Román + Ingrid      |
+| D-032 | 2026-04-18 | Scope WP Import CLI S5 = posts+terms+users+comments. Media, custom post types, PHP-meta = fuera    | Ingrid + Carmen     |
+| D-033 | 2026-04-18 | Plugin marketplace S5 = signal only (topic + docs + plugin list). Infra = Sprint 6+ condicionado   | Alejandro + Román   |
+| D-034 | 2026-04-18 | Licencia dual vs GPL puro — Alejandro decide con Eduardo antes del planning 2026-04-21             | Alejandro           |
+| D-035 | 2026-04-18 | React Router v7 migración entra como ticket Sprint 5                                               | Lucas + Román       |
+| D-036 | 2026-04-18 | CLA webhook + publish-cli approval gate = bloqueantes del planning. Helena antes del martes        | Martín + Helena     |
+| D-037 | 2026-04-18 | Regla proceso: ningún kickoff arranca sin retro del sprint anterior cerrada                        | Tomás + todo equipo |
+| D-038 | 2026-04-18 | Nico se activa en S5 solo si ICP-1 confirma ≥5 mentions de plugins terceros                        | Martín + Lucas      |
+| D-039 | 2026-04-19 | Bridge Pilot Registry: pilotCode inyectado en cada `renderShortcodes()` invocation (fix su_spacer) | Raúl + Román        |
+| D-040 | 2026-04-19 | CF7 pilot añadido como Tier 2 — form HTML estático, submission fuera de scope Tier 2               | Raúl                |
+
+### Sprint 5 — Estado cierre (2026-04-19)
+
+- **Tickets completados:** 9/10 (+ #72/#73 buffer = 11 efectivos). #61 CLA bloqueado.
+- **Tests:** 65+ tests bridge integration nuevos; suite global verde.
+- **ADRs nuevos:** ADR-022 (WP Import Strategy), ADR-023 (Plugin Registry Architecture draft).
+- **Bridge Pilot Registry:** operativo. 4 pilotos (Footnotes, SU, Display Posts, CF7). su_spacer fix incluido.
+- **WP compat real:** 3/4 PASS (su_button ✅, CF7 stub ✅, footnotes ✅, su_spacer ✅ post-fix).
+- **Pendiente S6:** #61 CLA (bloqueante GitHub Settings), Helena H-1/H-2 condiciones MEDIA, vm.Context Worker Threads go/no-go.
+- **Retro:** `docs/process/retros/sprint-5-retro.md` — cierre async 2026-04-21 AM.
+- **Velocity S5:** 11 tickets (mejor sprint desde Sprint 2).
+
+---
+
+---
+
+## Sprint 6 — Plugin Registry + vm.Context Hardening (2026-06-16 → 2026-06-27)
+
+**Sprint Goal:** "NodePress extensible desde el marketplace: plugin registry operativo, CLI install funcional, vm.Context con límite de memoria, OpenAPI completo."
+
+**DoD Sprint 6:** `nodepress plugin install <name>` funcional, Plugin Registry REST endpoints operativos, ADR-023 Accepted, vm.Context memory limit implementado con Worker Threads, OpenAPI 100% endpoints cubiertos.
+
+**Feature freeze:** 2026-06-25 12:00. **Kickoff:** 2026-06-16 AM (tras retro S5 cerrada).
+
+### Ticket Mapping Sprint 6
+
+| PROJECT_STATUS # | GitHub Issue | Short title                                                    | Responsable           | Estado  |
+| ---------------- | ------------ | -------------------------------------------------------------- | --------------------- | ------- |
+| 74               | —            | Plugin Registry — schema DB + API básica (register, list, get) | Ingrid                | ⬜ TODO |
+| 75               | —            | `nodepress plugin install <name>` — CLI + registry fetch       | Raúl                  | ⬜ TODO |
+| 76               | —            | Plugin Registry REST endpoints (GET /wp/v2/plugins, POST)      | Carmen (brief Ingrid) | ⬜ TODO |
+| 77               | —            | ADR-023 Plugin Registry Architecture → Accepted                | Román                 | ⬜ TODO |
+| 78               | —            | vm.Context hardening — memory limit + resource quota           | Raúl + Román          | ⬜ TODO |
+| 79               | —            | OpenAPI completo — endpoints cubiertos al 100%                 | Carmen                | ⬜ TODO |
+| 80               | —            | CLA webhook operativo + outreach confirmation                  | Helena + Martín       | ⬜ TODO |
+| 81               | —            | Users management UI — list + role editor admin panel           | Lucas + Nico          | ⬜ TODO |
+| 82               | —            | Media uploads stub — POST /wp/v2/media + storage local         | Ingrid + Carmen       | ⬜ TODO |
+| 83               | —            | Tier 2 bridge — cURL sync (deuda D-020, Sprint 2)              | Raúl                  | ⬜ TODO |
+
+> Ref backlog completo: `docs/process/backlog-sprint6-draft.md`
