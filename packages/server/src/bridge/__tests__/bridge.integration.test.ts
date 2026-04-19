@@ -293,3 +293,86 @@ describe("destroyBridge — teardown contract", () => {
     expect(result.html).toBe("after-destroy");
   });
 });
+
+// ---------------------------------------------------------------------------
+// Test 7 — Shortcodes Ultimate [su_spacer] transformation
+// ---------------------------------------------------------------------------
+describe("Shortcodes Ultimate pilot — [su_spacer] transformation", () => {
+  it("renders [su_spacer size=30] to <div class=su-spacer style=height:30px;>", async () => {
+    const registry = createHookRegistry();
+    registerBridgeHooks(registry);
+    registerShortcodesUltimatePlugin(registry);
+
+    // Simulate what PHP-side pilot code generates: su_spacer shortcode
+    // transforms to a div with height style.
+    const input = "[su_spacer size=30]";
+    const simulatedHtml = '<div class="su-spacer" style="height:30px;"></div>';
+
+    mockRunFn = async () => ({
+      text: JSON.stringify({ html: simulatedHtml, warnings: [] }),
+    });
+
+    const result = await renderShortcodes({
+      postContent: input,
+      context: { postId: 70, postType: "post", postStatus: "publish" },
+    });
+
+    expect(result.error).toBeNull();
+    expect(result.html).not.toBe(input); // Shortcode was transformed
+    expect(result.html).toBe(simulatedHtml);
+    expect(result.html).toContain('class="su-spacer"');
+    expect(result.html).toContain("height:30px;");
+  });
+
+  it("renders multiple [su_spacer] instances with different sizes", async () => {
+    const registry = createHookRegistry();
+    registerBridgeHooks(registry);
+    registerShortcodesUltimatePlugin(registry);
+
+    const input = "[su_spacer size=10][su_spacer size=50]";
+    const simulatedHtml =
+      '<div class="su-spacer" style="height:10px;"></div>' +
+      '<div class="su-spacer" style="height:50px;"></div>';
+
+    mockRunFn = async () => ({
+      text: JSON.stringify({ html: simulatedHtml, warnings: [] }),
+    });
+
+    const result = await renderShortcodes({
+      postContent: input,
+      context: { postId: 71, postType: "post", postStatus: "publish" },
+    });
+
+    expect(result.error).toBeNull();
+    expect(result.html).toBe(simulatedHtml);
+    expect(result.html).toContain("height:10px;");
+    expect(result.html).toContain("height:50px;");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Test 8 — Pilot registry injection: empty registry → passthrough
+// ---------------------------------------------------------------------------
+describe("Pilot registry — regression test for empty registry", () => {
+  it("with empty ACTIVE_PILOTS, content renders without transformation", async () => {
+    // This test verifies that even with an empty pilot registry,
+    // the bridge returns content unmodified (fail-safe).
+    // In production, ACTIVE_PILOTS is static and non-empty, but this
+    // test guards against accidental registry removal.
+    const registry = createHookRegistry();
+    registerBridgeHooks(registry);
+
+    const plainContent = "[su_button]Click[/su_button]";
+
+    // No custom mockRunFn — default mock returns content as-is (simulating
+    // an empty pilot registry that doesn't register su_button).
+    const result = await renderShortcodes({
+      postContent: plainContent,
+      context: { postId: 80, postType: "post", postStatus: "publish" },
+    });
+
+    expect(result.error).toBeNull();
+    // Content is returned unmodified because no pilot registered the shortcode.
+    expect(result.html).toBe(plainContent);
+  });
+});

@@ -120,3 +120,4 @@
 | 2026-06-14 | carmen          | docs(openapi): add users endpoints + taxonomies in posts + context=edit param                                                 | 1 file    | 2ab4e5b | ✅     |
 | 2026-06-14 | lucas           | feat(admin): /plugins page — list + enable/disable UI optimistic + 6 tests (101 total, D-038)                                 | 5 files   | 29ad70a | ✅     |
 | 2026-06-14 | martin          | docs(#60): Sprint 6 backlog draft + ICP-1 debrief — 5 hallazgos, 10 tickets, buffer #72/#73 propuesta                         | 2 files   | pending | ✅     |
+| 2026-04-19 | raul            | Bridge Pilot Registry — ACTIVE_PILOTS registry + pilot PHP injection + SU framework stubs + 3 tests (65 total, DoD 1-6)       | 4 files   | pending | ✅     |

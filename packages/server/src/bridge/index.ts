@@ -11,6 +11,7 @@
 import { performance } from "perf_hooks";
 import { randomUUID } from "crypto";
 import type { FilterEntry, HookRegistry } from "@nodepress/core";
+import { ACTIVE_PILOTS } from "./pilots/index.js";
 
 // ---------------------------------------------------------------------------
 // Types (ADR-017 §Bridge Contract)
@@ -523,19 +524,20 @@ export async function renderShortcodes(
           error: "BRIDGE_INIT_FAILED",
         };
       } else {
-        // Build code: bootstrap + pilot plugin code is injected externally;
-        // the bootstrap itself just sets up the environment and $postContent.
-        // The caller (pilot test) appends add_shortcode + np_bridge_return.
-        // For the bridge itself, we run a default: if no shortcodes are
-        // registered, np_bridge_return passes content through unchanged.
+        // Build code: bootstrap + pilot PHP code + runner.
+        // Per ADR-017 §Pilot Injection: each ACTIVE_PILOT's PHP code is concatenated
+        // before np_bridge_return, allowing pilots to register shortcodes/filters
+        // that execute when do_shortcode() runs.
         const bootstrapCode = buildBootstrapCode(
           input.postContent,
           input.context,
         );
+        const pilotCode = ACTIVE_PILOTS.map((p) => p.buildPhpCode()).join("\n");
         const runnerCode =
           bootstrapCode +
-          "\n// Default: pass through (no shortcodes registered by bridge itself)\n" +
-          "np_bridge_return(do_shortcode($postContent));\n";
+          "\n" +
+          pilotCode +
+          "\nnp_bridge_return(do_shortcode($postContent));\n";
 
         // --- Timeout race (ADR-017 §Runtime Model, ADR-018 §7) ---
         // 5-second timeout: if php-wasm hangs, return content unprocessed (fail-safe).

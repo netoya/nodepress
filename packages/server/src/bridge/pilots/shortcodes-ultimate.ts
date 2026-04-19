@@ -25,19 +25,71 @@ import type { FilterEntry, HookRegistry } from "@nodepress/core";
 const SHORTCODES_ULTIMATE_PLUGIN_ID = "tier2-shortcodes-ultimate-pilot";
 
 /**
+ * SU Framework stubs — exported separately for potential reuse.
+ *
+ * The Shortcodes Ultimate plugin uses internal functions like su_add_shortcode(),
+ * su_get_css_class(), su_query_asset(), etc. These are minimal no-op stubs that
+ * allow the plugin's real code (su_button, su_spacer, su_box, su_note, etc.) to
+ * register themselves via su_add_shortcode() instead of direct add_shortcode().
+ *
+ * Injected at the top of buildShortcodesUltimatePhpCode() so plugin code runs
+ * with access to these functions.
+ *
+ * Per memo 2026-04-19: stubs are prepended within the pilot, NOT scattered
+ * across other pilots. All SU-specific stubs live here.
+ */
+function buildSuFrameworkStubs(): string {
+  return `
+// --- Shortcodes Ultimate Framework Stubs ---
+function su_add_shortcode(\$args) {
+    if (isset(\$args['id']) && isset(\$args['callback'])) {
+        add_shortcode('su_' . \$args['id'], \$args['callback']);
+    }
+}
+function su_get_plugin_url() { return 'http://localhost:3000/wp-content/plugins/shortcodes-ultimate/'; }
+function su_get_css_class(\$atts) { return isset(\$atts['class']) && \$atts['class'] ? ' ' . esc_attr(\$atts['class']) : ''; }
+function su_query_asset(\$type, \$handle) { return false; }
+function su_adjust_brightness(\$hex, \$steps) { return \$hex; }
+function su_adjust_lightness(\$hex, \$steps) { return \$hex; }
+function su_do_nested_shortcodes(\$content, \$shortcode) { return do_shortcode(\$content); }
+function su_do_attribute(\$value) { return esc_html(\$value); }
+function su_parse_shortcode_atts(\$tag, \$atts) {
+    return is_array(\$atts) ? \$atts : [];
+}
+function su_html_style(\$styles) {
+    if (empty(\$styles)) return '';
+    return ' style="' . implode(';', \$styles) . '"';
+}
+function su_sanitize_css_color(\$hex) { return preg_match('/^#[0-9a-f]{3,6}\$/i', \$hex) ? \$hex : '#000000'; }
+function su_get_option(\$key, \$default = false) { return \$default; }
+function su_get_settings_data() { return []; }
+function su_get_asset_path(\$file) { return '/assets/' . basename(\$file); }
+function su_add_css_target(\$target, \$inline, \$priority = 10) { return true; }
+function su_add_js_target(\$target, \$inline, \$priority = 10) { return true; }
+function su_get_button_size_hint(\$size) { return ''; }
+function su_icons(\$return_format = 'array') { return []; }
+`;
+}
+
+/**
  * PHP code that implements the Shortcodes Ultimate logic.
  *
- * Registers three shortcodes:
- * 1. su_button - link button with color attribute
- * 2. su_box - content box with optional title and style
- * 3. su_note - simple note div
+ * Includes:
+ * 1. SU framework stubs (su_add_shortcode, su_get_css_class, etc.)
+ *    so the real plugin code (su_button, su_spacer, su_box, su_note) can register.
+ * 2. Implementation of the three shortcodes (button, box, note) as fallback.
  *
  * Pure string operations using htmlspecialchars (always bundled in php-wasm).
  * No network, no DB, no filesystem access.
+ *
+ * The stubs allow the real plugin code to run correctly. The hardcoded shortcodes
+ * are included as a minimal fallback if the plugin code is not injected separately.
  */
 export function buildShortcodesUltimatePhpCode(): string {
-  return `
-// --- Tier 2 Shortcodes Ultimate Pilot ---
+  return (
+    buildSuFrameworkStubs() +
+    `
+// --- Tier 2 Shortcodes Ultimate Pilot Shortcodes ---
 
 // Button shortcode: [su_button url="..." color="blue"]Text[/su_button]
 add_shortcode('su_button', function(\$atts, \$content) {
@@ -62,9 +114,17 @@ add_shortcode('su_note', function(\$atts, \$content) {
     return '<div class="su-note">' . do_shortcode(\$content) . '</div>';
 });
 
+// Spacer shortcode: [su_spacer size="30"]
+add_shortcode('su_spacer', function(\$atts, \$content) {
+    \$atts = shortcode_atts(['size' => '20'], \$atts);
+    \$size = (int)\$atts['size'];
+    return '<div class="su-spacer" style="height:' . \$size . 'px;"></div>';
+});
+
 // Process the post content through shortcodes
 \$postContent = do_shortcode(\$postContent);
-`;
+`
+  );
 }
 
 /**
