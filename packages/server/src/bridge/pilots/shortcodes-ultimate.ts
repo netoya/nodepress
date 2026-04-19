@@ -51,7 +51,14 @@ function su_get_css_class(\$atts) { return isset(\$atts['class']) && \$atts['cla
 function su_query_asset(\$type, \$handle) { return false; }
 function su_adjust_brightness(\$hex, \$steps) { return \$hex; }
 function su_adjust_lightness(\$hex, \$steps) { return \$hex; }
-function su_do_nested_shortcodes(\$content, \$shortcode) { return do_shortcode(\$content); }
+function su_do_nested_shortcodes(\$content, \$shortcode) {
+    static \$depth = 0;
+    if (\$depth >= 10) return \$content;
+    \$depth++;
+    \$result = do_shortcode(\$content);
+    \$depth--;
+    return \$result;
+}
 function su_do_attribute(\$value) { return esc_html(\$value); }
 function su_parse_shortcode_atts(\$tag, \$atts) {
     return is_array(\$atts) ? \$atts : [];

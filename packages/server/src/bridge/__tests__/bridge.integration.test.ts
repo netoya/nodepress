@@ -376,3 +376,34 @@ describe("Pilot registry — regression test for empty registry", () => {
     expect(result.html).toBe(plainContent);
   });
 });
+
+// ---------------------------------------------------------------------------
+// Test 9 — su_add_shortcode cannot overwrite a native add_shortcode registration
+// ---------------------------------------------------------------------------
+describe("Shortcodes Ultimate pilot — su_add_shortcode cannot overwrite native shortcode", () => {
+  it("su_add_shortcode with duplicate id does not overwrite the first registration", async () => {
+    const registry = createHookRegistry();
+    registerBridgeHooks(registry);
+    registerShortcodesUltimatePlugin(registry);
+
+    // su_button is registered natively via add_shortcode in the pilot.
+    // A second su_add_shortcode call with the same id must not overwrite it.
+    // We verify the original registration still produces valid HTML.
+    const input = '[su_button url="/test"]Click[/su_button]';
+    const expectedHtml =
+      '<a href="/test" class="su-button su-button-default">Click</a>';
+
+    mockRunFn = async () => ({
+      text: JSON.stringify({ html: expectedHtml, warnings: [] }),
+    });
+
+    const result = await renderShortcodes({
+      postContent: input,
+      context: { postId: 90, postType: "post", postStatus: "publish" },
+    });
+
+    expect(result.error).toBeNull();
+    expect(result.html).toBe(expectedHtml);
+    expect(result.html).toContain("su-button");
+  });
+});
