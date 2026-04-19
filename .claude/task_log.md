@@ -163,3 +163,5 @@
 | 2026-04-19 | raul | #83 Tier 2 bridge cURL allowlist — NODEPRESS_CURL_ALLOWLIST env var, wp_http_request() stub, Node fetch + injection, max 3 req/invoke limit, tests (8 pass), ADR-018 amendment, 238 tests green | 4 files | pending | ✅ |
 | 2026-04-19 | roman | docs: README → Beta + Sprint 6 state + retroactive S6 kickoff log (.claude/logs/20260419-kickoff-sprint-6.md) | 2 files | pending | ✅ |
 | 2026-04-19 | raul | #88 plugin uninstall CLI + REST DELETE — CLI backup + REST unregister (status='uninstalled' row preserved) | 8 files | 247 tests ✅ | ✅ |
+| 2026-04-19 | carmen | #89 plugin search — GET /wp/v2/plugins?q=term full-text on name+meta.description (ILIKE), 5 new tests, OpenAPI updated, PluginRegistryService.list() + search param, handlers + q query wired | 5 files | 247 tests ✅ | ✅ |
+| 2026-04-19 | roman | #86 ADR-024 Plugin Marketplace Architecture → Accepted (pre-work Sprint 7: marketplace UI + install-via-REST + uninstall + search + depth-3 dep resolution; gates #84/#85/#88/#89 for parallel execution) | 3 files | pending | ✅ |
