@@ -4,6 +4,15 @@
 
 ---
 
+## Meet 2026-04-19 — Logs Sprint 6 + README
+
+- **README framing:** "Beta abierta a contribuidores técnicos" — honesto, gestiona expectativas, no promete SLA enterprise. Commit fcb714d. **Date:** 2026-04-19
+- **README estructura:** shipped (S0-S5) / en curso (S6) / roadmap. No duplicar PROJECT_STATUS — enlazarlo. README = cartel; PROJECT_STATUS = inventario. **Date:** 2026-04-19
+- **ADR-017 §Consequences #6:** Tests de piloto deben usar renderShortcodes() real, no simular en JS. Aplicar a todos los pilotos nuevos de Sprint 6+. **Date:** 2026-04-19
+- **ADR-023 Accepted** (1b4c12e): Plugin Registry. DB-backed, npm-compatible tarball, REST /wp/v2/plugins, CLI nodepress plugin install. **Date:** 2026-04-19
+- **ADR-018 amendment** (#83): cURL allowlist via NODEPRESS_CURL_ALLOWLIST. Default bloqueado. Max 3 req/invocación. **Date:** 2026-04-19
+- **ADR-020 amendment** (#78): Worker Threads sandbox via NODEPRESS_WORKER_SANDBOX=true. Default OFF. 32MB/plugin. **Date:** 2026-04-19
+
 ## Meet 2026-04-18 — Kickoff Sprint 5
 
 - **D-031 ADR-022 WP Import Strategy:** Román escribe el ADR día 1 de Sprint 5 antes de cualquier código. SAX parser (no DOM — performance en dumps grandes), scope mínimo posts+terms+users+comments, idempotencia `--mode=reset|upsert`, media/custom post types/PHP-serialized meta = fuera. **Date:** 2026-04-18

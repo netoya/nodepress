@@ -1,3 +1,11 @@
+## Meet 2026-04-19 — Logs Sprint 6 + README
+
+- **Logs de ceremonias como gate de cierre:** A partir de Sprint 7, ningún sprint se cierra sin log de kickoff + retro en `.claude/logs/`. **Date:** 2026-04-19
+- **README refresh en DoD Sprint 7+:** El README refresh forma parte del DoD de cada sprint desde Sprint 7. **Date:** 2026-04-19
+- **CLA deadline:** Alejandro confirma Org Admin access antes del 2026-04-26 o escala como D-039. **Date:** 2026-04-19
+- **Acta retroactiva kickoff S6:** Generada en `.claude/logs/20260419-kickoff-sprint-6.md`. **Date:** 2026-04-19
+- **Sprint 5 retro cerrada:** Acta en `docs/process/retros/sprint-5-retro.md`. Velocity 11 tickets. **Date:** 2026-04-19
+
 ## Meet 2026-04-18 — Kickoff Sprint 5
 
 - **D-037 Regla de proceso:** Ningún kickoff arranca sin retro del sprint anterior cerrada. Acordado por todo el equipo. **Date:** 2026-04-18

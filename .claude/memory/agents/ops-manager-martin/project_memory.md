@@ -1,3 +1,9 @@
+## Meet 2026-04-19 — Logs Sprint 6 + README
+
+- **CLA deadline:** Alejandro confirma Org Admin access antes del 2026-04-26. Sin confirmación → escalar como D-039. **Date:** 2026-04-19
+- **GitHub Issues mapping #74-#83:** Deuda 3 sprints — completar esta semana. **Date:** 2026-04-19
+- **Sprint 6 completado:** 10/10 tickets entregados (P0+P1+P2). Push fcb714d. 238 tests verdes. **Date:** 2026-04-19
+
 ## Meet 2026-04-18 — Kickoff Sprint 5
 
 - **D-030 Techo Sprint 5:** 10 tickets (8 slots nuevos + #60 + #61 heredados). Velocity 80% en Sprint 4 — no comprometer más. **Date:** 2026-04-18
