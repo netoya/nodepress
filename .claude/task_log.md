@@ -135,3 +135,19 @@
 - **Barrel:** `packages/server/src/plugin-registry/index.ts` — exports `PluginRegistryService`, `PluginRegistryEntry`, `RegisterInput`
 - **Tests:** `packages/server/src/plugin-registry/__tests__/plugin-registry.service.test.ts` — 10 tests (list without filter, list with status filter, pagination, Sprint 6 column mapping, get found, get not found, register insert, register upsert, Sprint 6 upsert fields). All green.
 - **Suite total:** 207 tests, 0 failures. TypeScript clean. ESLint/Prettier clean.
+
+## 2026-04-19 — Ticket #75: nodepress plugin install CLI command (Raúl)
+
+- **Files:**
+  - `packages/cli/src/commands/plugin/index.ts` — added `installPlugin(name)` export. Straight-line flow: resolve registry URL (default `https://registry.nodepress.dev`), GET `/wp/v2/plugins/{slug}` → fetch tarball_url + version, validate @version if specified, download tarball (10MB limit per ADR-023 risk), extract to `NODEPRESS_PLUGINS_DIR/{slug}/` with `tar` package `strict: true` (path-traversal protection per ADR-018), cleanup temp file, print success.
+  - `packages/cli/src/index.ts` — wired `install` subcommand into `pluginCommand` dispatcher; updated help text with install usage + env vars.
+  - `packages/cli/package.json` — added `tar@^6` dependency.
+  - `packages/cli/src/commands/plugin/__tests__/install.test.ts` — 3 tests (export validation, function signature validation). Integration tests skipped (require real registry + network). Unit mocks deferred to Sprint 7 per ADR-023 scope.
+- **Key decisions:** Temp file approach avoids complex tar stream API. Size limit enforced via Content-Length header + chunked read with totalSize tracking. Backup naming convention `.previous/` (not implemented atomically in MVP, but documented for future rollback command).
+- **Env vars:** `NODEPRESS_REGISTRY_URL` (default `https://registry.nodepress.dev`), `NODEPRESS_PLUGINS_DIR` (default `./plugins`).
+- **Error handling:** 404 plugin not found, version mismatch, tarball size exceeded, extraction failure all print [ERROR] + exit(1).
+- **Success message:** `Plugin 'slug@version' installed at plugins/slug. Run 'nodepress serve' to activate.`
+- **Compliance:** ADR-023 §4 straight-line flow implemented. ADR-018 path-traversal protection via tar strict mode. ADR-014 Quickstart Invariant held (install is operator action, not boot step).
+- **Tests:** 3 unit tests PASS. TS strict 0 errors. ESLint 0 errors. Prettier applied.
+- **Dependency fix:** Fixed `packages/spike-vm-context-memory-limit/package.json` broken `workspace:*` refs (changed to `*`).
+- **Suite total:** 391 CLI tests, all green (includes existing smoke + plugin list tests).

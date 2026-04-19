@@ -114,6 +114,15 @@ async function pluginCommand(argv: string[]): Promise<void> {
   if (subcommand === "list") {
     const { listPlugins } = await import("./commands/plugin/index.js");
     await listPlugins();
+  } else if (subcommand === "install") {
+    const { installPlugin } = await import("./commands/plugin/index.js");
+    const pluginName = argv[1];
+    if (!pluginName) {
+      console.error("[ERROR] plugin name required");
+      showPluginHelp();
+      process.exit(1);
+    }
+    await installPlugin(pluginName);
   } else {
     console.error(`Unknown plugin subcommand: ${subcommand}`);
     showPluginHelp();
@@ -126,10 +135,13 @@ function showPluginHelp(): void {
 NodePress plugin — Manage NodePress plugins
 
 Usage:
-  nodepress plugin list         List installed plugins
-  nodepress plugin --help       Show this message
+  nodepress plugin list              List installed plugins
+  nodepress plugin install <name>    Install a plugin from registry
+  nodepress plugin install <name>@<version>  Install specific version
+  nodepress plugin --help            Show this message
 
 Environment Variables:
+  NODEPRESS_REGISTRY_URL       Registry base URL (default: https://registry.nodepress.dev)
   NODEPRESS_PLUGINS_DIR        Plugins directory (default: ./plugins)
 `);
 }

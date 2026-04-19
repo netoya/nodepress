@@ -11,5 +11,8 @@
     "build": "tsc",
     "test": "vitest run",
     "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "tar": "^6"
   }
 }

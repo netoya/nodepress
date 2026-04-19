@@ -157,7 +157,7 @@
 6. **WP Import CLI: 4 días, scope mínimo acordado** — incluye fix bug taxonomías en PUT /wp/v2/posts como subtarea. _(Carmen + Ingrid)_
 7. **React Router migración entra como ticket propio** — hash routing no escala. 3 días con tests. _(Lucas + Román)_
 8. **Retro Sprint 4 pendiente — lanzar hoy, cerrar lunes** — nueva regla de equipo: ningún kickoff arranca sin retro cerrada. _(Tomás)_
-9. **Hotfix: paginación en memoria GET /wp/v2/users** — Carmen cierra hoy, patrón page/per_page como /categories. _(Ingrid + Carmen)_
+9. **Hotfix: paginación en memoria GET /wp/v2/users** — Carmen cierra hoy, patrón page/per*page como /categories. *(Ingrid + Carmen)\_
 10. **PROJECT_STATUS inconsistente con ADRs** — ADR-020/021 marcados Proposed, están Accepted. Tomás corrige hoy. _(Román + Tomás)_
 
 ---
