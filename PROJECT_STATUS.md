@@ -45,16 +45,16 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado       | Objetivo                                                            |
-| ------------ | ----------------------- | ------------ | ------------------------------------------------------------------- |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO   | Scaffolding: monorepo, CI, docker, packages init                    |
-| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO   | Hook system + CRUD posts REST + Admin shell + demo 30-04            |
-| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO   | Hardening + ADRs sellados + Tier 2 pilotos + context=edit           |
-| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO   | Roles/capabilities + taxonomías + admin edit flow + CLI init        |
-| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO   | Plugin system + Theme engine + post-launch ICP-1 signal             |
-| **Sprint 5** | 2026-06-02 → 2026-06-13 | ✅ CERRADO   | CLI funcional, WP Import real, CLA + contribuidores                 |
-| **Sprint 6** | 2026-06-16 → 2026-06-27 | ✅ CERRADO   | Plugin Registry MVP + vm.Context hardening + OpenAPI                |
-| **Sprint 7** | 2026-06-30 → 2026-07-11 | ⬜ PENDIENTE | Plugin marketplace UI + dependency resolution + verified publishers |
+| Sprint       | Fechas                  | Estado      | Objetivo                                                            |
+| ------------ | ----------------------- | ----------- | ------------------------------------------------------------------- |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO  | Scaffolding: monorepo, CI, docker, packages init                    |
+| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO  | Hook system + CRUD posts REST + Admin shell + demo 30-04            |
+| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO  | Hardening + ADRs sellados + Tier 2 pilotos + context=edit           |
+| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO  | Roles/capabilities + taxonomías + admin edit flow + CLI init        |
+| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO  | Plugin system + Theme engine + post-launch ICP-1 signal             |
+| **Sprint 5** | 2026-06-02 → 2026-06-13 | ✅ CERRADO  | CLI funcional, WP Import real, CLA + contribuidores                 |
+| **Sprint 6** | 2026-06-16 → 2026-06-27 | ✅ CERRADO  | Plugin Registry MVP + vm.Context hardening + OpenAPI                |
+| **Sprint 7** | 2026-06-30 → 2026-07-11 | 🔄 EN CURSO | Plugin marketplace UI + dependency resolution + verified publishers |
 
 ---
 
@@ -518,3 +518,39 @@ _Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-19 (Sprint
 - **Features:** Plugin Registry (schema + service + REST + CLI install), Worker Threads sandbox (32MB/plugin), OpenAPI 100%, Users UI, Media uploads stub, cURL allowlist bridge
 - **Retro:** `docs/process/retros/sprint-6-retro.md` — cierre async 2026-04-21 AM
 - **Velocity S6:** 10/10 — sprint más completo desde Sprint 2
+
+---
+
+## Sprint 7 — Plugin Marketplace UI + Dependency Resolution (2026-06-30 → 2026-07-11)
+
+**Sprint Goal:** "NodePress con marketplace visual: browse, install y uninstall de plugins desde admin panel, con resolución automática de dependencias."
+
+**DoD Sprint 7:** Marketplace UI operativo (browse + search + install + uninstall), dependencias resueltas automáticamente (depth-cap 3, cycle detection), ADR-024 Accepted, plugin search REST funcional, uninstall CLI + REST.
+
+**Feature freeze:** 2026-07-09 12:00. **Kickoff:** 2026-06-30 AM.
+
+### Ticket Mapping Sprint 7
+
+| PROJECT_STATUS # | GitHub Issue | Short title                                                                  | Responsable               | Estado                             | Commit  |
+| ---------------- | ------------ | ---------------------------------------------------------------------------- | ------------------------- | ---------------------------------- | ------- |
+| 84               | —            | Plugin marketplace UI — browse + install desde admin panel                   | Lucas + Nico              | ✅ DONE                            | 624d3e9 |
+| 85               | —            | Plugin dependency resolution — instalar dependencias declaradas en manifest  | Raúl + Ingrid             | ✅ DONE                            | 743f4e0 |
+| 86               | —            | ADR-024 Plugin Marketplace Architecture → Accepted                           | Román                     | ✅ DONE                            | 676e511 |
+| 87               | —            | Verified publishers badge — criterios + badge UI                             | Alejandro + Román + Lucas | ⏳ PENDING criterios Alejandro     | —       |
+| 88               | —            | `nodepress plugin uninstall <slug>` — CLI + REST DELETE /wp/v2/plugins/:slug | Raúl                      | ✅ DONE                            | 655f1b1 |
+| 89               | —            | Plugin search `GET /wp/v2/plugins?q=...` — full-text name + description      | Carmen + Ingrid           | ✅ DONE                            | 655f1b1 |
+| 90               | —            | CLA webhook operativo — condicional confirmación Alejandro Org Admin         | Helena                    | ⏳ BLOQUEADO (deadline 2026-04-26) | —       |
+| 91               | —            | Dark mode admin panel                                                        | Marta + Nico              | ⬜ P2                              | —       |
+| 92               | —            | Plugin ratings schema stub                                                   | Ingrid                    | ⬜ P2                              | —       |
+| 93               | —            | Tier 2 bridge — shortcode nesting depth configurable                         | Raúl                      | ⬜ P2                              | —       |
+
+> Ref backlog completo: `docs/process/backlog-sprint7-draft.md`
+
+### Sprint 7 — Estado parcial (2026-04-19)
+
+- **Tickets completados:** 5/10 (#84, #85, #86, #88, #89)
+- **Tests:** 278 verdes (suite global)
+- **ADRs:** ADR-024 Accepted
+- **Features entregadas:** Plugin marketplace UI (browse+search+install+uninstall), dependency resolution (depth-3+cycles), plugin uninstall CLI+REST, plugin search ILIKE, ADR-024
+- **Pendiente P1:** #87 (esperando criterios Alejandro 2026-07-02), #90 (bloqueado CLA Org Admin 2026-04-26)
+- **P2:** #91 dark mode, #92 ratings stub, #93 nesting depth configurable — entran si P0+P1 cierra antes del freeze
