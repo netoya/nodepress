@@ -151,3 +151,5 @@
 - **Tests:** 3 unit tests PASS. TS strict 0 errors. ESLint 0 errors. Prettier applied.
 - **Dependency fix:** Fixed `packages/spike-vm-context-memory-limit/package.json` broken `workspace:*` refs (changed to `*`).
 - **Suite total:** 391 CLI tests, all green (includes existing smoke + plugin list tests).
+
+| 2026-04-19 | helena | #80 CLA setup guide + .clabot + outreach status + CLA.md (bloqueado en R-S5-1 Alejandro) | 4 files | pending | ✅ |
