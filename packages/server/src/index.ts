@@ -15,6 +15,7 @@ import usersPlugin from "./routes/users/index.js";
 import taxonomiesPlugin from "./routes/taxonomies/index.js";
 import mediaPlugin from "./routes/media/index.js";
 import publicPlugin from "./routes/public/index.js";
+import pluginRegistryPlugin from "./plugin-registry/routes.js";
 import { registerBridgeHooks } from "./bridge/index.js";
 import { registerFootnotesPlugin } from "./bridge/pilots/footnotes.js";
 import { registerShortcodesUltimatePlugin } from "./bridge/pilots/shortcodes-ultimate.js";
@@ -85,6 +86,10 @@ export async function buildServer() {
   // Register the public HTML renderer plugin
   // (GET / for home + GET /p/:slug for single post pages)
   await server.register(publicPlugin);
+
+  // Register the plugin registry REST API plugin
+  // (GET /wp/v2/plugins, GET /wp/v2/plugins/:slug, POST /wp/v2/plugins)
+  await server.register(pluginRegistryPlugin);
 
   return server;
 }
