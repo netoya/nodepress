@@ -1,5 +1,4 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { setupServer } from "msw/node";
 import { http, HttpResponse } from "msw";
@@ -157,66 +156,31 @@ describe("PluginsPage", () => {
     ).toBeDefined();
   });
 
-  it("optimistically toggles plugin status and shows toast", async () => {
-    const user = userEvent.setup();
-
+  it("renders Uninstall button for active plugins (Sprint 7)", async () => {
     renderWithQuery(<PluginsPage />);
 
-    // Wait for data
     await waitFor(() => {
       expect(screen.getByText("NodePress SEO")).toBeDefined();
     });
 
-    // NodePress SEO is active → Disable button
-    const disableBtn = screen.getByRole("button", {
-      name: /disable plugin nodepress seo/i,
-    });
-    await user.click(disableBtn);
-
-    // Optimistic: badge flipped to Inactive, button now says Enable
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /enable plugin nodepress seo/i }),
-      ).toBeDefined();
-    });
-
-    // Toast fired
-    expect(mockShow).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "success",
-        message: expect.stringContaining("disabled"),
-      }),
-    );
+    // Active plugin should have an Uninstall button
+    expect(
+      screen.getByRole("button", { name: /uninstall plugin nodepress seo/i }),
+    ).toBeDefined();
   });
 
-  it("optimistically enables an inactive plugin and shows toast", async () => {
-    const user = userEvent.setup();
-
+  it("renders Uninstall button for inactive plugins (Sprint 7)", async () => {
     renderWithQuery(<PluginsPage />);
 
     await waitFor(() => {
       expect(screen.getByText("Contact Form Lite")).toBeDefined();
     });
 
-    // Contact Form Lite is inactive → Enable button
-    const enableBtn = screen.getByRole("button", {
-      name: /enable plugin contact form lite/i,
-    });
-    await user.click(enableBtn);
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", {
-          name: /disable plugin contact form lite/i,
-        }),
-      ).toBeDefined();
-    });
-
-    expect(mockShow).toHaveBeenCalledWith(
-      expect.objectContaining({
-        type: "success",
-        message: expect.stringContaining("enabled"),
+    // Inactive plugin should also have an Uninstall button
+    expect(
+      screen.getByRole("button", {
+        name: /uninstall plugin contact form lite/i,
       }),
-    );
+    ).toBeDefined();
   });
 });

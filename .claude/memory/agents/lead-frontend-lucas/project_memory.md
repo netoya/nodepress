@@ -166,6 +166,19 @@
 - **6 tests green** in `admin/src/features/plugins/__tests__/PluginsPage.test.tsx`: loading, empty, data render, error, disable toggle toast, enable toggle toast. Total: 101/101 admin tests. **Date:** 2026-04-18
 - **Sprint 6 TODO:** wire real PATCH /wp/v2/plugins/:plugin endpoint for status toggle. Replace statusOverrides state with mutation. **Date:** 2026-04-18
 
+## Sprint 7 — #84 Plugin marketplace UI (2026-04-19)
+
+- **PluginsPage.tsx rewritten:** Sprint 7 full marketplace. Search bar (input + Search/Clear buttons, ?q= backend param), "Install plugin" header button, Uninstall button per plugin (hidden for status=uninstalled). StatusBadge component handles active/inactive/uninstalled. **Date:** 2026-04-19
+- **WpPlugin.status extended:** `"active" | "inactive" | "uninstalled"` — Sprint 7 adds uninstalled per ADR-024. **Date:** 2026-04-19
+- **usePluginsQuery updated:** accepts optional `search?: string` param, appends ?q= to path, queryKey includes search string `["plugins-list", search]`. **Date:** 2026-04-19
+- **useInstallPlugin.ts created:** useMutation, POST /wp/v2/plugins with { slug, registryUrl? }, invalidates ["plugins-list"] on success. **Date:** 2026-04-19
+- **useUninstallPlugin.ts created:** useMutation, DELETE /wp/v2/plugins/:slug (encodeURIComponent for slash slugs), invalidates ["plugins-list"] on success. **Date:** 2026-04-19
+- **InstallModal.tsx created:** role=dialog, form with slug (required) + registryUrl (optional, type=url), error display (role=alert), loading/success/cancel flow. Calls useInstallPlugin. **Date:** 2026-04-19
+- **MSW handlers updated:** GET /wp/v2/plugins now parses ?q= and filters; POST /wp/v2/plugins creates new plugin; DELETE /wp/v2/plugins/:slug marks status=uninstalled. **Date:** 2026-04-19
+- **Gotcha — /install plugin/i regex:** matches "Uninstall plugin X" buttons too. Fix: use exact string `"Install plugin"` in getByRole name. **Date:** 2026-04-19
+- **13 plugin tests green** (6 legacy in PluginsPage.test.tsx updated to Uninstall semantics + 7 new in PluginsPageMarketplace.test.tsx). 102 total admin tests pass. Pre-existing 3 test file failures (react-router-dom import in jsdom) unchanged — not caused by Sprint 7 work. **Date:** 2026-04-19
+- **Router unchanged:** /plugins route was already registered in router.tsx from Sprint 5. No router changes needed. **Date:** 2026-04-19
+
 ## Sprint 4 — #65 Dashboard refinement (2026-04-18)
 
 - **Indicador "Actualizado:"** añadido en DashboardPage sobre PostsList cuando hay datos. Usa `dataUpdatedAt` de React Query (timestamp) formateado con `toLocaleTimeString("es-ES")`. `aria-label="Last updated"` para a11y. **Date:** 2026-04-18

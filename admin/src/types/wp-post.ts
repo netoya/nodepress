@@ -94,8 +94,11 @@ export interface WpPlugin {
   name: string;
   /** Plugin version string. */
   version: string;
-  /** Plugin status — active | inactive. */
-  status: "active" | "inactive";
+  /**
+   * Plugin status — active | inactive | uninstalled.
+   * Sprint 7: uninstall marks status='uninstalled', does not delete the row (ADR-024).
+   */
+  status: "active" | "inactive" | "uninstalled";
   /** Short plugin description. */
   description: string;
   /** Plugin author name. */
