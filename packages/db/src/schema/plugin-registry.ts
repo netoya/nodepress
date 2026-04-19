@@ -17,6 +17,11 @@ export const pluginRegistry = pgTable(
     activatedAt: timestamp("activated_at"),
     errorLog: text("error_log"),
     meta: jsonb("meta").notNull().default({}),
+    // Sprint 6 — plugin registry extensions
+    registryUrl: text("registry_url"),
+    tarballUrl: text("tarball_url"),
+    publishedAt: timestamp("published_at"),
+    author: text("author"),
   },
   (table) => [index("plugin_registry_status_idx").on(table.status)],
 );

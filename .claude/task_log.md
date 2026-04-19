@@ -126,3 +126,12 @@
 | 2026-04-19 | scrum-master-tomas | Sprint 5 retro async + PROJECT_STATUS cierre S5 + Sprint 6 stub                                                                 | 2 files   | pending | ✅     |
 | 2026-04-19 | raul               | R-S5-2 + R-S5-3 — su_do_nested_shortcodes recursion depth guard (max 10) + Test 9 su_add_shortcode overwrite regression (197t)  | 3 files   | 3d2a890 | ✅     |
 | 2026-04-19 | roman              | #77 ADR-023 Plugin Registry Architecture → Accepted (Status promoted from Proposed; Sprint 6 P0 gate open)                      | 3 files   | pending | ✅     |
+
+## 2026-04-19 — Ticket #74: Plugin Registry service — schema migration + list/get/register API
+
+- **Schema:** `packages/db/src/schema/plugin-registry.ts` — added 4 nullable columns: `registryUrl`, `tarballUrl`, `publishedAt`, `author`
+- **Migration:** `packages/db/drizzle/0001_plugin_registry_sprint6.sql` + journal updated (idx 1)
+- **Service:** `packages/server/src/plugin-registry/plugin-registry.service.ts` — `PluginRegistryService` with `list(filter?)`, `get(slug)`, `register(data)` (upsert by slug). Drizzle db injected via constructor.
+- **Barrel:** `packages/server/src/plugin-registry/index.ts` — exports `PluginRegistryService`, `PluginRegistryEntry`, `RegisterInput`
+- **Tests:** `packages/server/src/plugin-registry/__tests__/plugin-registry.service.test.ts` — 10 tests (list without filter, list with status filter, pagination, Sprint 6 column mapping, get found, get not found, register insert, register upsert, Sprint 6 upsert fields). All green.
+- **Suite total:** 207 tests, 0 failures. TypeScript clean. ESLint/Prettier clean.
