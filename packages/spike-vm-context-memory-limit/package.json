@@ -1,0 +1,15 @@
+{
+  "name": "@nodepress/spike-vm-context-memory-limit",
+  "version": "0.1.0",
+  "description": "Spike: vm.Context memory limit options evaluation and Worker Threads PoC",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx src/poc-worker-threads.ts",
+    "test": "vitest",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "devDependencies": {
+    "typescript": "workspace:*",
+    "vitest": "workspace:*"
+  }
+}
