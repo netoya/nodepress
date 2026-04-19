@@ -2,6 +2,11 @@ import type { FastifyReply, FastifyRequest } from "fastify";
 import { db } from "@nodepress/db";
 import { PluginRegistryService } from "./plugin-registry.service.js";
 import type { PluginRegistryEntry } from "./plugin-registry.service.js";
+import { installPluginWithDependencies } from "./install-service.js";
+import {
+  DependencyCycleDetectedError,
+  DependencyDepthExceededError,
+} from "./dependency-resolver.js";
 
 // Initialize the service with the injected Drizzle db instance
 const registryService = new PluginRegistryService(db);
@@ -73,19 +78,22 @@ export async function getPlugin(
 }
 
 /**
- * POST /wp/v2/plugins — Register or update a plugin in the registry.
+ * POST /wp/v2/plugins — Register or update a plugin in the registry with dependency resolution.
  * Admin-auth required.
  * Body schema:
  *  - slug (required)
  *  - name (required)
  *  - version (required)
  *  - author, registryUrl, tarballUrl, publishedAt (optional)
- *  - meta (optional)
+ *  - meta (optional, can contain dependencies: [{ slug, version? }])
+ *
+ * Automatically resolves and installs dependencies before registering the main plugin.
+ * Depth cap: 3 levels of transitive dependencies.
  */
 export async function createPlugin(
   request: FastifyRequest,
   reply: FastifyReply,
-): Promise<PluginRegistryEntry | void> {
+): Promise<void> {
   const body = request.body as Record<string, unknown>;
 
   // Validate required fields
@@ -129,19 +137,54 @@ export async function createPlugin(
     }
   }
 
-  // Register (upsert) the plugin
-  const plugin = await registryService.register({
-    slug,
-    name,
-    version,
-    author,
-    registryUrl,
-    tarballUrl,
-    publishedAt,
-    meta,
-  });
+  // Install with dependency resolution
+  try {
+    const result = await installPluginWithDependencies(
+      registryService,
+      slug,
+      version,
+      {
+        name,
+        author,
+        registryUrl,
+        tarballUrl,
+        publishedAt,
+        meta,
+      },
+    );
 
-  return reply.status(201).send(plugin);
+    return reply.status(201).send({
+      slug: result.slug,
+      version: result.version,
+      status: result.status,
+      installedDependencies: result.installedDependencies,
+      warnings: result.warnings,
+    });
+  } catch (err) {
+    if (err instanceof DependencyCycleDetectedError) {
+      return reply.status(422).send({
+        code: "rest_dependency_cycle_detected",
+        message: err.message,
+        data: { status: 422 },
+      });
+    }
+
+    if (err instanceof DependencyDepthExceededError) {
+      return reply.status(422).send({
+        code: "rest_dependency_depth_exceeded",
+        message: err.message,
+        data: { status: 422 },
+      });
+    }
+
+    // Other errors (DB, registry lookup, etc.)
+    const msg = err instanceof Error ? err.message : String(err);
+    return reply.status(500).send({
+      code: "rest_internal_error",
+      message: `Failed to install plugin: ${msg}`,
+      data: { status: 500 },
+    });
+  }
 }
 
 /**
