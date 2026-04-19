@@ -122,3 +122,4 @@
 | 2026-06-14 | martin          | docs(#60): Sprint 6 backlog draft + ICP-1 debrief — 5 hallazgos, 10 tickets, buffer #72/#73 propuesta                           | 2 files   | pending | ✅     |
 | 2026-04-19 | raul            | Bridge Pilot Registry — ACTIVE_PILOTS registry + pilot PHP injection + SU framework stubs + 3 tests (65 total, DoD 1-6)         | 4 files   | pending | ✅     |
 | 2026-04-19 | roman           | ADR-017 amendment — Pilot Registry section + SU framework stubs subsection + Consequences #6 (pilot tests against real runtime) | 1 file    | pending | ✅     |
+| 2026-04-18 | roman           | #77 ADR-023 Plugin Registry Architecture — pre-work Sprint 5 buffer / Sprint 6 P0 (DB table extension, npm format, REST, CLI)   | 2 files   | pending | ✅     |
