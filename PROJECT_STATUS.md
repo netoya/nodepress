@@ -152,30 +152,31 @@
 
 ## ADRs
 
-| ADR | Título                         | Estado      | Autor           |
-| --- | ------------------------------ | ----------- | --------------- |
-| 001 | Architecture Overview          | ✅ Accepted | Román           |
-| 002 | Folder Structure               | ✅ Accepted | Román           |
-| 003 | PHP Compatibility Strategy     | ✅ Accepted | Román           |
-| 004 | Plugin Lifecycle               | ✅ Accepted | Román           |
-| 005 | Hook System Async Boundary     | ✅ Accepted | Román           |
-| 006 | date_gmt omission              | ✅ Accepted | Román + Ingrid  |
-| 007 | Slug auto-suffix WP-style      | ✅ Accepted | Carmen          |
-| 008 | PHP-WASM Tier 2 Verdict        | ✅ Accepted | Raúl + Helena   |
-| 009 | Context param (view/edit)      | ✅ Accepted | Carmen          |
-| 010 | CLI Architecture               | ✅ Accepted | Román           |
-| 011 | Theme Engine Contract          | ✅ Accepted | Román           |
-| 012 | Plugin API                     | ✅ Accepted | Román           |
-| 013 | CircuitBreaker stress findings | ✅ Accepted | Raúl            |
-| 014 | Developer Quickstart Invariant | ✅ Accepted | Román           |
-| 015 | Tooling Runtime Boundary       | ✅ Accepted | Román           |
-| 016 | Demo Lifecycle Contract        | ✅ Accepted | Román           |
-| 017 | Tier 2 Bridge Surface          | ✅ Accepted | Román + Ingrid  |
-| 018 | Bridge Security Boundary       | ✅ Accepted | Helena          |
-| 019 | Bridge Observability           | ✅ Accepted | Ingrid + Helena |
-| 020 | Plugin Loader Runtime          | ✅ Accepted | Román           |
-| 021 | Theme↔Core Integration         | ✅ Accepted | Román           |
-| 023 | Plugin Registry Architecture   | ✅ Accepted | Román           |
+| ADR | Título                          | Estado      | Autor           |
+| --- | ------------------------------- | ----------- | --------------- |
+| 001 | Architecture Overview           | ✅ Accepted | Román           |
+| 002 | Folder Structure                | ✅ Accepted | Román           |
+| 003 | PHP Compatibility Strategy      | ✅ Accepted | Román           |
+| 004 | Plugin Lifecycle                | ✅ Accepted | Román           |
+| 005 | Hook System Async Boundary      | ✅ Accepted | Román           |
+| 006 | date_gmt omission               | ✅ Accepted | Román + Ingrid  |
+| 007 | Slug auto-suffix WP-style       | ✅ Accepted | Carmen          |
+| 008 | PHP-WASM Tier 2 Verdict         | ✅ Accepted | Raúl + Helena   |
+| 009 | Context param (view/edit)       | ✅ Accepted | Carmen          |
+| 010 | CLI Architecture                | ✅ Accepted | Román           |
+| 011 | Theme Engine Contract           | ✅ Accepted | Román           |
+| 012 | Plugin API                      | ✅ Accepted | Román           |
+| 013 | CircuitBreaker stress findings  | ✅ Accepted | Raúl            |
+| 014 | Developer Quickstart Invariant  | ✅ Accepted | Román           |
+| 015 | Tooling Runtime Boundary        | ✅ Accepted | Román           |
+| 016 | Demo Lifecycle Contract         | ✅ Accepted | Román           |
+| 017 | Tier 2 Bridge Surface           | ✅ Accepted | Román + Ingrid  |
+| 018 | Bridge Security Boundary        | ✅ Accepted | Helena          |
+| 019 | Bridge Observability            | ✅ Accepted | Ingrid + Helena |
+| 020 | Plugin Loader Runtime           | ✅ Accepted | Román           |
+| 021 | Theme↔Core Integration          | ✅ Accepted | Román           |
+| 023 | Plugin Registry Architecture    | ✅ Accepted | Román           |
+| 024 | Plugin Marketplace Architecture | ✅ Accepted | Román           |
 
 ---
 
