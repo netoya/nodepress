@@ -58,6 +58,22 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/plugins",
     {
       schema: {
+        querystring: {
+          type: "object",
+          properties: {
+            page: { type: "integer", minimum: 1, default: 1 },
+            per_page: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              default: 10,
+            },
+            status: {
+              type: "string",
+              enum: ["active", "inactive", "all"],
+            },
+          },
+        },
         response: {
           200: {
             type: "array",
@@ -74,6 +90,13 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/plugins/:slug",
     {
       schema: {
+        params: {
+          type: "object",
+          required: ["slug"],
+          properties: {
+            slug: { type: "string" },
+          },
+        },
         response: {
           200: PluginEntrySchema,
           404: ErrorResponseSchema,
@@ -94,6 +117,7 @@ export default fp(async (app: FastifyInstance) => {
           201: PluginEntrySchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
+          409: ErrorResponseSchema,
         },
       },
     },

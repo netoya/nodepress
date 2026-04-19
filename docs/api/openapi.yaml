@@ -465,6 +465,121 @@ components:
               description: Database login field (username).
               example: "admin"
 
+    PluginEntry:
+      type: object
+      description: |
+        A plugin registry entry following NodePress plugin structure.
+        Sprint 5: stores metadata and status for plugin discovery and management.
+      required:
+        - slug
+        - name
+        - version
+        - status
+      properties:
+        slug:
+          type: string
+          description: Unique identifier for the plugin (kebab-case).
+          example: "hello-world"
+        name:
+          type: string
+          description: Human-readable plugin name.
+          example: "Hello World"
+        version:
+          type: string
+          description: Semantic version of the plugin.
+          example: "1.0.0"
+        status:
+          type: string
+          description: Plugin status (active, inactive, etc.).
+          enum:
+            - active
+            - inactive
+            - error
+          example: "active"
+        author:
+          type: string
+          nullable: true
+          description: Author name or organization.
+          example: "NodePress Team"
+        registryUrl:
+          type: string
+          nullable: true
+          description: URL of the plugin registry or source.
+          example: "https://registry.nodepress.io"
+        tarballUrl:
+          type: string
+          nullable: true
+          description: URL to download the plugin tarball.
+          example: "https://registry.nodepress.io/plugins/hello-world-1.0.0.tar.gz"
+        publishedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Publication date (ISO 8601).
+          example: "2026-04-15T10:00:00.000Z"
+        activatedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Activation date (ISO 8601). Null if plugin is inactive.
+          example: "2026-04-17T10:00:00.000Z"
+        errorLog:
+          type: string
+          nullable: true
+          description: Error message if plugin failed to load.
+          example: null
+        meta:
+          type: object
+          description: Arbitrary metadata (JSONB).
+          additionalProperties: true
+          example: {}
+
+    PostPluginBody:
+      type: object
+      description: Request body for POST /wp/v2/plugins (plugin registration).
+      required:
+        - slug
+        - name
+        - version
+      properties:
+        slug:
+          type: string
+          description: Unique identifier for the plugin.
+          example: "hello-world"
+        name:
+          type: string
+          description: Human-readable plugin name.
+          example: "Hello World"
+        version:
+          type: string
+          description: Semantic version.
+          example: "1.0.0"
+        author:
+          type: string
+          nullable: true
+          description: Author name (optional).
+          example: "NodePress Team"
+        registryUrl:
+          type: string
+          nullable: true
+          description: Registry URL (optional).
+          example: "https://registry.nodepress.io"
+        tarballUrl:
+          type: string
+          nullable: true
+          description: Download URL (optional).
+          example: "https://registry.nodepress.io/plugins/hello-world-1.0.0.tar.gz"
+        publishedAt:
+          type: string
+          nullable: true
+          description: Publication date ISO 8601 string (optional).
+          example: "2026-04-15T10:00:00.000Z"
+        meta:
+          type: object
+          description: Arbitrary metadata (optional).
+          additionalProperties: true
+          example: {}
+
     ErrorResponse:
       type: object
       required:
@@ -1028,6 +1143,168 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Post not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /wp/v2/media:
+    get:
+      operationId: listMedia
+      summary: List media
+      description: |
+        Returns a list of media items (attachments). Stub endpoint in Sprint 1 — returns empty array.
+        File uploads not yet implemented. Will be extended in future sprints.
+      tags:
+        - Media
+      parameters:
+        - name: page
+          in: query
+          description: Current page of the collection.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          description: Maximum number of items to return (max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+      responses:
+        "200":
+          description: A list of media items (currently empty).
+          headers:
+            X-WP-Total:
+              description: Total number of media items.
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /wp/v2/plugins:
+    get:
+      operationId: listPlugins
+      summary: List plugins
+      description: |
+        Returns a list of registered plugins from the plugin registry.
+        Mirrors WP REST API GET /wp/v2/plugins behaviour (experimental endpoint).
+        Public endpoint — no authentication required.
+      tags:
+        - Plugins
+      parameters:
+        - name: page
+          in: query
+          description: Current page of the collection.
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          description: Maximum number of items to return (max 100).
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: status
+          in: query
+          description: Filter plugins by status (optional).
+          schema:
+            type: string
+            enum:
+              - active
+              - inactive
+              - all
+      responses:
+        "200":
+          description: A list of plugins.
+          headers:
+            X-WP-Total:
+              description: Total number of plugins.
+              schema:
+                type: integer
+            X-WP-TotalPages:
+              description: Total number of pages.
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PluginEntry"
+    post:
+      operationId: createPlugin
+      summary: Register a plugin
+      description: |
+        Registers or updates a plugin in the registry. Requires admin authentication.
+        Body fields: slug, name, version (required); author, registryUrl, tarballUrl, publishedAt, meta (optional).
+        Upsert by slug — if plugin exists, updates all fields; otherwise creates new entry.
+      tags:
+        - Plugins
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PostPluginBody"
+      responses:
+        "201":
+          description: Plugin registered successfully.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PluginEntry"
+        "400":
+          description: Invalid request body (e.g., missing required fields slug, name, version).
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /wp/v2/plugins/{slug}:
+    parameters:
+      - name: slug
+        in: path
+        required: true
+        description: Unique identifier (slug) for the plugin.
+        schema:
+          type: string
+    get:
+      operationId: getPlugin
+      summary: Retrieve a plugin
+      description: Retrieves a single plugin by slug from the registry. Public endpoint.
+      tags:
+        - Plugins
+      responses:
+        "200":
+          description: Plugin found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PluginEntry"
+        "404":
+          description: Plugin not found.
           content:
             application/json:
               schema:

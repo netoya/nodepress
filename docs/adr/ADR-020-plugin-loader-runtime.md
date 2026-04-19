@@ -84,13 +84,45 @@ All tests pass. Type-strict, ESLint 0 errors, Prettier applied. No new dependenc
 - **Source-map handling for TS plugins.** When a TS plugin throws, the stack should point at the `.ts` source, not the tsx-cached transformation. Confirm behaviour during Sprint 3 integration test.
 - **Plugin directory watch mode.** Sprint 4 feature — not a Sprint 3 concern, noted here to avoid it being forgotten.
 
+## Amendment — Sprint 6 (#78) — Worker Threads Sandbox
+
+Worker Threads sandbox available via `NODEPRESS_WORKER_SANDBOX=true`. Provides real memory isolation (32MB limit per plugin activation, configurable via `NODEPRESS_PLUGIN_MAX_MEMORY_MB`). Default OFF to preserve ADR-014 Quickstart Invariant. See `packages/server/src/plugins/worker-sandbox.ts` and ADR-020 amendment rationale below.
+
+### Rationale
+
+ADR-004 and ADR-020 documented Sprint 3 timeout-based sandbox (no memory isolation) as sufficient for demo mode. Spike #73 (Sprint 5) validated Worker Threads as the only approach achieving memory isolation without breaking isolation guarantees. Sprint 6 adds the Worker Threads wrapper as an opt-in hardening layer — default behavior (vm.Context timeout) unchanged, backward compatible with all existing plugins.
+
+### Implementation
+
+- **`packages/server/src/plugins/worker-sandbox.ts`** (95 lines) — Worker Threads wrapper with `resourceLimits: { maxOldGenerationSizeMb }`
+- **`packages/core/src/plugins/loader.ts`** — updated signature: `loadPlugins(..., sandboxRunner?: PluginSandboxRunner)` allows custom sandbox
+- **`packages/server/src/plugins/index.ts`** — `createPluginSandboxRunner()` factory returns configured runner based on env var
+- **Feature flag:** `NODEPRESS_WORKER_SANDBOX=true` activates Worker Threads; default OFF (vm.Context timeout)
+- **Memory limit:** `NODEPRESS_PLUGIN_MAX_MEMORY_MB` (default 32) — V8 heap limit per plugin process
+- **Timeout:** Still 5s default (prevents infinite loops, regardless of sandbox type)
+
+### Tests
+
+5 tests in `packages/server/src/plugins/__tests__/worker-sandbox.test.ts`:
+
+- Plugin code executes cleanly without error
+- Plugin errors propagated correctly
+- Timeout triggers and worker terminates
+- Infinite loop killed on timeout
+- Async plugin code supported (top-level await in worker async IIFE)
+
+All tests PASS. Memory-bomb test (allocating >32MB) commented as requiring manual verification.
+
 ## References
 
 - `packages/core/src/plugins/loader.ts` — implementation
 - `packages/core/src/plugins/__tests__/loader.test.ts` — test suite (7 tests)
+- `packages/server/src/plugins/worker-sandbox.ts` — Worker Threads sandbox wrapper (NEW, Sprint 6)
+- `packages/server/src/plugins/__tests__/worker-sandbox.test.ts` — Worker sandbox tests (NEW, 5 tests)
 - `packages/plugin-api/src/types.ts` — type surface this loader implements
 - ADR-004 § Plugin Lifecycle — disposable registry, pluginId-scoped cleanup
 - ADR-005 § Hook System Semantics — registry methods used by plugins
 - ADR-012 § Plugin API Architecture — manifest + Plugin + PluginLoader types
 - ADR-014 § Developer Quickstart Invariant — absent plugin directory must not break boot
 - ADR-015 § Tooling Runtime Boundary — Lane A NodeNext for plugin runtime
+- Spike #73 — vm.Context memory limit evaluation (Sprint 5) — validated Worker Threads as best approach

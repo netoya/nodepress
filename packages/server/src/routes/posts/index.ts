@@ -20,6 +20,36 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/posts",
     {
       schema: {
+        querystring: {
+          type: "object",
+          properties: {
+            page: { type: "integer", minimum: 1, default: 1 },
+            per_page: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              default: 10,
+            },
+            search: { type: "string" },
+            status: {
+              type: "string",
+              enum: [
+                "publish",
+                "draft",
+                "pending",
+                "private",
+                "trash",
+                "future",
+              ],
+              default: "publish",
+            },
+            context: {
+              type: "string",
+              enum: ["view", "edit"],
+              default: "view",
+            },
+          },
+        },
         response: {
           200: {
             type: "array",
@@ -36,6 +66,23 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/posts/:id",
     {
       schema: {
+        params: {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: { type: "integer" },
+          },
+        },
+        querystring: {
+          type: "object",
+          properties: {
+            context: {
+              type: "string",
+              enum: ["view", "edit"],
+              default: "view",
+            },
+          },
+        },
         response: {
           200: PostSchema,
           404: ErrorResponseSchema,
@@ -68,12 +115,20 @@ export default fp(async (app: FastifyInstance) => {
     {
       preHandler: [app.requireAdmin],
       schema: {
+        params: {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: { type: "integer" },
+          },
+        },
         body: PostUpdateBodySchema,
         response: {
           200: PostSchema,
           400: ErrorResponseSchema,
           401: ErrorResponseSchema,
           404: ErrorResponseSchema,
+          409: ErrorResponseSchema,
         },
       },
     },
@@ -86,6 +141,19 @@ export default fp(async (app: FastifyInstance) => {
     {
       preHandler: [app.requireAdmin],
       schema: {
+        params: {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: { type: "integer" },
+          },
+        },
+        querystring: {
+          type: "object",
+          properties: {
+            force: { type: "boolean", default: false },
+          },
+        },
         response: {
           200: {
             oneOf: [

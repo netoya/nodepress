@@ -245,6 +245,29 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/categories",
     {
       schema: {
+        querystring: {
+          type: "object",
+          properties: {
+            page: { type: "integer", minimum: 1, default: 1 },
+            per_page: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              default: 10,
+            },
+            search: { type: "string" },
+            order: {
+              type: "string",
+              enum: ["asc", "desc"],
+              default: "asc",
+            },
+            orderby: {
+              type: "string",
+              enum: ["id", "name", "slug", "count"],
+              default: "name",
+            },
+          },
+        },
         response: {
           200: { type: "array", items: WpTermSchema },
         },
@@ -258,6 +281,13 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/categories/:id",
     {
       schema: {
+        params: {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: { type: "integer" },
+          },
+        },
         response: {
           200: WpTermSchema,
           404: ErrorResponseSchema,
@@ -272,6 +302,29 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/tags",
     {
       schema: {
+        querystring: {
+          type: "object",
+          properties: {
+            page: { type: "integer", minimum: 1, default: 1 },
+            per_page: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              default: 10,
+            },
+            search: { type: "string" },
+            order: {
+              type: "string",
+              enum: ["asc", "desc"],
+              default: "asc",
+            },
+            orderby: {
+              type: "string",
+              enum: ["id", "name", "slug", "count"],
+              default: "name",
+            },
+          },
+        },
         response: {
           200: { type: "array", items: WpTermSchema },
         },
@@ -285,6 +338,13 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/tags/:id",
     {
       schema: {
+        params: {
+          type: "object",
+          required: ["id"],
+          properties: {
+            id: { type: "integer" },
+          },
+        },
         response: {
           200: WpTermSchema,
           404: ErrorResponseSchema,

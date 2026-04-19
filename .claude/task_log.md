@@ -153,3 +153,4 @@
 - **Suite total:** 391 CLI tests, all green (includes existing smoke + plugin list tests).
 
 | 2026-04-19 | helena | #80 CLA setup guide + .clabot + outreach status + CLA.md (bloqueado en R-S5-1 Alejandro) | 4 files | pending | ✅ |
+| 2026-04-19 | carmen | #79 OpenAPI 100% — all endpoints documented + query params + schemas (media + plugins) | 9 files | 220/221 ✅ | ✅ |

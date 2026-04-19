@@ -151,6 +151,18 @@ export default fp(async (app: FastifyInstance) => {
     "/wp/v2/users",
     {
       schema: {
+        querystring: {
+          type: "object",
+          properties: {
+            page: { type: "integer", minimum: 1, default: 1 },
+            per_page: {
+              type: "integer",
+              minimum: 1,
+              maximum: 100,
+              default: 10,
+            },
+          },
+        },
         response: {
           200: {
             type: "array",

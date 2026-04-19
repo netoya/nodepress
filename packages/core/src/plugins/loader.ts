@@ -21,6 +21,20 @@ export interface PluginModule {
 }
 
 /**
+ * Plugin sandbox runner type.
+ * Can be overridden to use Worker Threads or other isolation mechanisms.
+ */
+export type PluginSandboxRunner = (
+  pluginFn: (
+    hooks: HookRegistry,
+    context: PluginContext,
+  ) => void | Promise<void>,
+  hooks: HookRegistry,
+  context: PluginContext,
+  timeoutMs: number,
+) => Promise<void>;
+
+/**
  * Load and activate plugins from a configured directory.
  *
  * Discovery behavior (ADR-020):
@@ -38,14 +52,18 @@ export interface PluginModule {
  * @param context - The PluginContext to pass to plugins
  * @param pluginsDir - Optional override for the plugins directory. If omitted,
  *                     uses NODEPRESS_PLUGINS_DIR env var or defaults to "./plugins"
+ * @param sandboxRunner - Optional custom sandbox runner (e.g., Worker Threads).
+ *                        Defaults to vm.Context timeout-based sandbox.
  * @returns Array of successfully loaded plugin filenames
  */
 export async function loadPlugins(
   hooks: HookRegistry,
   context: PluginContext,
   pluginsDir?: string,
+  sandboxRunner?: PluginSandboxRunner,
 ): Promise<string[]> {
   const dir = pluginsDir ?? process.env["NODEPRESS_PLUGINS_DIR"] ?? "./plugins";
+  const sandbox = sandboxRunner ?? runInSandbox;
 
   // ADR-014: absent plugin directory is a valid no-op, not an error
   if (!existsSync(dir)) {
@@ -84,7 +102,7 @@ export async function loadPlugins(
       ) {
         const pluginModule = mod as PluginModule;
         // Run plugin in sandbox with 5 second timeout to prevent hangs
-        await runInSandbox(pluginModule.default, hooks, context, 5000);
+        await sandbox(pluginModule.default, hooks, context, 5000);
         loaded.push(file);
         console.info(`[PluginLoader] loaded ${file}`);
       } else {

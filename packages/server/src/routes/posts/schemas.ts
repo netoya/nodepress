@@ -29,6 +29,16 @@ export const PostSchema = {
     content: RenderedFieldSchema,
     excerpt: RenderedFieldSchema,
     author: { type: "integer" },
+    categories: {
+      type: "array",
+      items: { type: "integer" },
+      description: "Array of category term IDs",
+    },
+    tags: {
+      type: "array",
+      items: { type: "integer" },
+      description: "Array of tag term IDs",
+    },
     _nodepress: {
       type: "object",
       properties: {
@@ -54,6 +64,16 @@ export const PostCreateBodySchema = {
     },
     excerpt: { type: "string" },
     slug: { type: "string" },
+    categories: {
+      type: "array",
+      items: { type: "integer" },
+      description: "Array of category term IDs to assign",
+    },
+    tags: {
+      type: "array",
+      items: { type: "integer" },
+      description: "Array of tag term IDs to assign",
+    },
   },
 };
 
@@ -68,6 +88,16 @@ export const PostUpdateBodySchema = {
     },
     excerpt: { type: "string" },
     slug: { type: "string" },
+    categories: {
+      type: "array",
+      items: { type: "integer" },
+      description: "Array of category term IDs to assign (replaces existing)",
+    },
+    tags: {
+      type: "array",
+      items: { type: "integer" },
+      description: "Array of tag term IDs to assign (replaces existing)",
+    },
   },
 };
 
