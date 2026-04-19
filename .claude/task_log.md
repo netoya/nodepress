@@ -125,3 +125,4 @@
 | 2026-04-18 | roman              | #77 ADR-023 Plugin Registry Architecture — pre-work Sprint 5 buffer / Sprint 6 P0 (DB table extension, npm format, REST, CLI)   | 2 files   | pending | ✅     |
 | 2026-04-19 | scrum-master-tomas | Sprint 5 retro async + PROJECT_STATUS cierre S5 + Sprint 6 stub                                                                 | 2 files   | pending | ✅     |
 | 2026-04-19 | raul               | R-S5-2 + R-S5-3 — su_do_nested_shortcodes recursion depth guard (max 10) + Test 9 su_add_shortcode overwrite regression (197t)  | 3 files   | 3d2a890 | ✅     |
+| 2026-04-19 | roman              | #77 ADR-023 Plugin Registry Architecture → Accepted (Status promoted from Proposed; Sprint 6 P0 gate open)                      | 3 files   | pending | ✅     |

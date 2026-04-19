@@ -1,7 +1,8 @@
 # ADR-023: Plugin Registry Architecture — DB-backed Registry + npm-compatible Package Format
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Date:** 2026-04-18
+- **Accepted:** 2026-04-19
 - **Author:** Román (Tech Lead)
 - **Sprint:** 6 (pre-work during Sprint 5 buffer, ticket #77)
 - **Related:** ADR-010 (CLI Architecture), ADR-012 (Plugin API type surface), ADR-014 (Developer Quickstart Invariant), ADR-015 (Tooling Runtime Boundary), ADR-020 (Plugin Loader Runtime)

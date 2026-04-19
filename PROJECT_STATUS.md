@@ -174,6 +174,7 @@
 | 019 | Bridge Observability           | ✅ Accepted | Ingrid + Helena |
 | 020 | Plugin Loader Runtime          | ✅ Accepted | Román           |
 | 021 | Theme↔Core Integration         | ✅ Accepted | Román           |
+| 023 | Plugin Registry Architecture   | ✅ Accepted | Román           |
 
 ---
 
