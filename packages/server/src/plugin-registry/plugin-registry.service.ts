@@ -1,5 +1,5 @@
 import type { NodePgDatabase } from "drizzle-orm/node-postgres";
-import { eq } from "drizzle-orm";
+import { eq, sql, or, ilike } from "drizzle-orm";
 import { pluginRegistry } from "@nodepress/db";
 
 /**
@@ -67,34 +67,51 @@ export class PluginRegistryService {
   constructor(private readonly db: DrizzleDb) {}
 
   /**
-   * Return all registered plugins, optionally filtered by status.
+   * Return all registered plugins, optionally filtered by status or search term.
    * Pagination: page (1-based) + perPage (default 20, max 100).
+   * Search: full-text filter on name or meta.description (ILIKE %term%).
    */
   async list(filter?: {
     status?: string;
     page?: number;
     perPage?: number;
+    search?: string;
   }): Promise<PluginRegistryEntry[]> {
     const page = Math.max(1, filter?.page ?? 1);
     const perPage = Math.min(100, Math.max(1, filter?.perPage ?? 20));
     const offset = (page - 1) * perPage;
 
-    let rows: (typeof pluginRegistry.$inferSelect)[];
+    // Build WHERE conditions
+    const conditions = [];
 
     if (filter?.status) {
-      rows = await this.db
-        .select()
-        .from(pluginRegistry)
-        .where(eq(pluginRegistry.status, filter.status))
-        .limit(perPage)
-        .offset(offset);
-    } else {
-      rows = await this.db
-        .select()
-        .from(pluginRegistry)
-        .limit(perPage)
-        .offset(offset);
+      conditions.push(eq(pluginRegistry.status, filter.status));
     }
+
+    if (filter?.search) {
+      const searchTerm = `%${filter.search}%`;
+      // Match on name OR description from meta.description
+      conditions.push(
+        or(
+          ilike(pluginRegistry.name, searchTerm),
+          sql`${pluginRegistry.meta}->>'description' ILIKE ${searchTerm}`,
+        ),
+      );
+    }
+
+    let query = this.db.select().from(pluginRegistry);
+
+    if (conditions.length === 1) {
+      query = query.where(conditions[0]);
+    } else if (conditions.length > 1) {
+      query = query.where(or(...conditions)!);
+    }
+
+    if (filter?.search) {
+      query = query.orderBy(pluginRegistry.name);
+    }
+
+    const rows = await query.limit(perPage).offset(offset);
 
     return rows.map(toEntry);
   }
@@ -147,5 +164,20 @@ export class PluginRegistryService {
 
     // returning() always yields a row after insert/upsert
     return toEntry(row!);
+  }
+
+  /**
+   * Unregister a plugin by slug.
+   * Updates status to 'uninstalled' (row preserved for audit).
+   * Returns the updated entry or null if not found.
+   */
+  async unregister(slug: string): Promise<PluginRegistryEntry | null> {
+    const [row] = await this.db
+      .update(pluginRegistry)
+      .set({ status: "uninstalled" })
+      .where(eq(pluginRegistry.slug, slug))
+      .returning();
+
+    return row ? toEntry(row) : null;
   }
 }

@@ -78,40 +78,58 @@ describe("Plugin Registry API Integration Tests", () => {
 
     // Register minimal mock plugin for routing + auth tests
     await app.register(async (fastify: any) => {
+      // Mock plugin data with descriptions for search testing
+      const allPlugins = [
+        {
+          slug: "plugin-1",
+          name: "Plugin One",
+          version: "1.0.0",
+          status: "inactive",
+          author: null,
+          registryUrl: null,
+          tarballUrl: null,
+          publishedAt: null,
+          activatedAt: null,
+          errorLog: null,
+          meta: { description: "A simple SEO plugin for basic optimization" },
+        },
+        {
+          slug: "plugin-2",
+          name: "Plugin Two",
+          version: "2.0.0",
+          status: "active",
+          author: null,
+          registryUrl: null,
+          tarballUrl: null,
+          publishedAt: null,
+          activatedAt: null,
+          errorLog: null,
+          meta: { description: "Email notification plugin" },
+        },
+      ];
+
       // GET /wp/v2/plugins — list (public)
       fastify.get(
         "/wp/v2/plugins",
-        async (_request: FastifyRequest, reply: FastifyReply) => {
-          reply.header("X-WP-Total", "2");
+        async (request: FastifyRequest, reply: FastifyReply) => {
+          const query = request.query as Record<string, unknown>;
+          const q = (query["q"] as string) ?? undefined;
+
+          let filtered = allPlugins;
+          if (q) {
+            const searchTerm = q.toLowerCase();
+            filtered = allPlugins.filter(
+              (p) =>
+                p.name.toLowerCase().includes(searchTerm) ||
+                ((p.meta.description as string) ?? "")
+                  .toLowerCase()
+                  .includes(searchTerm),
+            );
+          }
+
+          reply.header("X-WP-Total", filtered.length.toString());
           reply.header("X-WP-TotalPages", "1");
-          return [
-            {
-              slug: "plugin-1",
-              name: "Plugin One",
-              version: "1.0.0",
-              status: "inactive",
-              author: null,
-              registryUrl: null,
-              tarballUrl: null,
-              publishedAt: null,
-              activatedAt: null,
-              errorLog: null,
-              meta: {},
-            },
-            {
-              slug: "plugin-2",
-              name: "Plugin Two",
-              version: "2.0.0",
-              status: "active",
-              author: null,
-              registryUrl: null,
-              tarballUrl: null,
-              publishedAt: null,
-              activatedAt: null,
-              errorLog: null,
-              meta: {},
-            },
-          ];
+          return filtered;
         },
       );
 
@@ -181,6 +199,38 @@ describe("Plugin Registry API Integration Tests", () => {
           });
         },
       );
+
+      // DELETE /wp/v2/plugins/:slug — uninstall (admin required)
+      fastify.delete(
+        "/wp/v2/plugins/:slug",
+        { preHandler: [fastify.requireAdmin] },
+        async (request: FastifyRequest, reply: FastifyReply) => {
+          const params = request.params as Record<string, unknown>;
+          const slug = params["slug"] as string;
+
+          if (slug === "existing-plugin") {
+            return reply.status(200).send({
+              slug: "existing-plugin",
+              name: "Existing Plugin",
+              version: "1.0.0",
+              status: "uninstalled",
+              author: null,
+              registryUrl: null,
+              tarballUrl: null,
+              publishedAt: null,
+              activatedAt: null,
+              errorLog: null,
+              meta: {},
+            });
+          }
+
+          return reply.status(404).send({
+            code: "rest_plugin_invalid_slug",
+            message: "Plugin not found.",
+            data: { status: 404 },
+          });
+        },
+      );
     });
   });
 
@@ -221,6 +271,56 @@ describe("Plugin Registry API Integration Tests", () => {
       });
 
       expect(response.statusCode).toBe(200);
+    });
+
+    it("filters by search term matching plugin name", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/wp/v2/plugins?q=seo",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(Array.isArray(body)).toBe(true);
+      expect(body.length).toBe(1);
+      expect(body[0].name).toContain("Plugin One");
+    });
+
+    it("filters by search term matching description from meta", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/wp/v2/plugins?q=email",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(Array.isArray(body)).toBe(true);
+      expect(body.length).toBe(1);
+      expect(body[0].slug).toBe("plugin-2");
+    });
+
+    it("returns empty array for non-matching search term", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/wp/v2/plugins?q=nonexistent",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(Array.isArray(body)).toBe(true);
+      expect(body.length).toBe(0);
+      expect(response.headers["x-wp-total"]).toBe("0");
+    });
+
+    it("supports search without other filters", async () => {
+      const response = await app.inject({
+        method: "GET",
+        url: "/wp/v2/plugins?q=plugin",
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body.length).toBeGreaterThan(0);
     });
   });
 
@@ -331,6 +431,48 @@ describe("Plugin Registry API Integration Tests", () => {
       const body = JSON.parse(response.body);
       expect(body.author).toBe("John Doe");
       expect(body.registryUrl).toBe("https://registry.example.com/full-plugin");
+    });
+  });
+
+  describe("DELETE /wp/v2/plugins/:slug", () => {
+    it("returns 401 without admin auth token", async () => {
+      const response = await app.inject({
+        method: "DELETE",
+        url: "/wp/v2/plugins/existing-plugin",
+      });
+
+      expect(response.statusCode).toBe(401);
+    });
+
+    it("returns 200 with uninstalled plugin when found", async () => {
+      const response = await app.inject({
+        method: "DELETE",
+        url: "/wp/v2/plugins/existing-plugin",
+        headers: {
+          authorization: `Bearer ${ADMIN_TOKEN}`,
+        },
+      });
+
+      expect(response.statusCode).toBe(200);
+      const body = JSON.parse(response.body);
+      expect(body.slug).toBe("existing-plugin");
+      expect(body.status).toBe("uninstalled");
+    });
+
+    it("returns 404 with WP error format when plugin not found", async () => {
+      const response = await app.inject({
+        method: "DELETE",
+        url: "/wp/v2/plugins/nonexistent-plugin",
+        headers: {
+          authorization: `Bearer ${ADMIN_TOKEN}`,
+        },
+      });
+
+      expect(response.statusCode).toBe(404);
+      const body = JSON.parse(response.body);
+      expect(body.code).toBe("rest_plugin_invalid_slug");
+      expect(body.message).toBe("Plugin not found.");
+      expect(body.data.status).toBe(404);
     });
   });
 });

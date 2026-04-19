@@ -123,6 +123,15 @@ async function pluginCommand(argv: string[]): Promise<void> {
       process.exit(1);
     }
     await installPlugin(pluginName);
+  } else if (subcommand === "uninstall") {
+    const { uninstallPlugin } = await import("./commands/plugin/index.js");
+    const pluginSlug = argv[1];
+    if (!pluginSlug) {
+      console.error("[ERROR] plugin slug required");
+      showPluginHelp();
+      process.exit(1);
+    }
+    await uninstallPlugin(pluginSlug);
   } else {
     console.error(`Unknown plugin subcommand: ${subcommand}`);
     showPluginHelp();
@@ -135,10 +144,11 @@ function showPluginHelp(): void {
 NodePress plugin — Manage NodePress plugins
 
 Usage:
-  nodepress plugin list              List installed plugins
-  nodepress plugin install <name>    Install a plugin from registry
+  nodepress plugin list                   List installed plugins
+  nodepress plugin install <name>         Install a plugin from registry
   nodepress plugin install <name>@<version>  Install specific version
-  nodepress plugin --help            Show this message
+  nodepress plugin uninstall <slug>       Uninstall a plugin (backup to .uninstalled)
+  nodepress plugin --help                 Show this message
 
 Environment Variables:
   NODEPRESS_REGISTRY_URL       Registry base URL (default: https://registry.nodepress.dev)

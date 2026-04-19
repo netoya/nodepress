@@ -271,4 +271,44 @@ describe("PluginRegistryService", () => {
       );
     });
   });
+
+  // ── unregister ────────────────────────────────────────────────────────────
+
+  describe("unregister()", () => {
+    it("updates status to 'uninstalled' and returns the entry", async () => {
+      const updated = makeRow({
+        slug: "plugin-to-remove",
+        status: "uninstalled",
+      });
+      const terminal = Promise.resolve([updated]);
+      db.update = vi.fn().mockReturnThis();
+      db.set = vi.fn().mockReturnThis();
+      db.where = vi.fn().mockReturnThis();
+      db.returning = vi.fn().mockReturnValue(terminal);
+
+      service = new PluginRegistryService(db as any);
+
+      const entry = await service.unregister("plugin-to-remove");
+
+      expect(db.update).toHaveBeenCalled();
+      expect(db.set).toHaveBeenCalledWith({ status: "uninstalled" });
+      expect(entry).not.toBeNull();
+      expect(entry!.slug).toBe("plugin-to-remove");
+      expect(entry!.status).toBe("uninstalled");
+    });
+
+    it("returns null when plugin not found", async () => {
+      const terminal = Promise.resolve([]); // empty array → not found
+      db.update = vi.fn().mockReturnThis();
+      db.set = vi.fn().mockReturnThis();
+      db.where = vi.fn().mockReturnThis();
+      db.returning = vi.fn().mockReturnValue(terminal);
+
+      service = new PluginRegistryService(db as any);
+
+      const entry = await service.unregister("nonexistent-plugin");
+
+      expect(entry).toBeNull();
+    });
+  });
 });

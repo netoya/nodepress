@@ -7,8 +7,9 @@ import type { PluginRegistryEntry } from "./plugin-registry.service.js";
 const registryService = new PluginRegistryService(db);
 
 /**
- * GET /wp/v2/plugins — List registered plugins with optional status filter and pagination.
+ * GET /wp/v2/plugins — List registered plugins with optional status filter, search, and pagination.
  * Public endpoint (no auth required).
+ * Supports full-text search on name and meta.description via ?q=term
  */
 export async function listPlugins(
   request: FastifyRequest,
@@ -21,11 +22,13 @@ export async function listPlugins(
     Math.max(1, parseInt((query["per_page"] as string) ?? "10", 10)),
   );
   const status = (query["status"] as string) ?? undefined;
+  const search = (query["q"] as string) ?? undefined;
 
   const results = await registryService.list({
     status,
     page,
     perPage,
+    search,
   });
 
   // Compute total count for pagination headers
@@ -33,6 +36,7 @@ export async function listPlugins(
     status,
     page: 1,
     perPage: 1000,
+    search,
   });
   const total = allResults.length;
   const totalPages = Math.ceil(total / perPage);
@@ -138,4 +142,31 @@ export async function createPlugin(
   });
 
   return reply.status(201).send(plugin);
+}
+
+/**
+ * DELETE /wp/v2/plugins/:slug — Uninstall a plugin (mark as uninstalled).
+ * Admin-auth required.
+ * Returns 200 with updated PluginRegistryEntry (status='uninstalled').
+ * Returns 404 if plugin not found.
+ * Returns 401 if not authenticated.
+ */
+export async function deletePlugin(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<PluginRegistryEntry | void> {
+  const params = request.params as Record<string, unknown>;
+  const slug = params["slug"] as string;
+
+  const plugin = await registryService.unregister(slug);
+
+  if (!plugin) {
+    return reply.status(404).send({
+      code: "rest_plugin_invalid_slug",
+      message: "Plugin not found.",
+      data: { status: 404 },
+    });
+  }
+
+  return reply.status(200).send(plugin);
 }

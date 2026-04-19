@@ -1227,6 +1227,11 @@ paths:
               - active
               - inactive
               - all
+        - name: q
+          in: query
+          description: Full-text search term to filter plugins by name or description (case-insensitive).
+          schema:
+            type: string
       responses:
         "200":
           description: A list of plugins.

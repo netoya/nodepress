@@ -1,6 +1,11 @@
 import type { FastifyInstance } from "fastify";
 import fp from "fastify-plugin";
-import { listPlugins, getPlugin, createPlugin } from "./handlers.js";
+import {
+  listPlugins,
+  getPlugin,
+  createPlugin,
+  deletePlugin,
+} from "./handlers.js";
 
 /**
  * JSON Schema for PluginRegistryEntry response
@@ -72,6 +77,10 @@ export default fp(async (app: FastifyInstance) => {
               type: "string",
               enum: ["active", "inactive", "all"],
             },
+            q: {
+              type: "string",
+              description: "Full-text search on plugin name and description",
+            },
           },
         },
         response: {
@@ -122,5 +131,28 @@ export default fp(async (app: FastifyInstance) => {
       },
     },
     createPlugin,
+  );
+
+  // DELETE /wp/v2/plugins/:slug — Uninstall plugin (admin required)
+  app.delete(
+    "/wp/v2/plugins/:slug",
+    {
+      preHandler: [app.requireAdmin],
+      schema: {
+        params: {
+          type: "object",
+          required: ["slug"],
+          properties: {
+            slug: { type: "string" },
+          },
+        },
+        response: {
+          200: PluginEntrySchema,
+          401: ErrorResponseSchema,
+          404: ErrorResponseSchema,
+        },
+      },
+    },
+    deletePlugin,
   );
 });
