@@ -12,6 +12,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Posts", href: "/posts" },
   { label: "Pages", href: "/pages" },
   { label: "Plugins", href: "/plugins" },
+  { label: "Users", href: "/users" },
   { label: "Settings", href: "/settings" },
 ];
 

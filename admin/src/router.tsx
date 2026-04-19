@@ -4,6 +4,7 @@ import { DashboardPage } from "./features/dashboard/DashboardPage";
 import { PostsListPage } from "./features/posts/PostsListPage";
 import { PostEditorRoute } from "./features/posts/PostEditorRoute";
 import { PluginsPage } from "./features/plugins/PluginsPage";
+import { UsersPage } from "./features/users/UsersPage";
 import { AuthGuard } from "./features/auth/AuthGuard";
 import { LoginPage } from "./features/auth/LoginPage";
 
@@ -31,6 +32,7 @@ export const router = createHashRouter([
           { path: "posts/new", element: <PostEditorRoute /> },
           { path: "posts/:id/edit", element: <PostEditorRoute /> },
           { path: "plugins", element: <PluginsPage /> },
+          { path: "users", element: <UsersPage /> },
         ],
       },
     ],

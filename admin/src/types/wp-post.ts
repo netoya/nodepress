@@ -103,6 +103,30 @@ export interface WpPlugin {
 }
 
 /**
+ * WP REST API v2 — User role type.
+ */
+export type WpUserRole = "administrator" | "editor" | "author" | "subscriber";
+
+/**
+ * WP REST API v2 — User shape as returned by GET /wp/v2/users.
+ * Subset of the WP Users REST API spec relevant to NodePress admin.
+ */
+export interface WpUser {
+  /** Unique identifier for the user. */
+  id: number;
+  /** Display name. */
+  name: string;
+  /** User email address. */
+  email: string;
+  /** Assigned roles — WP supports multiple, NodePress UI shows the first. */
+  roles: WpUserRole[];
+  /** ISO 8601 registration date. */
+  registered_date: string;
+  /** URL-friendly user identifier. */
+  slug: string;
+}
+
+/**
  * Pagination metadata extracted from WP REST API response headers.
  * X-WP-Total and X-WP-TotalPages.
  */

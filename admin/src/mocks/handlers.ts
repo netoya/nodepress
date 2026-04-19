@@ -1,5 +1,11 @@
 import { http, HttpResponse } from "msw";
-import type { WpPlugin, WpPost, WpTerm } from "../types/wp-post";
+import type {
+  WpPlugin,
+  WpPost,
+  WpTerm,
+  WpUser,
+  WpUserRole,
+} from "../types/wp-post";
 
 const BASE_URL = "http://localhost:3000";
 
@@ -134,6 +140,41 @@ const mockTags: WpTerm[] = [
   { id: 13, name: "api", slug: "api", taxonomy: "post_tag", count: 2 },
 ];
 
+const mockUsers: WpUser[] = [
+  {
+    id: 1,
+    name: "Alice Admin",
+    email: "alice@nodepress.dev",
+    roles: ["administrator"],
+    registered_date: "2026-01-10T09:00:00.000Z",
+    slug: "alice-admin",
+  },
+  {
+    id: 2,
+    name: "Bob Editor",
+    email: "bob@nodepress.dev",
+    roles: ["editor"],
+    registered_date: "2026-02-14T14:30:00.000Z",
+    slug: "bob-editor",
+  },
+  {
+    id: 3,
+    name: "Carol Author",
+    email: "carol@nodepress.dev",
+    roles: ["author"],
+    registered_date: "2026-03-01T08:15:00.000Z",
+    slug: "carol-author",
+  },
+  {
+    id: 4,
+    name: "Dave Subscriber",
+    email: "dave@nodepress.dev",
+    roles: ["subscriber"],
+    registered_date: "2026-04-05T11:45:00.000Z",
+    slug: "dave-subscriber",
+  },
+];
+
 export const handlers = [
   // GET /wp/v2/posts — list posts
   http.get(`${BASE_URL}/wp/v2/posts`, () => {
@@ -235,6 +276,34 @@ export const handlers = [
         "X-WP-TotalPages": "1",
       },
     });
+  }),
+
+  // GET /wp/v2/users — list users
+  http.get(`${BASE_URL}/wp/v2/users`, () => {
+    return HttpResponse.json(mockUsers, {
+      headers: {
+        "X-WP-Total": String(mockUsers.length),
+        "X-WP-TotalPages": "1",
+      },
+    });
+  }),
+
+  // PUT /wp/v2/users/:id — update user role
+  http.put(`${BASE_URL}/wp/v2/users/:id`, async ({ params, request }) => {
+    const id = Number(params["id"]);
+    const user = mockUsers.find((u) => u.id === id);
+    if (!user) {
+      return HttpResponse.json(
+        { code: "rest_user_invalid_id", message: "Invalid user ID." },
+        { status: 404 },
+      );
+    }
+    const body = (await request.json()) as { roles?: WpUserRole[] };
+    const updated: WpUser = {
+      ...user,
+      roles: body.roles ?? user.roles,
+    };
+    return HttpResponse.json(updated);
   }),
 
   // DELETE /wp/v2/posts/:id — soft delete (trash) or hard delete
