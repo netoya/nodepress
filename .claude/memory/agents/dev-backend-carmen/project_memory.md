@@ -4,6 +4,20 @@ description: Project memory for Carmen (Dev Backend) in NodePress
 type: project
 ---
 
+## Sprint 5 — #76 Plugin Registry REST endpoints (2026-04-19)
+
+- **3 endpoints Fastify en `packages/server/src/plugin-registry/`:** routes.ts (plugin), handlers.ts (lógica), **tests**/plugin-registry.routes.test.ts (9/9 green).
+- **GET /wp/v2/plugins:** lista con filtro `status` (opcional) + paginación `page` + `per_page` (max 100, default 10). Público. Headers X-WP-Total + X-WP-TotalPages. Retorna array PluginRegistryEntry.
+- **GET /wp/v2/plugins/:slug:** retrieva un plugin por slug. Público. 404 si no existe (WP-style error: `{code: "rest_plugin_invalid_slug", message: "Plugin not found.", data: {status: 404}}`).
+- **POST /wp/v2/plugins:** register/upsert. Admin-auth requerido (`requireAdmin` preHandler). Body: `{slug, name, version, author?, registryUrl?, tarballUrl?, publishedAt?, meta?}`. Validación: slug/name/version obligatorios → 400 si faltan. `publishedAt` se convierte de ISO string a Date. Retorna 201 + PluginRegistryEntry. Upsert por slug (Ingrid implementó onConflictDoUpdate en PluginRegistryService.register()).
+- **Handlers:** listPlugins(), getPlugin(), createPlugin(). Todos usan PluginRegistryService inyectado con DB. Mock DB en tests para evitar dependencia real.
+- **JSON Schemas:** PluginEntrySchema (response), PostPluginBodySchema (POST body), ErrorResponseSchema. Fastify valida automáticamente.
+- **Tests 9/9 verde:** (1) GET list → 200 + headers. (2) GET list paginación. (3) GET list status filter. (4) GET slug found → 200. (5) GET slug not found → 404 WP error. (6) POST sin auth → 401. (7) POST con auth + valid body → 201. (8) POST missing fields → 400. (9) POST con optional fields → 201 con datos.
+- **Integración:** Registrado en `packages/server/src/index.ts` como `pluginRegistryPlugin`. Cargado después de publicPlugin. Mismo patrón que posts/users/taxonomies.
+- **Tests suite:** 216/216 verde (9 nuevos + 207 existentes, sin regressions).
+- **Commit:** `958df4c` feat(#76): Plugin Registry REST endpoints — GET/POST /wp/v2/plugins.
+- **Date:** 2026-04-19
+
 ## Meet 2026-04-18 — Kickoff Sprint 5
 
 - **WP Import CLI Sprint 5:** Estimación 4 días. Scope: posts + terms + users + comments. Sin media. Dry-run + idempotencia obligatorios. ADR-022 (Román) debe estar antes del primer commit. **Date:** 2026-04-18
