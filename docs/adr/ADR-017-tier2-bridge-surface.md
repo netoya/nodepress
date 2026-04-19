@@ -317,6 +317,68 @@ the PHP side do NOT call back into the Node `HookRegistry`. Cross-runtime hook
 dispatch is a separate ADR (listed in Out of Scope). In v1 the bridge is a
 one-way call: Node → PHP → HTML string → Node.
 
+#### Shortcodes Ultimate framework stubs
+
+> **Amendment 2026-04-19** — documents the SU framework stub layer introduced
+> in fix commit `b91802b`, which allowed the real Shortcodes Ultimate plugin
+> code to register via `su_add_shortcode()` instead of being rewritten to call
+> `add_shortcode()` directly.
+
+Some WordPress plugins ship with their own internal framework functions that
+real plugin files (distributed on wordpress.org) expect to exist. Shortcodes
+Ultimate is the first pilot to require this layer: `su_button.php`,
+`su_spacer.php`, etc. call `su_add_shortcode()`, `su_get_css_class()`,
+`su_html_style()` and peers instead of the WP API directly.
+
+These **pilot-specific framework functions live in the pilot's own
+`buildPhpCode()`**, not in the bridge bootstrap. For Shortcodes Ultimate the
+layer is factored into an internal helper `buildSuFrameworkStubs()` inside
+`packages/server/src/bridge/pilots/shortcodes-ultimate.ts`, prepended within
+`buildShortcodesUltimatePhpCode()`. The current stub set includes:
+
+| Function                                      | Behavior                                               |
+| --------------------------------------------- | ------------------------------------------------------ |
+| `su_add_shortcode($args)`                     | Delegates to `add_shortcode('su_' . $args['id'], ...)` |
+| `su_get_plugin_url()`                         | Returns a static placeholder URL                       |
+| `su_get_css_class($atts)`                     | Builds a ` class="..."` fragment from `$atts['class']` |
+| `su_query_asset($type, $handle)`              | `false` (no asset pipeline in v1)                      |
+| `su_adjust_brightness`, `su_adjust_lightness` | Identity on the input hex                              |
+| `su_do_nested_shortcodes($content, $tag)`     | Delegates to `do_shortcode($content)`                  |
+| `su_do_attribute($value)`                     | `esc_html($value)`                                     |
+| `su_parse_shortcode_atts($tag, $atts)`        | Coerces to array                                       |
+| `su_html_style($styles)`                      | Builds ` style="..."` from an array, safe-empty        |
+| `su_sanitize_css_color($hex)`                 | Regex-validates hex color, falls back to `#000000`     |
+| `su_get_option`, `su_get_settings_data`       | Return `$default` / `[]` (no options backing in v1)    |
+| `su_get_asset_path($file)`                    | Returns `/assets/basename($file)`                      |
+| `su_add_css_target`, `su_add_js_target`       | `true` no-ops                                          |
+| `su_get_button_size_hint($size)`              | `""`                                                   |
+| `su_icons($return_format)`                    | `[]` (no icon library in v1)                           |
+
+The rule is explicit:
+
+> **Any new plugin pilot that requires additional PHP functions must add them
+> to the pilot's own `buildPhpCode()`, NOT to the bridge bootstrap.
+> `buildBootstrapCode` is for WP core API only.**
+
+Rationale:
+
+1. **Scope integrity.** The bootstrap is the audit surface for ADR-018. Pilot
+   framework functions are pilot-specific; they do not belong in the shared
+   surface because a future pilot (e.g., WooCommerce) will need a different
+   framework layer and mixing them in the bootstrap turns it into a union of
+   every pilot's needs.
+2. **Reviewability.** A reader of the bootstrap should see exactly what the
+   WP core contract is. Pilot helpers in the bootstrap hide which calls are
+   core-compatible vs pilot-convenience.
+3. **Removability.** Retiring a pilot is a single-file delete plus an
+   `ACTIVE_PILOTS` edit. If the pilot's helpers had leaked into the
+   bootstrap, retirement would require surgery on a shared surface.
+
+Factor future pilot framework layers the same way (`buildWooFrameworkStubs`,
+`buildAcfFrameworkStubs`, …) and keep them internal to the pilot module
+unless two pilots demonstrably share the function — at which point the shared
+function gets promoted to a dedicated helper module, not to the bootstrap.
+
 ### Runtime Model
 
 **One PHP-WASM instance per Node process.** Singleton, lazy-initialized on first
@@ -394,6 +456,134 @@ const result = await Promise.race([
 
 ---
 
+## Pilot Registry
+
+> **Amendment 2026-04-19** — formalizes the static pilot registry pattern
+> introduced in fix commit `b91802b`. Prior to this amendment, §Runtime Model
+> described the bootstrap + runner code but left the question "where does the
+> pilot PHP live, and who injects it" implicit. That gap allowed `su_spacer` to
+> ship apparently-working (JS unit tests green) while the real PHP-WASM runtime
+> never saw the pilot code. This section closes the gap.
+
+### The registry is a compile-time commitment of the bridge
+
+The set of PHP pilots that the bridge ships with is **declared statically in
+`packages/server/src/bridge/pilots/index.ts`** as a `readonly` array:
+
+```ts
+export interface BridgePilot {
+  readonly id: string;
+  readonly buildPhpCode: () => string;
+}
+
+export const ACTIVE_PILOTS: readonly BridgePilot[] = [
+  { id: "tier2-footnotes-pilot", buildPhpCode: buildFootnotesPhpCode },
+  {
+    id: "tier2-shortcodes-ultimate-pilot",
+    buildPhpCode: buildShortcodesUltimatePhpCode,
+  },
+  { id: "tier2-display-posts-pilot", buildPhpCode: buildDisplayPostsPhpCode },
+  { id: "tier2-contact-form-7-pilot", buildPhpCode: buildContactForm7PhpCode },
+];
+```
+
+The bridge imports `ACTIVE_PILOTS` statically; there is no runtime registration
+path and no field on `BridgeInput` that accepts pilot code from callers.
+
+**The registry is closed.** Adding, removing or reordering pilots is a code
+change in the bridge package, reviewed under the same gates as a stub addition
+(ADR-018 §Constraints §1, 90% coverage). It is not an input and it is not
+extensible at runtime.
+
+### Per-invocation injection (not one-time bootstrap)
+
+Inside `renderShortcodes`, every call builds the runner code by concatenating:
+
+```ts
+const bootstrapCode = buildBootstrapCode(input.postContent, input.context);
+const pilotCode = ACTIVE_PILOTS.map((p) => p.buildPhpCode()).join("\n");
+const runnerCode =
+  bootstrapCode +
+  "\n" +
+  pilotCode +
+  "\nnp_bridge_return(do_shortcode($postContent));\n";
+```
+
+Pilot PHP is prepended **on every invocation**, not once at singleton boot.
+The reason is §Runtime Model's scope-reset contract: the bootstrap explicitly
+resets `$np_shortcodes`, `$np_warnings`, `$np_filters` at the top of each run
+to preserve stateless-between-invocations semantics. After a scope reset, any
+`add_shortcode` call made in a previous invocation is gone. If pilot PHP were
+loaded only at singleton boot, the second invocation would run against an empty
+shortcode map and `do_shortcode($postContent)` would pass content through
+unchanged — exactly the failure mode that `su_spacer` surfaced before this fix.
+
+The cost of re-parsing pilot PHP per invocation is measured at <1ms on the
+3-pilot baseline (spike day 3 timings). This is an acceptable tax for
+correctness under the scope-reset invariant. If the pilot bundle ever grows
+large enough that re-parsing dominates, the remediation is to move pilot code
+to a post-reset re-registration hook inside `buildBootstrapCode`, not to skip
+re-injection.
+
+### Concatenation order is stable, but not priority
+
+Pilot PHP is concatenated in **`ACTIVE_PILOTS` array order**. This is a
+deterministic textual order for bootstrap code — it does **not** govern
+shortcode execution order.
+
+Execution order of shortcodes and filters is determined **inside PHP** by the
+priority argument on `add_shortcode` / `add_filter` calls, same as WordPress.
+Two concepts, two mechanisms:
+
+| Concern              | Mechanism                      | Owner                 |
+| -------------------- | ------------------------------ | --------------------- |
+| PHP source order     | `ACTIVE_PILOTS` array position | Bridge maintainers    |
+| Shortcode dispatch   | `add_shortcode($tag, $cb)`     | Pilot PHP code        |
+| Filter priority      | `add_filter(..., $priority)`   | Pilot PHP code        |
+| `the_content` anchor | Filter `pluginId` + priority   | `registerBridgeHooks` |
+
+Do not overload `ACTIVE_PILOTS` order with priority semantics. A future
+maintainer must be able to reorder the array for readability without changing
+runtime behavior.
+
+### Caller cannot supply pilot code (Option C is prohibited)
+
+During the `su_spacer` incident (meet 2026-04-19), an "Option C" was proposed:
+add a `pilotCodes: string[]` field to `BridgeInput` so callers could inject
+additional PHP at render time. **This is rejected and must not be reintroduced.**
+Rationale:
+
+1. **Violates §Consequences #1 ("one surface, no escape hatches").** Arbitrary
+   PHP from the caller is the escape hatch that §Consequences #1 exists to
+   forbid.
+2. **Violates ADR-018 §Attack Surface (RCE).** Any field on `BridgeInput` that
+   accepts PHP is, by definition, a remote-code-execution vector if the field
+   is ever populated from untrusted input. Once such a field exists, a
+   downstream caller in Sprint N+3 wires it up to a user-provided value and
+   the bridge is compromised. The only safe surface is "no such field."
+3. **Breaks the audit invariant.** The stub-and-pilot surface is the bridge's
+   entire PHP attack surface. If that surface is fixed at compile time, the
+   audit (ADR-018 coverage gate) is tractable. If it accepts runtime-provided
+   PHP, the audit is unbounded.
+
+Plugins written **by users** of NodePress are a separate concern and flow
+through a different channel — the JS/TS plugin loader formalized by ADR-020.
+User plugins do not inject PHP. A user plugin that wants to alter rendered
+content does so via the Node-side `HookRegistry` (`addFilter("the_content", ...)`),
+not by contributing PHP to the bridge.
+
+Introducing a new PHP pilot (e.g., a 5th shortcode plugin) requires:
+
+1. A new file under `packages/server/src/bridge/pilots/`.
+2. Addition to `ACTIVE_PILOTS` in `pilots/index.ts`.
+3. Stub/framework functions specific to that pilot live in that pilot's own
+   `buildPhpCode()` (see §PHP Stubs Required below).
+4. An ADR amendment here and an integration test that exercises the real
+   `renderShortcodes` against the pilot — JS-only simulation of the pilot's
+   behavior is not sufficient evidence (see §Consequences #6 below).
+
+---
+
 ## Consequences
 
 ### What this locks in
@@ -417,6 +607,20 @@ const result = await Promise.race([
 
 5. **`BridgeOutput` is the sole return shape.** Nothing else crosses the
    boundary. Streaming, chunked rendering, partial results — all out of scope.
+
+6. **Pilot tests must exercise `renderShortcodes` against the real PHP-WASM
+   runtime.** _(Added in amendment 2026-04-19.)_ JS-side tests that simulate
+   what a pilot "would do" in PHP produce false greens — this is exactly how
+   `su_spacer` shipped broken while the Shortcodes Ultimate unit tests stayed
+   green for weeks. The authoritative evidence that a pilot works is an
+   integration test that (a) loads the real singleton runtime (mocking only
+   the `@php-wasm/node` boot when the runtime is unavailable in CI), (b)
+   exercises `renderShortcodes` end-to-end including `ACTIVE_PILOTS`
+   injection, and (c) asserts on the actual `BridgeOutput.html`. Pure JS
+   unit tests are retained for bridge plumbing (validation, timeout,
+   destroy), **not** for pilot shortcode behavior. A regression test with
+   `ACTIVE_PILOTS` stubbed to `[]` guards against an accidental registry
+   vacuum regressing to "content passes through unchanged without error."
 
 ### Positive
 
@@ -494,6 +698,15 @@ This ADR explicitly does NOT cover:
   match ADR-017 contract. Security bootstrap (ADR-018 stubs + ini overrides),
   observability span (ADR-019), singleton with lazy init and scope reset all
   implemented. ADR status: **Accepted**.
+- **Amendment 2026-04-19 — Román (Tech Lead).** Added §Pilot Registry,
+  §PHP Stubs Required → "Shortcodes Ultimate framework stubs" subsection, and
+  §Consequences #6 (pilot tests against real runtime). Formalizes the
+  `ACTIVE_PILOTS` registry pattern and SU framework stub layer landed in fix
+  commit `b91802b`. Reaffirms Option C (caller-supplied PHP) as prohibited.
+  Co-sign Helena pending — the pilot registry text touches ADR-018
+  §Attack Surface by name and must clear security review before the next
+  pilot lands. ADR status remains **Accepted**; amendment does not open new
+  surface, it documents existing behavior.
 
 ---
 
@@ -509,3 +722,9 @@ This ADR explicitly does NOT cover:
   plugin-id-scoped filter registration
 - `@php-wasm/node@3.1.20` — runtime (ADR-008)
 - Spike #25 day 3 findings: `docs/spikes/2026-04-19-day3-phpwasm.md`
+- Fix commit `b91802b` (2026-04-19) — introduced `ACTIVE_PILOTS` registry and
+  SU framework stubs formalized by the 2026-04-19 amendment of this ADR
+- `packages/server/src/bridge/pilots/index.ts` — `BridgePilot` interface +
+  `ACTIVE_PILOTS` registry
+- `packages/server/src/bridge/pilots/shortcodes-ultimate.ts` —
+  `buildSuFrameworkStubs()` reference implementation
