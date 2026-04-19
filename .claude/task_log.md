@@ -158,3 +158,4 @@
 | 2026-04-19 | lucas | #81 Users management UI — UsersPage 4 states + role editor modal + MSW handlers + router + 6 tests | 6 files | pending | ✅ |
 | 2026-04-19 | carmen | #82 Media uploads stub — POST /wp/v2/media + local storage (in-mem list, disk save, multipart upload, 10MB limit, mime guard) | 4 files | 37d13c0 | ✅ |
 | 2026-04-19 | raul | #83 Tier 2 bridge cURL allowlist — NODEPRESS_CURL_ALLOWLIST env var, wp_http_request() stub, Node fetch + injection, max 3 req/invoke limit, tests (8 pass), ADR-018 amendment, 238 tests green | 4 files | pending | ✅ |
+| 2026-04-19 | roman | docs: README → Beta + Sprint 6 state + retroactive S6 kickoff log (.claude/logs/20260419-kickoff-sprint-6.md) | 2 files | pending | ✅ |
