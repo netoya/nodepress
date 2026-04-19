@@ -45,15 +45,16 @@
 
 ## Estado Actual
 
-| Sprint       | Fechas                  | Estado       | Objetivo                                                     |
-| ------------ | ----------------------- | ------------ | ------------------------------------------------------------ |
-| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO   | Scaffolding: monorepo, CI, docker, packages init             |
-| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO   | Hook system + CRUD posts REST + Admin shell + demo 30-04     |
-| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO   | Hardening + ADRs sellados + Tier 2 pilotos + context=edit    |
-| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO   | Roles/capabilities + taxonomías + admin edit flow + CLI init |
-| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO   | Plugin system + Theme engine + post-launch ICP-1 signal      |
-| **Sprint 5** | 2026-06-02 → 2026-06-13 | ✅ CERRADO   | CLI funcional, WP Import real, CLA + contribuidores          |
-| **Sprint 6** | 2026-06-16 → 2026-06-27 | ⬜ PENDIENTE | Plugin Registry MVP + vm.Context hardening + OpenAPI         |
+| Sprint       | Fechas                  | Estado       | Objetivo                                                            |
+| ------------ | ----------------------- | ------------ | ------------------------------------------------------------------- |
+| **Sprint 0** | 2026-04-10 → 2026-04-16 | ✅ CERRADO   | Scaffolding: monorepo, CI, docker, packages init                    |
+| **Sprint 1** | 2026-04-17 → 2026-04-30 | ✅ CERRADO   | Hook system + CRUD posts REST + Admin shell + demo 30-04            |
+| **Sprint 2** | 2026-04-18 → 2026-05-02 | ✅ CERRADO   | Hardening + ADRs sellados + Tier 2 pilotos + context=edit           |
+| **Sprint 3** | 2026-05-05 → 2026-05-16 | ✅ CERRADO   | Roles/capabilities + taxonomías + admin edit flow + CLI init        |
+| **Sprint 4** | 2026-05-19 → 2026-05-30 | ✅ CERRADO   | Plugin system + Theme engine + post-launch ICP-1 signal             |
+| **Sprint 5** | 2026-06-02 → 2026-06-13 | ✅ CERRADO   | CLI funcional, WP Import real, CLA + contribuidores                 |
+| **Sprint 6** | 2026-06-16 → 2026-06-27 | ✅ CERRADO   | Plugin Registry MVP + vm.Context hardening + OpenAPI                |
+| **Sprint 7** | 2026-06-30 → 2026-07-11 | ⬜ PENDIENTE | Plugin marketplace UI + dependency resolution + verified publishers |
 
 ---
 
@@ -373,7 +374,7 @@
 
 ---
 
-_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-19 (Sprint 5 cierre)_
+_Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-19 (Sprint 6 cierre)_
 
 ---
 
@@ -494,16 +495,25 @@ _Mantenido por Tomás (Scrum Master). Última actualización: 2026-04-19 (Sprint
 ### Ticket Mapping Sprint 6
 
 | PROJECT_STATUS # | GitHub Issue | Short title                                                    | Responsable           | Estado  |
-| ---------------- | ------------ | -------------------------------------------------------------- | --------------------- | ------- |
-| 74               | —            | Plugin Registry — schema DB + API básica (register, list, get) | Ingrid                | ⬜ TODO |
-| 75               | —            | `nodepress plugin install <name>` — CLI + registry fetch       | Raúl                  | ⬜ TODO |
-| 76               | —            | Plugin Registry REST endpoints (GET /wp/v2/plugins, POST)      | Carmen (brief Ingrid) | ⬜ TODO |
-| 77               | —            | ADR-023 Plugin Registry Architecture → Accepted                | Román                 | ⬜ TODO |
-| 78               | —            | vm.Context hardening — memory limit + resource quota           | Raúl + Román          | ⬜ TODO |
-| 79               | —            | OpenAPI completo — endpoints cubiertos al 100%                 | Carmen                | ⬜ TODO |
-| 80               | —            | CLA webhook operativo + outreach confirmation                  | Helena + Martín       | ⬜ TODO |
-| 81               | —            | Users management UI — list + role editor admin panel           | Lucas + Nico          | ⬜ TODO |
-| 82               | —            | Media uploads stub — POST /wp/v2/media + storage local         | Ingrid + Carmen       | ⬜ TODO |
-| 83               | —            | Tier 2 bridge — cURL sync (deuda D-020, Sprint 2)              | Raúl                  | ⬜ TODO |
+| ---------------- | ------------ | -------------------------------------------------------------- | --------------------- | ------- | ------- |
+| 74               | —            | Plugin Registry — schema DB + API básica (register, list, get) | Ingrid                | ✅ DONE | 70fd9a2 |
+| 75               | —            | `nodepress plugin install <name>` — CLI + registry fetch       | Raúl                  | ✅ DONE | e1b6a99 |
+| 76               | —            | Plugin Registry REST endpoints (GET /wp/v2/plugins, POST)      | Carmen (brief Ingrid) | ✅ DONE | 958df4c |
+| 77               | —            | ADR-023 Plugin Registry Architecture → Accepted                | Román                 | ✅ DONE | 1b4c12e |
+| 78               | —            | vm.Context hardening — memory limit + resource quota           | Raúl + Román          | ✅ DONE | 740544c |
+| 79               | —            | OpenAPI completo — endpoints cubiertos al 100%                 | Carmen                | ✅ DONE | afab8f3 |
+| 80               | —            | CLA webhook operativo + outreach confirmation                  | Helena + Martín       | ✅ DONE | 185fa34 |
+| 81               | —            | Users management UI — list + role editor admin panel           | Lucas + Nico          | ✅ DONE | 9a10c10 |
+| 82               | —            | Media uploads stub — POST /wp/v2/media + storage local         | Ingrid + Carmen       | ✅ DONE | 37d13c0 |
+| 83               | —            | Tier 2 bridge — cURL sync (deuda D-020, Sprint 2)              | Raúl                  | ✅ DONE | 4d5a971 |
 
 > Ref backlog completo: `docs/process/backlog-sprint6-draft.md`
+
+### Sprint 6 — Estado cierre (2026-04-19)
+
+- **Tickets completados:** 10/10
+- **Tests:** 238 verdes (suite global)
+- **ADRs:** ADR-023 Accepted + amendments ADR-018, ADR-020
+- **Features:** Plugin Registry (schema + service + REST + CLI install), Worker Threads sandbox (32MB/plugin), OpenAPI 100%, Users UI, Media uploads stub, cURL allowlist bridge
+- **Retro:** `docs/process/retros/sprint-6-retro.md` — cierre async 2026-04-21 AM
+- **Velocity S6:** 10/10 — sprint más completo desde Sprint 2
