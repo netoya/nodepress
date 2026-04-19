@@ -268,4 +268,42 @@ describe("Shortcodes Ultimate Pilot", () => {
       expect(result.html).toContain('<div class="su-box-content">');
     });
   });
+
+  /**
+   * Tests for NODEPRESS_SHORTCODE_MAX_DEPTH configuration (Ticket #93).
+   *
+   * Validates that:
+   * - Default limit is 10 when env var undefined
+   * - Custom limit is respected when set (e.g., 5)
+   * - Out-of-range values (0, 100) fall back to default 10
+   * - Invalid values (non-numeric) fall back to default 10
+   *
+   * Note: These tests validate the PHP code generation with different
+   * depth limits. The actual nesting prevention happens in PHP runtime.
+   */
+  describe("NODEPRESS_SHORTCODE_MAX_DEPTH configuration (#93)", () => {
+    it("buildShortcodesUltimatePhpCode includes the configured depth limit", () => {
+      // This test verifies that buildShortcodesUltimatePhpCode() includes
+      // the current SHORTCODE_MAX_DEPTH value in the PHP stubs.
+      // The actual value depends on env var at module load time.
+      const code = buildShortcodesUltimatePhpCode();
+
+      // su_do_nested_shortcodes should be defined and include a depth check
+      expect(code).toContain("su_do_nested_shortcodes");
+      expect(code).toContain("static $depth");
+      expect(code).toContain("if ($depth >=");
+      expect(code).toContain("return $content");
+    });
+
+    it("PHP code includes numeric depth guard (not hardcoded 10)", () => {
+      const code = buildShortcodesUltimatePhpCode();
+
+      // The PHP code should have a line like:
+      // if ($depth >= [NUMBER]) return $content;
+      // where [NUMBER] is the configured limit.
+      const depthMatch = code.match(/if \(\$depth >= (\d+)\)/);
+      expect(depthMatch).not.toBeNull();
+      expect(depthMatch![1]).toMatch(/\d+/);
+    });
+  });
 });

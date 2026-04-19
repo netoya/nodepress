@@ -25,6 +25,38 @@ import type { FilterEntry, HookRegistry } from "@nodepress/core";
 const SHORTCODES_ULTIMATE_PLUGIN_ID = "tier2-shortcodes-ultimate-pilot";
 
 /**
+ * Read and validate NODEPRESS_SHORTCODE_MAX_DEPTH env var.
+ *
+ * - Default: 10
+ * - Valid range: 1-50
+ * - Out of range or invalid → uses default 10 with warning logged
+ * - Read once at module init time (not on each invocation)
+ */
+function getShortcodeMaxDepth(): number {
+  const envValue = process.env.NODEPRESS_SHORTCODE_MAX_DEPTH;
+
+  // Undefined or empty → use default
+  if (!envValue) {
+    return 10;
+  }
+
+  const parsed = parseInt(envValue, 10);
+
+  // Check if parsing succeeded and within valid range [1, 50]
+  if (isNaN(parsed) || parsed < 1 || parsed > 50) {
+    console.warn(
+      `[NodePress Bridge] NODEPRESS_SHORTCODE_MAX_DEPTH="${envValue}" is invalid or out of range [1-50]. Using default 10.`,
+    );
+    return 10;
+  }
+
+  return parsed;
+}
+
+// Cache the depth limit at module init time
+const SHORTCODE_MAX_DEPTH = getShortcodeMaxDepth();
+
+/**
  * SU Framework stubs — exported separately for potential reuse.
  *
  * The Shortcodes Ultimate plugin uses internal functions like su_add_shortcode(),
@@ -53,7 +85,7 @@ function su_adjust_brightness(\$hex, \$steps) { return \$hex; }
 function su_adjust_lightness(\$hex, \$steps) { return \$hex; }
 function su_do_nested_shortcodes(\$content, \$shortcode) {
     static \$depth = 0;
-    if (\$depth >= 10) return \$content;
+    if (\$depth >= ${SHORTCODE_MAX_DEPTH}) return \$content;
     \$depth++;
     \$result = do_shortcode(\$content);
     \$depth--;
