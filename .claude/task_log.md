@@ -3,7 +3,7 @@
 > Append-only audit trail. One line per completed task.
 
 | Date       | Agent              | Task                                                                                                                            | Output    | Commit  | Status |
-| 2026-04-19 | lead-frontend-lucas | E2E spec public-site-shortcodes.spec.ts: negative test (no raw tags), footnote positive, su_note positive; bridge skip guard | 1 file    | pending | ✅     |
+| 2026-04-19 | lead-frontend-lucas | E2E spec public-site-shortcodes.spec.ts: negative test (no raw tags), footnote positive, su_note positive; bridge skip guard | 1 file    | 1385698 | ✅     |
 | ---------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- | ------ |
 | 2026-04-09 | roman              | Initial project setup (docs, ADRs, design)                                                                                      | 8 files   | eea0f95 | ✅     |
 | 2026-04-09 | roman + lucas      | Sprint 0 scaffolding (monorepo + admin)                                                                                         | 32 files  | 3b8b061 | ✅     |
