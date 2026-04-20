@@ -27,6 +27,7 @@ export interface RegisterInput {
   slug: string;
   name: string;
   version: string;
+  status?: string;
   author?: string;
   registryUrl?: string;
   tarballUrl?: string;
@@ -138,6 +139,7 @@ export class PluginRegistryService {
       slug: data.slug,
       name: data.name,
       version: data.version,
+      status: data.status ?? "active",
       author: data.author ?? null,
       registryUrl: data.registryUrl ?? null,
       tarballUrl: data.tarballUrl ?? null,
@@ -153,6 +155,7 @@ export class PluginRegistryService {
         set: {
           name: values.name,
           version: values.version,
+          status: values.status,
           author: values.author,
           registryUrl: values.registryUrl,
           tarballUrl: values.tarballUrl,
