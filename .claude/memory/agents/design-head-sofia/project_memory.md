@@ -32,7 +32,12 @@ NodePress es un CMS open-source en Node.js/TypeScript/PostgreSQL con admin panel
 - Accesibilidad WCAG AA obligatoria desde el primer día (heredado del perfil de Sofía).
 - NO generar CSS ni código React — sólo specs y documentación.
 
+## Entregables completados
+
+- **2026-04-19 — `docs/design/public-frontend-spec.md`**: Spec visual completa para el Paso A (CSS en InlineThemeEngine). Cubre: escala tipográfica (h1-h3, p, caption, code), columna de lectura 720px, mapeo de tokens a usos públicos, shortcodes ([footnote], [su_note], [su_button], blockquote), empty state archive, 404, nav/header/footer. Gate de merge: screenshot obligatorio de /, /p/:slug y 404 antes de aprobar.
+
 ## Pending / Open Questions
 
-- Definir dark mode tokens (no en scope de esta iteración, pero a documentar como future work).
+- Definir dark mode tokens para el frontend público (Sprint 8). Los tokens `[data-theme="dark"]` actuales son para el admin panel y no están validados para lectura larga.
+- Gate pendiente: screenshot approval de Marta sobre el Paso A (render real de las 3 vistas).
 - Validar paleta con usuarios reales de WordPress (research pendiente).
