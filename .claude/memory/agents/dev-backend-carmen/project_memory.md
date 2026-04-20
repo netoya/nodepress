@@ -4,6 +4,33 @@ description: Project memory for Carmen (Dev Backend) in NodePress
 type: project
 ---
 
+## Mini-sprint — M2: Pages REST endpoints + M6: Settings REST (2026-04-20)
+
+### M2: Pages REST endpoints (ADR-025 implementation)
+
+- **Handler factory pattern:** Nuevo fichero `packages/server/src/routes/posts/handler-factory.ts` con función `createPostHandler(postType)` que devuelve 5 handlers reutilizables: `listPosts`, `getPost`, `createPost`, `updatePost`, `deletePost`.
+- **Handlers factory parametrizados:** Cada handler filtra por `eq(posts.type, postType)` (ej: "page" o "post"). El factory emite handlers identidad-agnósticos.
+- **Fix crítico listPosts:** La función original en `handlers.ts` NO filtraba por type. Ahora filtra por `eq(posts.type, "post")` para evitar que GET /wp/v2/posts devuelva pages (contract violation).
+- **Fix crítico authorId:** El factory lee `request.user?.id ?? 1` en lugar de hardcodeado `1`. ADR-025 enforcement: autenticación correcta desde el contexto de la request.
+- **Pages router:** Nuevo fichero `packages/server/src/routes/pages/index.ts` que monta los 5 endpoints (`GET /wp/v2/pages`, `GET /wp/v2/pages/:id`, `POST /wp/v2/pages`, `PUT /wp/v2/pages/:id`, `DELETE /wp/v2/pages/:id`) usando el factory con `postType="page"`.
+- **PageSchema:** Esquema Fastify con todos los campos de PostSchema + `parent` (integer|null) y `menu_order` (integer) a nivel de raíz (WP-compat).
+- **Pages registration:** Registrado en `packages/server/src/index.ts` como `pagesPlugin` entre postsPlugin y usersPlugin.
+- **No migraciones:** `posts.type`, `posts.parentId`, `posts.menuOrder` ya existen en el schema. Zero schema changes.
+- **ADR-025 compliance:** Factory pattern + in-place `handlers.ts` fix (type filter only) + auth correction en factory. No duplicación. Rollback trivial si es necesario.
+
+### M6: Settings REST (GET/PUT /wp/v2/settings)
+
+- **SettingsService:** Nueva clase en `packages/server/src/routes/settings/service.ts` con métodos:
+  - `getSettings()`: Lee 6 keys whitelisted (`title`, `description`, `url`, `email`, `posts_per_page`, `default_category`) de la tabla `options` (autoload=true). Extrae valores JSONB a tipos nativos.
+  - `updateSettings(data)`: Upsert de los 6 keys whitelisted. Silencia claves no-whitelisted. Valores JSONB nativos.
+- **Whitelist:** Las 6 keys están hardcodeadas (`title`, `description`, `url`, `email`, `posts_per_page`, `default_category`). POST/PUT ignoran el resto.
+- **Settings router:** Nuevo fichero `packages/server/src/routes/settings/index.ts` que monta los 2 endpoints:
+  - `GET /wp/v2/settings`: Público (no auth). Schema SettingsSchema.
+  - `PUT /wp/v2/settings`: Requiere auth (`preHandler: [app.requireAdmin]`). Actualiza + retorna settings actualizados.
+- **WP-compat naming:** Response usa names WP exactos: `title`, `description`, `url`, `email`, `posts_per_page`, `default_category` (no `siteTitle`, etc.). Crítico para clientes WP-compat.
+- **Settings registration:** Registrado en `packages/server/src/index.ts` como `settingsPlugin` al final del buildServer.
+- **No bloqueadores:** `options` table existe. JSONB handling se confía a Drizzle `onConflictDoUpdate`.
+
 ## Sprint 5 — #76 Plugin Registry REST endpoints (2026-04-19)
 
 - **3 endpoints Fastify en `packages/server/src/plugin-registry/`:** routes.ts (plugin), handlers.ts (lógica), **tests**/plugin-registry.routes.test.ts (9/9 green).

@@ -3,6 +3,7 @@
 > Append-only audit trail. One line per completed task.
 
 | Date       | Agent              | Task                                                                                                                            | Output    | Commit  | Status |
+| 2026-04-20 | dev-backend-carmen | M2: Pages REST endpoints (handler-factory.ts + pages/index.ts) + M6: Settings REST (SettingsService + settings/index.ts). ADR-025 factory pattern applied. 6 tests affected by pre-existing regression in public.integration. M2/M6 code complete. | 7 files   | pending | ✅     |
 | 2026-04-20 | tech-lead-roman    | ADR-025 (Pages over Posts table) + ADR-026 (bcrypt password hashing) — mini-sprint M1/M5 gate unblocked; bcrypt native spike green on darwin arm64 | 2 files   | pending | ✅     |
 | 2026-04-20 | lead-frontend-lucas | Modal generic component (Modal.tsx + 7 tests) + MSW handlers for /wp/v2/pages (GET list, GET :id, POST, PUT, DELETE) + WpPage type | 5 files | pending | ✅     |
 | 2026-04-19 | lead-frontend-lucas | E2E spec public-site-shortcodes.spec.ts: negative test (no raw tags), footnote positive, su_note positive; bridge skip guard | 1 file    | 1385698 | ✅     |

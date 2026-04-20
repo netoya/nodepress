@@ -11,9 +11,11 @@ import fastifyCors from "@fastify/cors";
 import { registerBearerAuth } from "./auth/index.js";
 import { registerHooks } from "./hooks.js";
 import postsPlugin from "./routes/posts/index.js";
+import pagesPlugin from "./routes/pages/index.js";
 import usersPlugin from "./routes/users/index.js";
 import taxonomiesPlugin from "./routes/taxonomies/index.js";
 import mediaPlugin from "./routes/media/index.js";
+import settingsPlugin from "./routes/settings/index.js";
 import publicPlugin from "./routes/public/index.js";
 import pluginRegistryPlugin from "./plugin-registry/routes.js";
 import { registerBridgeHooks } from "./bridge/index.js";
@@ -74,6 +76,9 @@ export async function buildServer() {
   // Register the posts plugin
   await server.register(postsPlugin);
 
+  // Register the pages plugin (GET /wp/v2/pages, POST /wp/v2/pages, etc.)
+  await server.register(pagesPlugin);
+
   // Register the users plugin (GET /wp/v2/users/me)
   await server.register(usersPlugin);
 
@@ -90,6 +95,9 @@ export async function buildServer() {
   // Register the plugin registry REST API plugin
   // (GET /wp/v2/plugins, GET /wp/v2/plugins/:slug, POST /wp/v2/plugins)
   await server.register(pluginRegistryPlugin);
+
+  // Register the settings plugin (GET /wp/v2/settings, PUT /wp/v2/settings)
+  await server.register(settingsPlugin);
 
   return server;
 }

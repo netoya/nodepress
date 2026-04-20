@@ -42,6 +42,9 @@ export async function listPosts(request: FastifyRequest, reply: FastifyReply) {
   // Build WHERE conditions
   const conditions = [];
 
+  // Filter by post type (ADR-025: must explicitly filter to avoid pages in posts list)
+  conditions.push(eq(posts.type, "post"));
+
   // Filter by status
   conditions.push(eq(posts.status, status));
 
