@@ -769,6 +769,12 @@ export async function renderShortcodes(
             warnings: [rawText.slice(0, 512)],
             error: "BRIDGE_FATAL",
           };
+          if (process.env.NODE_ENV === "development") {
+            console.error("[bridge] BRIDGE_FATAL: JSON parse error", {
+              invocationId,
+              rawText: rawText.slice(0, 512),
+            });
+          }
           emitSpanFor(t0, traceId, invocationId, input, output);
           return output;
         }
@@ -806,6 +812,15 @@ export async function renderShortcodes(
                 warnings: [rawText2.slice(0, 512)],
                 error: "BRIDGE_FATAL",
               };
+              if (process.env.NODE_ENV === "development") {
+                console.error(
+                  "[bridge] BRIDGE_FATAL: JSON parse error (cURL response)",
+                  {
+                    invocationId,
+                    rawText: rawText2.slice(0, 512),
+                  },
+                );
+              }
               emitSpanFor(t0, traceId, invocationId, input, output);
               return output;
             }
@@ -847,6 +862,9 @@ export async function renderShortcodes(
         warnings: [msg.slice(0, 512)],
         error: "BRIDGE_FATAL",
       };
+      if (process.env.NODE_ENV === "development") {
+        console.error("[bridge] BRIDGE_FATAL:", { invocationId, error: msg });
+      }
     }
   }
 
