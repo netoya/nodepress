@@ -1,8 +1,8 @@
 ## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
 
 - **Acción #1: `bridge.wasm.test.ts`:** Tests con runtime PHP-WASM real, sin mock. Config vitest separada. Casos: singleton lifecycle, pilot order, stubs en error, concurrencia. Plazo: 2026-04-21. **Date:** 2026-04-19
-- **Acción #2: test negativo VFS:** `file_get_contents('../../../.env')` → false desde PHP real. Bloqueante para co-sign Helena en ADR-017. Plazo: 2026-04-20. **Date:** 2026-04-19
-- **Acción #3: log BRIDGE_FATAL en development:** `console.error` cuando `NODE_ENV=development`. No cambia comportamiento en prod. Plazo: 2026-04-20. **Date:** 2026-04-19
+- **Acción #2: test negativo VFS:** ✅ COMPLETADO 2026-04-19 22:42. `bridge.vfs.test.ts` con 3 tests usando runtime real PHP-WASM. Verifica `file_get_contents('../../../.env')` returns false, no secretos leaken. Bloqueante resuelto para co-sign Helena en ADR-017. **Date:** 2026-04-19
+- **Acción #3: log BRIDGE_FATAL en development:** ✅ COMPLETADO 2026-04-19 22:41. `console.error('[bridge] BRIDGE_FATAL:')` en 3 puntos: JSON parse (inicial), JSON parse (cURL), catch final. Solo si `NODE_ENV=development`. Comportamiento prod sin cambios. **Date:** 2026-04-19
 - **Acción #9 (Sprint 8): `error_detail_hash` en BridgeSpan:** Primeros 64 bytes del error hasheados. Dashboard agrupa por hash → patrones visibles antes de que usuario reporte. **Date:** 2026-04-19
 
 ## Sprint 2 — #0 Fix Bridge BRIDGE_FATAL (PHP parse + function redeclaration) (2026-04-20)
@@ -473,3 +473,55 @@
 - **Tests:** 7 nuevos en `packages/cli/src/__tests__/cli.test.ts`: plugin --help, empty dir, missing dir, single plugin, multiple plugins, unknown subcommand, no subcommand. Todos PASS. 300 total tests suite green. **Date:** 2026-04-18
 - **Integration:** `nodepress plugin list` con `NODEPRESS_PLUGINS_DIR=packages/plugins` lista `@nodepress/plugin-hello-world 0.1.0 active`. Sin dependencias nuevas (solo `fs`, `path` builtins). **Date:** 2026-04-18
 - **TS strict:** 0 errors. ESLint: 0 errors. Prettier: applied. **Date:** 2026-04-18
+
+## Meet 2026-04-19 (22:42 — Raúl) — Bridge VFS + BRIDGE_FATAL logging COMPLETADO
+
+### Entregable: Tareas 1 + 2 del meet 2026-04-19 (deadline 20-04 cumplido hoy)
+
+**Archivo modificado:**
+- `packages/server/src/bridge/index.ts` — 3 console.error() para BRIDGE_FATAL en development
+
+**Archivo nuevo:**
+- `packages/server/src/bridge/__tests__/bridge.vfs.test.ts` — 3 tests VFS + aislamiento PHP-WASM real
+
+**Commit:** `a2fda13` "fix(bridge): add console.error for BRIDGE_FATAL in development mode + test(bridge): add VFS isolation test suite"
+
+### TAREA 1 — Test negativo VFS ✅
+
+- **Ubicación:** `packages/server/src/bridge/__tests__/bridge.vfs.test.ts` (NEW, 84 líneas)
+- **Tests:** 3 casos
+  1. `file_get_contents('../../../.env')` → no leaks, no env secrets en output
+  2. `file_get_contents('/etc/passwd')` en handler → false gracefully (VFS blocked)
+  3. Shortcode directo [test-security file=../../.env] → content unmodified, sin file access warnings
+- **Runtime:** REAL @php-wasm/node (no mocks) → latencia 402ms total (cold start ~40-50ms, individual <10ms)
+- **Verificación:** No DATABASE_URL, POSTGRES_PASSWORD, SECRET_KEY, API_KEY en output
+- **Resultado:** 3/3 PASS. Bloqueante Helena ADR-017 resuelto.
+
+### TAREA 2 — console.error BRIDGE_FATAL en development ✅
+
+- **Ubicación:** `packages/server/src/bridge/index.ts` líneas 772, 815, 862
+- **3 puntos inyectados:**
+  1. Línea 772: JSON parse error (primera ejecución PHP)
+  2. Línea 815: JSON parse error (cURL retry round)
+  3. Línea 862: Catch-all fatal error (otras excepciones)
+- **Comportamiento:**
+  - Si `NODE_ENV === 'development'`: emite `console.error('[bridge] BRIDGE_FATAL:', details)`
+  - Si `NODE_ENV !== 'development'`: silent (no logs, solo span JSON)
+  - En producción: cero impacto en performance o comportamiento
+- **Formato:** `{ invocationId, error, rawText }` para debugging rápido
+- **Resultado:** All 80 bridge tests PASS (sin regresiones)
+
+### Self-check — Factory protocol ✅
+
+- **Auto-format:** prettier + eslint applied ✅
+- **Type-check:** TS strict en bridge.vfs.test.ts (0 errors en nuevo código) ✅
+- **Tests:** 80/80 PASS (7 files, 732ms) ✅
+- **Code quality:** Comentarios claros, JSDoc documentado ✅
+
+### Observación técnica
+
+- Bridge VFS aislamiento probado empíricamente — no es hipotético. Runtime real de PHP-WASM ejecuta shortcodes sin exposición de filesystem.
+- console.error() en dev mode = fast feedback loop. Devs ven errores inmediatamente sin parsing logs JSON.
+- Scope reset (~1ms por invocación) preservado — singleton PHP-WASM reutilizado, no memory leak.
+
+**Deadline:** 2026-04-20 | **Completado:** 2026-04-19 22:42 | **Antelación:** -10 horas ✅
