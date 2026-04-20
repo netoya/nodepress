@@ -254,59 +254,82 @@ $np_candidate_posts = json_decode('${candidatePostsJson.replace(/'/g, "\\'")}', 
 $np_plugin_config   = json_decode('${pluginConfigJson.replace(/'/g, "\\'")}', true) ?: [];
 
 // --- Security stubs (ADR-018 §Constraints §1) ---
-function exec($cmd = '', &$output = null, &$return_var = null) {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: exec';
-  return '';
+// Wrapped in if !function_exists to allow singleton reuse (scope reset per invocation).
+if (!function_exists('exec')) {
+  function exec($cmd = '', &$output = null, &$return_var = null) {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: exec';
+    return '';
+  }
 }
-function system($cmd = '', &$return_var = null) {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: system';
-  return '';
+if (!function_exists('system')) {
+  function system($cmd = '', &$return_var = null) {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: system';
+    return '';
+  }
 }
-function shell_exec($cmd = '') {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: shell_exec';
-  return '';
+if (!function_exists('shell_exec')) {
+  function shell_exec($cmd = '') {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: shell_exec';
+    return '';
+  }
 }
-function passthru($cmd = '', &$return_var = null) {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: passthru';
+if (!function_exists('passthru')) {
+  function passthru($cmd = '', &$return_var = null) {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: passthru';
+  }
 }
-function popen($command = '', $mode = '') {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: popen';
-  return false;
+if (!function_exists('popen')) {
+  function popen($command = '', $mode = '') {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: popen';
+    return false;
+  }
 }
-function proc_open($command, $descriptorspec, &$pipes, $cwd = null, $env = null, $other_options = null) {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: proc_open';
-  return false;
+if (!function_exists('proc_open')) {
+  function proc_open($command, $descriptorspec, &$pipes, $cwd = null, $env = null, $other_options = null) {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: proc_open';
+    return false;
+  }
 }
-function mail($to = '', $subject = '', $message = '', $headers = '', $params = '') {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: mail to=' . substr($to, 0, 20);
-  return false;
+if (!function_exists('mail')) {
+  function mail($to = '', $subject = '', $message = '', $headers = '', $params = '') {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: mail to=' . substr($to, 0, 20);
+    return false;
+  }
 }
-function curl_exec($handle = null) {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: curl_exec';
-  return false;
+if (!function_exists('curl_exec')) {
+  function curl_exec($handle = null) {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: curl_exec';
+    return false;
+  }
 }
-function curl_multi_exec($multi_handle = null, &$still_running = null) {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: curl_multi_exec';
-  return 0;
+if (!function_exists('curl_multi_exec')) {
+  function curl_multi_exec($multi_handle = null, &$still_running = null) {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: curl_multi_exec';
+    return 0;
+  }
 }
-function file_put_contents($filename = '', $data = '', $flags = 0, $context = null) {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: file_put_contents';
-  return false;
+if (!function_exists('file_put_contents')) {
+  function file_put_contents($filename = '', $data = '', $flags = 0, $context = null) {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: file_put_contents';
+    return false;
+  }
 }
-function fwrite($handle = null, $string = '', $length = null) {
-  global $np_warnings;
-  $np_warnings[] = '[BRIDGE WARN] blocked: fwrite';
-  return 0;
+if (!function_exists('fwrite')) {
+  function fwrite($handle = null, $string = '', $length = null) {
+    global $np_warnings;
+    $np_warnings[] = '[BRIDGE WARN] blocked: fwrite';
+    return 0;
+  }
 }
 // --- WP HTTP API stubs (ADR-018 Amendment — Sprint 6 #83: cURL allowlist) ---
 function wp_http_request($url = '', $args = []) {
@@ -460,10 +483,10 @@ function shortcode_atts($pairs, $atts, $shortcode = '') {
 
 function shortcode_parse_atts($text) {
   $atts = [];
-  $pattern = '/([\\w-]+)\\s*=\\s*"([^"]*)"(*SKIP)(*F)|([\\w-]+)\\s*=\\s*\'([^\']*)\'(*SKIP)(*F)|([\\w-]+)\\s*=\\s*(\\S+)|"([^"]*)"(*SKIP)(*F)|\'([^\']*)\'(*SKIP)(*F)|([^\\s]+)/';
+  $pattern = '/([\\w-]+)\\s*=\\s*"([^"]*)"(*SKIP)(*F)|([\\w-]+)\\s*=\\s*\\'([^\\']*)\\'(*SKIP)(*F)|([\\w-]+)\\s*=\\s*(\\S+)|"([^"]*)"(*SKIP)(*F)|\\'([^\\']*)\\'(*SKIP)(*F)|([^\\s]+)/';
   preg_match_all($pattern, $text, $match);
   // Simplified: just split on whitespace key=value pairs
-  preg_match_all('/([\\w-]+)=(?:"([^"]*)"|\'([^\']*)\'|(\\S+))/', $text, $m, PREG_SET_ORDER);
+  preg_match_all('/([\\w-]+)=(?:"([^"]*)"|\\\'([^\\']*)\\\'|(\\S+))/', $text, $m, PREG_SET_ORDER);
   foreach ($m as $pair) {
     $key = $pair[1];
     $val = !empty($pair[2]) ? $pair[2] : (!empty($pair[3]) ? $pair[3] : $pair[4]);
