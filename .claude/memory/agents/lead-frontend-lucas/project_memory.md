@@ -1,3 +1,13 @@
+## Sprint 7 — Modal generic component + MSW pages handlers (2026-04-20)
+
+- **`admin/src/components/ui/Modal.tsx` created:** Generic dialog component. Props: `title`, `onClose`, `children`, `size?: 'sm'|'md'|'lg'`. role="dialog", aria-modal="true", aria-labelledby via `useId()`. Backdrop click closes. Escape key closes (handled only in dialog panel onKeyDown — not on backdrop, to avoid double-fire on bubble). Focus moves to first focusable on mount. **Date:** 2026-04-20
+- **Modal exported from `admin/src/components/ui/index.ts`.** **Date:** 2026-04-20
+- **7 Modal tests in `__tests__/Modal.test.tsx` all green:** title renders, children visible, aria-modal present, aria-labelledby connected, Escape closes, backdrop click closes, panel click does NOT close. **Date:** 2026-04-20
+- **Gotcha — double Escape fire:** If `onKeyDown` is on both backdrop div AND dialog div, Escape fires twice (bubble). Fix: only handle on dialog div. **Date:** 2026-04-20
+- **`WpPage` interface added to `admin/src/types/wp-post.ts`:** parent and menu_order at root (contract from Ingrid). Includes id, date, modified, slug, status, title (RenderedField), content (RenderedField), author, parent (number), menu_order (number), link (optional). **Date:** 2026-04-20
+- **MSW handlers for `/wp/v2/pages` added to `admin/src/mocks/handlers.ts`:** GET list, GET :id, POST (201), PUT, DELETE (200). Mock data includes 3 pages: id=10 (parent=0), id=11 (parent=10, child), id=12 (parent=0, draft). Child page covers parent selector tests. **Date:** 2026-04-20
+- **134/134 tests green after all changes. 0 new TS errors. 0 ESLint errors.** Pre-existing react-router-dom NavLink/Outlet TS errors unchanged. **Date:** 2026-04-20
+
 ## Planning Mini-Sprint Pages/Users/Settings — 2026-07-14
 
 - **M8 = 2 días confirmados:** parent selector con guard circular, `useContentQuery(endpoint)` hook factory, router, sidebar. Terminar el jueves al mediodía para dar tiempo a M11. **Date:** 2026-07-14

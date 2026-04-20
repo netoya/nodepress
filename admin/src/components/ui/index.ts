@@ -20,3 +20,4 @@ export { Textarea, type TextareaProps } from "./Textarea";
 export { Select, type SelectProps, type SelectOption } from "./Select";
 export { Toast, type ToastItem } from "./Toast";
 export { ToastProvider, useToast } from "./ToastProvider";
+export { Modal, type ModalProps } from "./Modal";

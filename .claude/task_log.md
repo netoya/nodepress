@@ -3,6 +3,7 @@
 > Append-only audit trail. One line per completed task.
 
 | Date       | Agent              | Task                                                                                                                            | Output    | Commit  | Status |
+| 2026-04-20 | lead-frontend-lucas | Modal generic component (Modal.tsx + 7 tests) + MSW handlers for /wp/v2/pages (GET list, GET :id, POST, PUT, DELETE) + WpPage type | 5 files | pending | ✅     |
 | 2026-04-19 | lead-frontend-lucas | E2E spec public-site-shortcodes.spec.ts: negative test (no raw tags), footnote positive, su_note positive; bridge skip guard | 1 file    | 1385698 | ✅     |
 | ---------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------- | --------- | ------- | ------ |
 | 2026-04-09 | roman              | Initial project setup (docs, ADRs, design)                                                                                      | 8 files   | eea0f95 | ✅     |

@@ -130,6 +130,36 @@ export interface WpUser {
 }
 
 /**
+ * WP REST API v2 — Page shape as returned by GET /wp/v2/pages.
+ * Pages extend the post shape with parent and menu_order at root level.
+ * Contract closed with Ingrid: parent and menu_order are integer IDs in root, not nested.
+ */
+export interface WpPage {
+  /** Unique identifier for the page. */
+  id: number;
+  /** Publication date, local ISO 8601. */
+  date: string;
+  /** Last-modified date, local ISO 8601. */
+  modified?: string;
+  /** URL-friendly page identifier. */
+  slug: string;
+  /** Named post status. */
+  status: PostStatus;
+  /** Page title as rendered field. */
+  title: RenderedField;
+  /** Page content as rendered field. */
+  content: RenderedField;
+  /** Author user ID. */
+  author: number;
+  /** Parent page ID. 0 = top-level page. */
+  parent: number;
+  /** Sort order within siblings. */
+  menu_order: number;
+  /** Permalink for the page. */
+  link?: string;
+}
+
+/**
  * Pagination metadata extracted from WP REST API response headers.
  * X-WP-Total and X-WP-TotalPages.
  */

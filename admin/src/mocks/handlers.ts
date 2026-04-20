@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type {
+  WpPage,
   WpPlugin,
   WpPost,
   WpTerm,
@@ -71,6 +72,51 @@ const mockPosts: WpPost[] = [
     excerpt: { rendered: "Awaiting editorial review before publish." },
     author: 2,
     _nodepress: { type: "post", menu_order: 4, meta: {} },
+  },
+];
+
+// ---------------------------------------------------------------------------
+// Pages mock data — includes a child page (parent != 0) for parent selector tests.
+// ---------------------------------------------------------------------------
+const mockPages: WpPage[] = [
+  {
+    id: 10,
+    date: "2026-04-10T10:00:00.000Z",
+    modified: "2026-04-10T12:00:00.000Z",
+    slug: "about",
+    status: "publish",
+    title: { rendered: "About Us" },
+    content: { rendered: "<p>About NodePress.</p>" },
+    author: 1,
+    parent: 0,
+    menu_order: 0,
+    link: "http://localhost:3000/about/",
+  },
+  {
+    id: 11,
+    date: "2026-04-11T10:00:00.000Z",
+    modified: "2026-04-11T10:30:00.000Z",
+    slug: "team",
+    status: "publish",
+    title: { rendered: "Our Team" },
+    content: { rendered: "<p>Meet the NodePress team.</p>" },
+    author: 1,
+    parent: 10,
+    menu_order: 1,
+    link: "http://localhost:3000/about/team/",
+  },
+  {
+    id: 12,
+    date: "2026-04-12T08:00:00.000Z",
+    modified: "2026-04-12T08:15:00.000Z",
+    slug: "contact",
+    status: "draft",
+    title: { rendered: "Contact (Draft)" },
+    content: { rendered: "<p>Get in touch — coming soon.</p>" },
+    author: 2,
+    parent: 0,
+    menu_order: 2,
+    link: "http://localhost:3000/contact/",
   },
 ];
 
@@ -304,6 +350,103 @@ export const handlers = [
       roles: body.roles ?? user.roles,
     };
     return HttpResponse.json(updated);
+  }),
+
+  // ---------------------------------------------------------------------------
+  // Pages handlers — GET list, GET single, POST, PUT, DELETE
+  // ---------------------------------------------------------------------------
+
+  // GET /wp/v2/pages — list pages
+  http.get(`${BASE_URL}/wp/v2/pages`, () => {
+    return HttpResponse.json(mockPages, {
+      headers: {
+        "X-WP-Total": String(mockPages.length),
+        "X-WP-TotalPages": "1",
+      },
+    });
+  }),
+
+  // GET /wp/v2/pages/:id — single page
+  http.get(`${BASE_URL}/wp/v2/pages/:id`, ({ params }) => {
+    const id = Number(params["id"]);
+    const page = mockPages.find((p) => p.id === id);
+    if (!page) {
+      return HttpResponse.json(
+        { code: "rest_page_invalid_id", message: "Invalid page ID." },
+        { status: 404 },
+      );
+    }
+    return HttpResponse.json(page);
+  }),
+
+  // POST /wp/v2/pages — create page
+  http.post(`${BASE_URL}/wp/v2/pages`, async ({ request }) => {
+    const body = (await request.json()) as {
+      title?: string;
+      content?: string;
+      status?: string;
+      parent?: number;
+      menu_order?: number;
+    };
+    const created: WpPage = {
+      id: 100 + mockPages.length,
+      date: new Date().toISOString(),
+      slug: (body.title ?? "untitled").toLowerCase().replace(/\s+/g, "-"),
+      status: (body.status as WpPage["status"]) ?? "draft",
+      title: { rendered: body.title ?? "" },
+      content: { rendered: body.content ?? "" },
+      author: 1,
+      parent: body.parent ?? 0,
+      menu_order: body.menu_order ?? 0,
+      link: `http://localhost:3000/${(body.title ?? "untitled").toLowerCase().replace(/\s+/g, "-")}/`,
+    };
+    return HttpResponse.json(created, { status: 201 });
+  }),
+
+  // PUT /wp/v2/pages/:id — update page
+  http.put(`${BASE_URL}/wp/v2/pages/:id`, async ({ params, request }) => {
+    const id = Number(params["id"]);
+    const page = mockPages.find((p) => p.id === id);
+    if (!page) {
+      return HttpResponse.json(
+        { code: "rest_page_invalid_id", message: "Invalid page ID." },
+        { status: 404 },
+      );
+    }
+    const body = (await request.json()) as Partial<{
+      title: string;
+      content: string;
+      status: string;
+      parent: number;
+      menu_order: number;
+    }>;
+    const updated: WpPage = {
+      ...page,
+      ...(body.title !== undefined ? { title: { rendered: body.title } } : {}),
+      ...(body.content !== undefined
+        ? { content: { rendered: body.content } }
+        : {}),
+      ...(body.status !== undefined
+        ? { status: body.status as WpPage["status"] }
+        : {}),
+      ...(body.parent !== undefined ? { parent: body.parent } : {}),
+      ...(body.menu_order !== undefined ? { menu_order: body.menu_order } : {}),
+      modified: new Date().toISOString(),
+    };
+    return HttpResponse.json(updated);
+  }),
+
+  // DELETE /wp/v2/pages/:id — simulates deletion
+  http.delete(`${BASE_URL}/wp/v2/pages/:id`, ({ params }) => {
+    const id = Number(params["id"]);
+    const page = mockPages.find((p) => p.id === id);
+    if (!page) {
+      return HttpResponse.json(
+        { code: "rest_page_invalid_id", message: "Invalid page ID." },
+        { status: 404 },
+      );
+    }
+    return HttpResponse.json({ deleted: true, previous: page });
   }),
 
   // DELETE /wp/v2/posts/:id — soft delete (trash) or hard delete
