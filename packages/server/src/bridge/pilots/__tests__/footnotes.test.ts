@@ -70,22 +70,33 @@ describe("Footnotes Pilot", () => {
       const code = buildFootnotesPhpCode();
 
       expect(typeof code).toBe("string");
-      expect(code).toContain("process_footnotes");
+      // Registers the WP shortcode handler so [footnote]text[/footnote] works.
+      expect(code).toContain("add_shortcode('footnote'");
+      // Keeps MCI ((text)) legacy syntax as a pre-pass.
       expect(code).toContain("preg_replace_callback");
-      expect(code).toContain("\\(\\(");
+      expect(code).toContain("\\(\\((.+?)\\)\\)");
+      // Renders the footnotes section.
       expect(code).toContain("footnotes");
     });
 
-    it("includes the function process_footnotes", () => {
+    it("registers the [footnote] shortcode with add_shortcode", () => {
       const code = buildFootnotesPhpCode();
-      expect(code).toMatch(/function\s+process_footnotes/);
+      expect(code).toMatch(/add_shortcode\(\s*'footnote'/);
     });
 
-    it("uses pcre preg_replace_callback for pattern matching", () => {
+    it("uses pcre preg_replace_callback for the legacy ((text)) syntax", () => {
       const code = buildFootnotesPhpCode();
       expect(code).toContain("preg_replace_callback");
       // The regex pattern for ((text))
       expect(code).toContain("\\(\\((.+?)\\)\\)");
+    });
+
+    it("expands shortcodes in place and appends the footnotes section", () => {
+      const code = buildFootnotesPhpCode();
+      // do_shortcode is invoked inside the pilot so the footnotes section can
+      // be appended right after the anchors are produced.
+      expect(code).toContain("do_shortcode($postContent)");
+      expect(code).toContain('<div class="footnotes"><ol>');
     });
   });
 
