@@ -7,7 +7,7 @@
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](LICENSE)
 [![Status: Beta](https://img.shields.io/badge/status-beta-yellow.svg)](PROJECT_STATUS.md)
 
-**Sprint 5 closed · Sprint 6 active (Plugin Registry + vm.Context hardening).**
+**Sprint 6 closed · Sprint 7 active (public CSS + bridge hardening + Sprint Closing process).**
 
 ---
 
@@ -38,7 +38,7 @@ not through PHP.
 
 ---
 
-## What's shipped (Sprints 0–5)
+## What's shipped (Sprints 0–6)
 
 - **Hook system** — `HookRegistry` with WP-identical semantics: numeric
   priorities, sync filters, async actions, `removeAllByPlugin` cleanup.
@@ -66,27 +66,38 @@ not through PHP.
 - **WP Import CLI** — real importer for posts, terms, users, and comments,
   with `--mode=reset|upsert` and `--dry-run`.
   ([ADR-022](docs/adr/ADR-022-wp-import-strategy.md))
-- **Tests** — 221+ Vitest tests green across core, server, admin, db, cli,
-  theme-engine. Integration tests hit real Postgres via Testcontainers and
-  real `php-wasm` through the bridge.
-- **ADRs** — 23 Accepted. See [docs/adr/](docs/adr/) for the full index.
+- **Plugin Registry** — `nodepress plugin install <name>[@version]` wired to
+  the registry, tarball download + extraction into `NODEPRESS_PLUGINS_DIR`,
+  REST surface at `GET/POST /wp/v2/plugins`. Plugin status fixed: installed
+  plugins are immediately active.
+  ([ADR-023](docs/adr/ADR-023-plugin-registry-architecture.md))
+- **vm.Context hardening** — Worker Threads with 32 MB memory limit per
+  plugin, opt-in via `NODEPRESS_WORKER_SANDBOX=true`.
+- **Bridge hardening** — VFS sandbox verified (file_get_contents path traversal
+  returns false), BRIDGE_FATAL console.error in development, singleton
+  redeclaration guards on all 11 PHP stubs. E2E shortcode specs in CI.
+- **Public frontend CSS** — `InlineThemeEngine` rewritten with design tokens
+  (Inter, Deep Violet palette, 720px reading column). Covers single, archive,
+  empty state, 404. Shortcode rendering: footnotes, su_note, su_button.
+- **Tests** — 404+ Vitest tests green across core, server, admin, db, cli,
+  theme-engine. Integration tests hit real Postgres and real `php-wasm`.
+- **ADRs** — 24 Accepted. See [docs/adr/](docs/adr/) for the full index.
 
 ---
 
-## What's in Sprint 6 (active, 2026-06-16 → 2026-06-27)
+## What's in Sprint 7 (active, 2026-06-30 → 2026-07-11)
 
-- **Plugin Registry** — `nodepress plugin install <name>[@version]` wired to
-  the registry, tarball download + extraction into `NODEPRESS_PLUGINS_DIR`,
-  REST surface at `GET/POST /wp/v2/plugins`.
-  ([ADR-023](docs/adr/ADR-023-plugin-registry-architecture.md))
-- **vm.Context hardening** — Worker Threads with a 32 MB memory limit per
-  plugin, opt-in via `NODEPRESS_WORKER_SANDBOX=true`.
-- **OpenAPI 100%** — every REST endpoint documented, schemas aligned with
-  WP API v2.
-- **CLA workflow** — CLA Assistant webhook active for external contributors
-  (pending GitHub App setup).
+- **Plugin marketplace UI** — Browse, search, install plugins from the admin
+  panel. Dependency resolution before install.
+- **Public frontend design tokens** — `@nodepress/design-tokens` package
+  extraction (P0 Sprint 9 committed). CSS tokens shared between admin and
+  public frontend.
+- **Sprint Closing Checklist** — Formal process: retro log + PROJECT_STATUS
+  closed + README review + CI guard (`docs(readme): Sprint N close`).
+  ([docs/process/sprint-close-checklist.md](docs/process/sprint-close-checklist.md))
+- **Dark mode** — Admin panel dark mode (desplazado desde S7, delivery en S8).
 
-Full Sprint 6 ticket map in [PROJECT_STATUS.md](PROJECT_STATUS.md).
+Full Sprint 7 ticket map in [PROJECT_STATUS.md](PROJECT_STATUS.md).
 
 ---
 
