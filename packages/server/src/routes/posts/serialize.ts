@@ -67,6 +67,10 @@ export function toWpPost(
       protected: false,
     },
     author: dbRow.authorId,
+    // WP-compat root-level fields for hierarchical post types (pages).
+    // Present on all types (null / 0 for flat posts) to keep serializer generic.
+    parent: dbRow.parentId ?? null,
+    menu_order: dbRow.menuOrder,
     categories,
     tags,
     _nodepress: {
@@ -187,6 +191,8 @@ export async function toWpPostAsync(
       protected: false,
     },
     author: dbRow.authorId,
+    parent: dbRow.parentId ?? null,
+    menu_order: dbRow.menuOrder,
     categories,
     tags,
     _nodepress: {

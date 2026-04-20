@@ -179,3 +179,16 @@
 | 2026-04-19 | roman | test(e2e): demo-php-plugin.spec.ts ampliado — multi-plugin scene. Seeds 3 plugin rows (Footnotes + Shortcodes Ultimate + Contact Form 7) en vez de solo Footnotes; shortcode post mezcla `[footnote]` + `[su_note]` + `[su_button url=… color=blue]` + `[contact-form-7]`; asserts reales sobre el HTML renderizado en `/p/:slug` (sup#fnref-N + a.footnote-ref + div.footnotes ol li#fn-N, div.su-note + a.su-button.su-button-blue con href asserted, div.wpcf7 form.wpcf7-form + input[name="your-name"]/[name="your-email"] + textarea.wpcf7-textarea). Display Posts excluido porque el serialize REST no pasa `context.candidatePosts` y el shortcode devolvería cadena vacía. Docstring actualizada (ya no BRIDGE_FATAL, ahora assert-based). `npm run demo:video:php`: 1/1 ✅ 25.2s. Video en `admin/test-results/demo-php-plugin-NodePress--029ca-hortcode-post-→-public-view-chromium-demo/video.webm`. | 1 file | 1/1 ✅ | ✅ |
 | 2026-04-19 | sofia | docs(design): public-frontend-spec.md — visual spec for InlineThemeEngine CSS pass (Paso A): typography scale, reading column, color token mapping, shortcodes ([footnote]/[su_note]/[su_button]/blockquote), empty archive state, 404 page, nav/header/footer. Dark mode explicitly deferred to Sprint 8. | 1 file | pending | ✅ |
 | 2026-04-19 | marta | feat(public-css): InlineThemeEngine CSS tokens + global styles (Paso A) — getDesignTokensCSS() (46 tokens) + getGlobalCSS() (850 lines), renderSinglePost/renderArchive with Google Fonts Inter, responsive .np-page (720px max-width), empty state (np-empty-state), 404 handler with design tokens; :focus-visible WCAG AA on all links; no hardcoded colors (#0066cc/#333/#fafafa → tokens). Type-check ✅. Gate: screenshot review Sofía for `/`, `/p/:slug`, 404. | 2 files | pending | ✅ |
+
+## 2026-04-20 — M3/M4/M7 Mini-Sprint (Ingrid)
+
+| Ticket | Status | Notes |
+|--------|--------|-------|
+| M7 — Settings seeds | Done | 6 rows, ON CONFLICT DO NOTHING, autoload=true |
+| M4 — Users CRUD | Done | GET/:id, POST (bcrypt cost 12), PUT (conditional rotation), DELETE (tx + reassign) |
+| M4 — Users tests | Done | 6 real-db cases, Testcontainers pattern |
+| M3 — PageSchema + serialize | Done | parent + menu_order at root in toWpPost + PostSchema |
+| M3 — Pages WP-conformance tests | Done | 8 real-db cases |
+| M3 — OpenAPI pages | Done | Page schema + 5 endpoints in openapi.yaml |
+
+- Commit: pending

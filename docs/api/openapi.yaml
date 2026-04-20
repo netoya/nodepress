@@ -324,6 +324,58 @@ components:
             The parent term ID. Always 0 in Sprint 3 (flat taxonomy, no hierarchy).
           example: 0
 
+    Page:
+      type: object
+      description: |
+        A page object following WP REST API v2 shape.
+        Extends Post with `parent` (integer | null) and `menu_order` (integer) at root level.
+        Both fields are WP-compat (not under _nodepress namespace).
+      required:
+        - id
+        - date
+        - slug
+        - status
+        - title
+        - content
+        - author
+      properties:
+        id:
+          type: integer
+          description: Unique identifier for the page.
+        date:
+          type: string
+          format: date-time
+          description: Date the page was created (ISO 8601).
+        modified:
+          type: string
+          format: date-time
+          description: Date the page was last modified (ISO 8601).
+        slug:
+          type: string
+          description: URL-safe slug for the page.
+        status:
+          type: string
+          enum: [publish, future, draft, pending, private, trash]
+          description: Publication status.
+        title:
+          $ref: "#/components/schemas/RenderedField"
+        content:
+          $ref: "#/components/schemas/RenderedField"
+        excerpt:
+          $ref: "#/components/schemas/RenderedField"
+        author:
+          type: integer
+          description: Author user ID.
+        parent:
+          type: integer
+          nullable: true
+          description: Parent page ID. Null if this is a root-level page.
+          example: null
+        menu_order:
+          type: integer
+          description: Order of the page in menu listings.
+          default: 0
+
     WpUserPublic:
       type: object
       description: |
@@ -1282,6 +1334,229 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Missing or invalid Bearer token.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /wp/v2/pages:
+    get:
+      operationId: listPages
+      summary: List pages
+      description: |
+        Returns a paginated list of pages (type=page). Does NOT include posts.
+        Public endpoint — no authentication required.
+      tags:
+        - Pages
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [publish, draft, pending, private, trash, future]
+            default: publish
+        - name: context
+          in: query
+          schema:
+            type: string
+            enum: [view, edit]
+            default: view
+      responses:
+        "200":
+          description: List of pages.
+          headers:
+            X-WP-Total:
+              schema:
+                type: string
+              description: Total number of pages.
+            X-WP-TotalPages:
+              schema:
+                type: string
+              description: Total number of result pages.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Page"
+    post:
+      operationId: createPage
+      summary: Create a page
+      description: Creates a new page. Requires admin authentication.
+      tags:
+        - Pages
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, content]
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                status:
+                  type: string
+                  enum: [publish, future, draft, pending, private]
+                  default: draft
+                excerpt:
+                  type: string
+                slug:
+                  type: string
+                parent:
+                  type: integer
+                  description: Parent page ID (optional).
+                menu_order:
+                  type: integer
+                  default: 0
+      responses:
+        "201":
+          description: Page created.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        "400":
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /wp/v2/pages/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getPage
+      summary: Retrieve a page
+      description: Returns a single page by ID. Public endpoint.
+      tags:
+        - Pages
+      parameters:
+        - name: context
+          in: query
+          schema:
+            type: string
+            enum: [view, edit]
+            default: view
+      responses:
+        "200":
+          description: Page found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        "404":
+          description: Page not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updatePage
+      summary: Update a page
+      description: Updates an existing page. Requires admin authentication.
+      tags:
+        - Pages
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                content:
+                  type: string
+                status:
+                  type: string
+                  enum: [publish, future, draft, pending, private, trash]
+                excerpt:
+                  type: string
+                slug:
+                  type: string
+                parent:
+                  type: integer
+                menu_order:
+                  type: integer
+      responses:
+        "200":
+          description: Page updated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        "404":
+          description: Page not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deletePage
+      summary: Delete a page
+      description: |
+        Soft-deletes (status=trash) or hard-deletes a page.
+        Requires admin authentication.
+      tags:
+        - Pages
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: force
+          in: query
+          schema:
+            type: boolean
+            default: false
+          description: If true, permanently removes the page from the DB.
+      responses:
+        "200":
+          description: Page deleted or trashed.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Page"
+        "401":
+          description: Unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Page not found.
           content:
             application/json:
               schema:

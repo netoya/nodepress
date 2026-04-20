@@ -99,13 +99,30 @@ async function seedOptions(db: ReturnType<typeof drizzle>): Promise<void> {
     { name: "siteurl", value: "http://localhost:3000" },
     { name: "blogname", value: "NodePress Demo" },
     { name: "blogdescription", value: "A modern CMS built on Node.js" },
+    // M7 — default settings seeds
+    { name: "siteTitle", value: "NodePress Site" },
+    { name: "siteDescription", value: "A WordPress-compatible CMS" },
+    { name: "siteUrl", value: "http://localhost:3000" },
+    { name: "adminEmail", value: "admin@example.com" },
+    { name: "postsPerPage", value: 10 },
+    { name: "defaultCategory", value: 1 },
   ];
 
   for (const option of optionsData) {
+    // M7 settings keys use autoload=true; legacy keys keep autoload=false
+    const m7Keys = [
+      "siteTitle",
+      "siteDescription",
+      "siteUrl",
+      "adminEmail",
+      "postsPerPage",
+      "defaultCategory",
+    ];
+    const autoload = m7Keys.includes(option.name);
     await db.execute(sql`
       INSERT INTO options (name, value, autoload)
-      VALUES (${option.name}, ${JSON.stringify(option.value)}, false)
-      ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value
+      VALUES (${option.name}, ${JSON.stringify(option.value)}, ${autoload})
+      ON CONFLICT (name) DO NOTHING
     `);
   }
 }
@@ -116,7 +133,7 @@ export async function runSeed(
   await seedUsers(db);
   await seedPosts(db);
   await seedOptions(db);
-  return { users: 1, posts: 5, options: 3 };
+  return { users: 1, posts: 5, options: 9 };
 }
 
 // Only run when invoked directly (tsx src/seeds/index.ts)

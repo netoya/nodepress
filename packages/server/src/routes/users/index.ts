@@ -1,7 +1,9 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
+import { eq } from "drizzle-orm";
 import type { AuthenticatedUser } from "../../auth/types.js";
-import { db, users } from "@nodepress/db";
+import { db, users, posts } from "@nodepress/db";
+import { hash as hashPassword } from "../../services/password.js";
 
 /**
  * WP REST API-compatible user object shape returned by /wp/v2/users and /wp/v2/users/me.
@@ -132,6 +134,192 @@ async function listUsersHandler(
     .send(wpUsers);
 }
 
+async function getUserHandler(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const params = request.params as Record<string, unknown>;
+  const id = parseInt(params["id"] as string, 10);
+
+  const [user] = await db.select().from(users).where(eq(users.id, id));
+
+  if (!user) {
+    await reply
+      .status(404)
+      .send({ code: "NOT_FOUND", message: `User ${id} not found.` });
+    return;
+  }
+
+  await reply.status(200).send(toWpUserPublic(user));
+}
+
+async function createUserHandler(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const body = request.body as Record<string, unknown>;
+
+  const username = body["username"] as string | undefined;
+  const email = body["email"] as string | undefined;
+  const password = body["password"] as string | undefined;
+  const displayName = (body["displayName"] as string | undefined) ?? "";
+  const roles = (body["roles"] as string[] | undefined) ?? ["subscriber"];
+
+  if (!username || !email || !password) {
+    await reply.status(422).send({
+      code: "INVALID_REQUEST",
+      message: "Fields username, email, and password are required.",
+    });
+    return;
+  }
+
+  if (password.length < 1) {
+    await reply.status(422).send({
+      code: "INVALID_REQUEST",
+      message: "Password must not be empty.",
+    });
+    return;
+  }
+
+  // Hash password — plaintext is discarded after this call (ADR-026)
+  const passwordHash = await hashPassword(password);
+
+  try {
+    const [created] = await db
+      .insert(users)
+      .values({
+        login: username,
+        email,
+        displayName,
+        passwordHash,
+        roles,
+      })
+      .returning();
+
+    // Password and passwordHash NEVER in response (ADR-026 §2)
+    await reply.status(201).send(toWpUser(created!));
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message.includes("unique")) {
+      await reply.status(409).send({
+        code: "USER_EXISTS",
+        message: "A user with that username or email already exists.",
+      });
+      return;
+    }
+    throw err;
+  }
+}
+
+async function updateUserHandler(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const params = request.params as Record<string, unknown>;
+  const id = parseInt(params["id"] as string, 10);
+  const body = request.body as Record<string, unknown>;
+
+  const [existing] = await db.select().from(users).where(eq(users.id, id));
+  if (!existing) {
+    await reply
+      .status(404)
+      .send({ code: "NOT_FOUND", message: `User ${id} not found.` });
+    return;
+  }
+
+  const updateData: Record<string, unknown> = {};
+
+  if ("displayName" in body) updateData["displayName"] = body["displayName"];
+  if ("email" in body) updateData["email"] = body["email"];
+  if ("roles" in body) updateData["roles"] = body["roles"];
+  if ("capabilities" in body) updateData["capabilities"] = body["capabilities"];
+
+  // Rotate hash ONLY when password is explicitly provided (ADR-026 §3)
+  if ("password" in body) {
+    const pw = body["password"] as string;
+    if (!pw || pw.length < 1) {
+      await reply.status(422).send({
+        code: "INVALID_REQUEST",
+        message: "Password must not be empty.",
+      });
+      return;
+    }
+    updateData["passwordHash"] = await hashPassword(pw);
+  }
+  // If "password" is absent from body — do NOT touch passwordHash
+
+  if (Object.keys(updateData).length === 0) {
+    // No-op: return current user shape unchanged
+    await reply.status(200).send(toWpUser(existing));
+    return;
+  }
+
+  const [updated] = await db
+    .update(users)
+    .set(updateData)
+    .where(eq(users.id, id))
+    .returning();
+
+  // Password and passwordHash NEVER in response (ADR-026 §2)
+  await reply.status(200).send(toWpUser(updated!));
+}
+
+async function deleteUserHandler(
+  request: FastifyRequest,
+  reply: FastifyReply,
+): Promise<void> {
+  const params = request.params as Record<string, unknown>;
+  const query = request.query as Record<string, unknown>;
+  const id = parseInt(params["id"] as string, 10);
+  const reassignParam = query["reassign"] as string | undefined;
+
+  const [existing] = await db.select().from(users).where(eq(users.id, id));
+  if (!existing) {
+    await reply
+      .status(404)
+      .send({ code: "NOT_FOUND", message: `User ${id} not found.` });
+    return;
+  }
+
+  if (!reassignParam) {
+    // Check whether this user has authored posts
+    const authoredPosts = await db
+      .select()
+      .from(posts)
+      .where(eq(posts.authorId, id));
+
+    if (authoredPosts.length > 0) {
+      await reply.status(409).send({
+        code: "USER_HAS_CONTENT",
+        message: `User ${id} has ${authoredPosts.length} post(s). Provide ?reassign=<userId> to reassign them before deletion.`,
+      });
+      return;
+    }
+
+    // No posts — safe to delete
+    await db.delete(users).where(eq(users.id, id));
+    await reply
+      .status(200)
+      .send({ deleted: true, previous: toWpUserPublic(existing) });
+    return;
+  }
+
+  const reassignId = parseInt(reassignParam, 10);
+
+  // Reassign posts and delete user in a single transaction (ADR-026 §4)
+  await db.transaction(async (tx) => {
+    await tx
+      .update(posts)
+      .set({ authorId: reassignId })
+      .where(eq(posts.authorId, id));
+
+    await tx.delete(users).where(eq(users.id, id));
+  });
+
+  await reply
+    .status(200)
+    .send({ deleted: true, previous: toWpUserPublic(existing) });
+}
+
 async function getMeHandler(
   request: FastifyRequest,
   reply: FastifyReply,
@@ -191,11 +379,37 @@ export default fp(async (app: FastifyInstance) => {
 
   // GET /wp/v2/users/me — Returns the currently authenticated user.
   // Requires a valid Bearer token (any authenticated user, not just admin).
+  // NOTE: /me must be registered before /:id so Fastify doesn't treat "me" as an integer id.
   app.get(
     "/wp/v2/users/me",
     {
       preHandler: [app.requireAuth],
     },
     getMeHandler,
+  );
+
+  // GET /wp/v2/users/:id — Public user profile (no email). 404 if not found.
+  app.get("/wp/v2/users/:id", getUserHandler);
+
+  // POST /wp/v2/users — Create user. Requires admin. Password hashed at cost 12 (ADR-026).
+  app.post(
+    "/wp/v2/users",
+    { preHandler: [app.requireAdmin] },
+    createUserHandler,
+  );
+
+  // PUT /wp/v2/users/:id — Update user. Requires admin. Hash rotates only when password is explicit.
+  app.put(
+    "/wp/v2/users/:id",
+    { preHandler: [app.requireAdmin] },
+    updateUserHandler,
+  );
+
+  // DELETE /wp/v2/users/:id — Delete user. Requires admin.
+  // ?reassign=<userId> required when user has posts (transaction-safe, ADR-026 §4).
+  app.delete(
+    "/wp/v2/users/:id",
+    { preHandler: [app.requireAdmin] },
+    deleteUserHandler,
   );
 });

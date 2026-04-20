@@ -1,3 +1,16 @@
+## Mini-Sprint M3/M4/M7 — Execution (2026-04-20)
+
+- **M7 seeds done:** 6 rows added to `seedOptions()` with `ON CONFLICT DO NOTHING` and `autoload: true`. Updated `runSeed` return count to 9 options. **Date:** 2026-04-20
+- **M4 Users CRUD done:** `GET /:id` public (toWpUserPublic), `POST` (bcrypt cost 12, ADR-026), `PUT` (conditional hash rotation — `"password" in body` guard), `DELETE` with transaction + reassign. All 4 new handlers in `packages/server/src/routes/users/index.ts`. Password service at `packages/server/src/services/password.ts`. **Date:** 2026-04-20
+- **M4 /me route registration order fixed:** `/wp/v2/users/me` registered BEFORE `/:id` — Fastify would otherwise treat "me" as an integer param. **Date:** 2026-04-20
+- **M4 DELETE semantics:** Without `?reassign` and user has posts → 409 USER_HAS_CONTENT. Without `?reassign` and no posts → hard delete. With `?reassign=<id>` → db.transaction() UPDATE posts + DELETE user. **Date:** 2026-04-20
+- **M4 tests:** 6 real-db cases in `packages/server/src/routes/users/__tests__/users.real-db.test.ts`. Pattern: Testcontainers + vi.doMock + vi.resetModules same as posts.real-db.test.ts. **Date:** 2026-04-20
+- **M3 serialize.ts:** Added `parent` and `menu_order` at root of toWpPost and toWpPostAsync return objects. Also added to PostSchema response schema. WP-compat root fields. **Date:** 2026-04-20
+- **M3 tests:** 8 WP-conformance cases in `packages/server/src/routes/pages/__tests__/pages.real-db.test.ts`. Covers: parent, menu_order update, slug collision (posts table shared → 409 on explicit slug), context=edit, type isolation, 404, nullable parentId, status isolation. **Date:** 2026-04-20
+- **M3 OpenAPI:** `Page` schema added. 5 endpoints documented under `Pages` tag in `docs/api/openapi.yaml`. **Date:** 2026-04-20
+- **Pre-existing test failures not introduced by M3/M4/M7:** 11 failures in npm test were already present before this session (verified via git stash). Contract tests fail due to mock DB issues from prior sprint. **Date:** 2026-04-20
+- **@types/bcrypt installed:** Added as devDependency in packages/server. **Date:** 2026-04-20
+
 ## Planning Mini-Sprint Pages/Users/Settings — 2026-07-14
 
 - **PageSchema acordado:** extiende PostSchema con `parent` integer nullable y `menu_order` integer default 0, AMBOS en root. Contrato cerrado con Lucas. **Date:** 2026-07-14

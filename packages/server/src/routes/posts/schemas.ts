@@ -29,6 +29,11 @@ export const PostSchema = {
     content: RenderedFieldSchema,
     excerpt: RenderedFieldSchema,
     author: { type: "integer" },
+    parent: {
+      type: ["integer", "null"],
+      description: "Parent post/page ID (null for root-level content)",
+    },
+    menu_order: { type: "integer", description: "Menu order (default 0)" },
     categories: {
       type: "array",
       items: { type: "integer" },
