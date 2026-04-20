@@ -1,3 +1,56 @@
+## Sprint 2 — #0 Fix Bridge BRIDGE_FATAL (PHP parse + function redeclaration) (2026-04-20)
+
+**Ticket:** Bug report - Tier 2 Bridge failing with BRIDGE_FATAL
+**Task:** Diagnose and fix PHP-WASM bridge parse errors  
+**Status:** ✅ Complete — 2 root causes found and fixed
+
+### Issue Analysis
+
+**Symptom:** curl requests to `/p/{slug}` returning `[contact-form-7 id="..."]` literal (unprocessed). Bridge error: `BRIDGE_FATAL`. 
+
+**Investigation:**
+- Bridge tests passed (mocked php-wasm), but real php-wasm execution failed
+- Error 1 (line 227): `Parse error: unexpected token "^", expecting "]"`
+  - Cause: Template string escaping bug in regex (shortcode_parse_atts function)
+  - In backtick strings, `\'` becomes `'` (TS consumes backslash)
+  - PHP regex `/...\'...` needs literal `\'` for char class, got `'` instead
+  - **Fix:** Use `\\'` in template string → generates `\'` in PHP
+  
+- Error 2: `Cannot redeclare exec()` on second invocation
+  - Cause: PHP-WASM singleton persists across calls, bootstrap redefines functions without guards
+  - First renderShortcodes() defines exec(), system(), mail(), etc.
+  - Second call concatenates bootstrap again → redeclaration fatal
+  - **Fix:** Wrap all stubs in `if (!function_exists(...)) { function ... }`
+
+### Fixes Applied
+
+1. **Line 463 regex escaping:**
+   ```php
+   // Before: /...\'...'/ ← broken, becomes /...'...'/ 
+   // After:  /...\\'...'/ ← correct, generates /...\'...'/ 
+   ```
+
+2. **Lines 320-329 (exec, system, shell_exec, passthru, popen, proc_open, mail, curl_exec, curl_multi_exec, file_put_contents, fwrite):**
+   ```php
+   // Before: function exec(...) { ... }
+   // After:  if (!function_exists('exec')) { function exec(...) { ... } }
+   ```
+
+### Verification
+
+- All 76 bridge tests passing (mocks unaffected)
+- Real php-wasm execution: [contact-form-7] renders 1715 bytes valid HTML
+- Bridge span shows `error_code: null, duration_ms: 161`
+- No regressions in existing pilots (footnotes, shortcodes-ultimate, display-posts)
+
+### Lessons
+
+- **Template string escaping is treacherous:** backtick strings consume escapes differently than regex/PHP expect. Use raw string patterns or double-escape.
+- **Singleton state + dynamic code injection = function redeclaration trap.** Guard all stub definitions or make them truly stateless.
+- **Bridge timeout tests pass, but real execution reveals escaping bugs.** Unit mocks are insufficient for PHP code generation — must test with real php-wasm.
+
+---
+
 ## Spike #73 — vm.Context memory limit evaluation (2026-04-19)
 
 **Ticket:** #73 (buffer for Sprint 6 ticket #78: vm.Context hardening)
