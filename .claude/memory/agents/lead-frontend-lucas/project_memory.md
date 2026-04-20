@@ -4,6 +4,13 @@
 - **`INLINE_CSS` del 404 es anti-patrón:** CSS de negocio en el handler con valores hardcodeados fuera de paleta. Unificar en el Paso A. **Date:** 2026-04-19
 - **Tokens copiados para Paso A:** `admin/src/styles/tokens.css` → `packages/theme-engine/src/themes/default/tokens.css`. Consolidación como P0 en Sprint 9. **Date:** 2026-04-19
 
+## Sprint 7 — public-site-shortcodes.spec.ts (2026-04-19)
+
+- **`admin/e2e/public-site-shortcodes.spec.ts` created:** 3 tests in CI (NOT in demo/). Negative: plain post body does not contain `[footnote]`/`[su_note]` raw tags. Positive footnote: `sup a.footnote-ref` visible + `.footnotes` section with note text. Positive su_note: `div.su-note` visible with "Contenido destacado". **Date:** 2026-04-19
+- **Bridge skip guard pattern:** `isBridgeAvailable()` probes `x-nodepress-tier2` response header from `GET /wp/v2/posts`. If absent, positive tests call `test.skip(true, "...message...")` with a clear explanation. **Date:** 2026-04-19
+- **Post creation via REST:** `createPost()` helper uses `POST /wp/v2/posts` with `Authorization: Bearer <token>` — same pattern as demo-php-plugin.spec.ts. No admin UI interaction needed. **Date:** 2026-04-19
+- **Negative test is CI-safe:** runs without NODEPRESS_TIER2 — only requires backend on :3000. Positive tests skip cleanly when bridge is absent. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
 
 - **Regla `e2e/skipped/` adoptada por el equipo:** Specs sin assert principal van a `e2e/skipped/` con issue bloqueante abierto. No a `demo/`. CI no pasa con specs en `skipped/` sin issue. **Date:** 2026-04-19
