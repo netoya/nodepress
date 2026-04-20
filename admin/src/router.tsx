@@ -3,8 +3,11 @@ import { AdminLayout } from "./layouts/AdminLayout";
 import { DashboardPage } from "./features/dashboard/DashboardPage";
 import { PostsListPage } from "./features/posts/PostsListPage";
 import { PostEditorRoute } from "./features/posts/PostEditorRoute";
+import { PagesListPage } from "./features/pages/PagesListPage";
+import { PageEditorRoute } from "./features/pages/PageEditorRoute";
 import { PluginsPage } from "./features/plugins/PluginsPage";
 import { UsersPage } from "./features/users/UsersPage";
+import { SettingsPage } from "./features/settings/SettingsPage";
 import { AuthGuard } from "./features/auth/AuthGuard";
 import { LoginPage } from "./features/auth/LoginPage";
 
@@ -31,8 +34,12 @@ export const router = createHashRouter([
           { path: "posts", element: <PostsListPage /> },
           { path: "posts/new", element: <PostEditorRoute /> },
           { path: "posts/:id/edit", element: <PostEditorRoute /> },
+          { path: "pages", element: <PagesListPage /> },
+          { path: "pages/new", element: <PageEditorRoute /> },
+          { path: "pages/:id/edit", element: <PageEditorRoute /> },
           { path: "plugins", element: <PluginsPage /> },
           { path: "users", element: <UsersPage /> },
+          { path: "settings", element: <SettingsPage /> },
         ],
       },
     ],

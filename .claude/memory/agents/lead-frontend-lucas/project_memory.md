@@ -1,3 +1,17 @@
+## M8 — Admin Pages UI (2026-04-20)
+
+- **`admin/src/hooks/useContentQuery.ts` created:** Hook factory that accepts `endpoint: string` and returns `useListQuery`, `useItemQuery`, `useCreateMutation`, `useUpdateMutation`, `useDeleteMutation`. Fully typed with `<T extends { id: number }>` generic. Cache key derived from last path segment (e.g. "/wp/v2/pages" → "pages"). **Date:** 2026-04-20
+- **Gotcha — ESLint rules-of-hooks with factory:** Calling `useContentQuery(...)` at module level triggers `react-hooks/rules-of-hooks` because of the `use` prefix. Fix: call the factory inside the component body. The returned hook functions call React hooks (`useQuery`, `useMutation`) correctly — ESLint does not track them via property access so no false positives inside the component. **Date:** 2026-04-20
+- **`admin/src/features/pages/PagesListPage.tsx` created:** 4-state (loading/error/empty/data) page list. Table columns: Title, Slug, Parent (name of parent page if parent!=0 via Map lookup, else "—"), Menu Order, Status, Date, Actions. "New Page" button → `/pages/new`. Row click → `/pages/:id/edit`. Inline delete confirmation dialog (same pattern as PostsListPage). **Date:** 2026-04-20
+- **`admin/src/features/pages/PageForm.tsx` created:** Controlled form with title, slug (auto-generated from title via useEffect when slug is empty), content (textarea), status (select), parent (select with all pages from GET /wp/v2/pages?per_page=100), menu_order (number input). Parent selector filters out `currentPageId` from the list — direct circular reference guard. `// TODO: Sprint 8 — prevenir referencias circulares indirectas (A→B→A)`. **Date:** 2026-04-20
+- **`admin/src/features/pages/PageEditorPage.tsx` created:** Create/edit modes via `pageId: number | null`. Uses `useContentQuery` factory. `serverValues` + `localEdits` override pattern (same as PostEditorPage). **Date:** 2026-04-20
+- **`admin/src/features/pages/PageEditorRoute.tsx` created:** Thin router adapter — reads `useParams` and passes `pageId` to `PageEditorPage`. Same pattern as `PostEditorRoute`. **Date:** 2026-04-20
+- **`admin/src/router.tsx` updated:** Added `/pages`, `/pages/new`, `/pages/:id/edit` routes under AdminLayout children. **Date:** 2026-04-20
+- **Sidebar already had "Pages" link** at `admin/src/components/layout/Sidebar.tsx` — no changes needed. **Date:** 2026-04-20
+- **Select mock pattern in tests:** PageForm uses Select (Radix). Test file stubs `../../../components/ui/Select` with a plain `<select>` to avoid Radix jsdom issues. Same pattern as PostEditorPage tests. **Date:** 2026-04-20
+- **11 new tests green:** 5 in `PagesListPage.test.tsx` (data/loading/empty/error/navigate) + 6 in `PageForm.test.tsx` (fields render, submit, parent exclusion, parent all-in-create, menu_order, create button label). **Date:** 2026-04-20
+- **164 total tests, 157 pass, 7 pre-existing failures** (settings + users — unrelated to pages work). 0 new TS errors in new files. 0 ESLint errors in new files. **Date:** 2026-04-20
+
 ## Sprint 7 — Modal generic component + MSW pages handlers (2026-04-20)
 
 - **`admin/src/components/ui/Modal.tsx` created:** Generic dialog component. Props: `title`, `onClose`, `children`, `size?: 'sm'|'md'|'lg'`. role="dialog", aria-modal="true", aria-labelledby via `useId()`. Backdrop click closes. Escape key closes (handled only in dialog panel onKeyDown — not on backdrop, to avoid double-fire on bubble). Focus moves to first focusable on mount. **Date:** 2026-04-20
