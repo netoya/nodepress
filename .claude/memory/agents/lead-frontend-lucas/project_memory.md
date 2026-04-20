@@ -1,3 +1,15 @@
+## M11 — E2E demo spec: Pages + Users + Settings (2026-04-20)
+
+- **`admin/e2e/demo/demo-pages-users-settings.spec.ts` created:** 6 scenes covering all mini-sprint work. Runs via `playwright.demo.config.ts` (testDir: `./e2e/demo`). **Date:** 2026-04-20
+- **Scene structure:** `test.describe` per scene. `beforeAll` saves original site title for restore. `afterAll` deletes created pages (Our Team → About Us, order matters due to parent FK), created user, and restores settings. **Date:** 2026-04-20
+- **Backend guard pattern:** Each test calls `isBackendAvailable(request)` and calls `test.skip(true, "...")` if `:3000` is unreachable — no silent failures, clear message. Same probe pattern as `public-site-shortcodes.spec.ts`. **Date:** 2026-04-20
+- **Scene 2 skip guard:** If `created.aboutUsId === 0` (Scene 1 didn't run or failed), Scene 2 skips with message — prevents test ordering dependency crash. **Date:** 2026-04-20
+- **Scene 4 skip guard:** If `created.demoUserId === 0` (Scene 3 failed), Scene 4 skips. **Date:** 2026-04-20
+- **Edit button fallback in Scene 4:** Table rows may not have `role="row"` — spec tries `getByRole("row")` first, falls back to sibling traversal via `..` ancestor. **Date:** 2026-04-20
+- **REST helpers:** `deletePage`, `deleteUser`, `restoreSettings` — all `failOnStatusCode: false` for safe cleanup even if entity was already deleted. **Date:** 2026-04-20
+- **`playwright.demo.config.ts` unchanged:** `testDir: "./e2e/demo"` already picks up the new spec — no config changes needed. **Date:** 2026-04-20
+- **0 ESLint errors. Prettier formatted.** **Date:** 2026-04-20
+
 ## M8 — Admin Pages UI (2026-04-20)
 
 - **`admin/src/hooks/useContentQuery.ts` created:** Hook factory that accepts `endpoint: string` and returns `useListQuery`, `useItemQuery`, `useCreateMutation`, `useUpdateMutation`, `useDeleteMutation`. Fully typed with `<T extends { id: number }>` generic. Cache key derived from last path segment (e.g. "/wp/v2/pages" → "pages"). **Date:** 2026-04-20
