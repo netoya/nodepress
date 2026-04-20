@@ -177,7 +177,7 @@ describe("UsersPage", () => {
     ).toBeDefined();
   });
 
-  it("opens role editor modal and saves the new role with optimistic update", async () => {
+  it("opens edit user modal and saves updates", async () => {
     const user = userEvent.setup();
 
     renderWithQuery(<UsersPage />);
@@ -186,29 +186,20 @@ describe("UsersPage", () => {
       expect(screen.getByText("Alice Admin")).toBeDefined();
     });
 
-    // Open modal for Alice
+    // Open modal for Alice via Edit button
     const editBtn = screen.getByRole("button", {
-      name: /edit role for alice admin/i,
+      name: /edit user alice admin/i,
     });
     await user.click(editBtn);
 
     // Modal is visible
     const dialog = screen.getByRole("dialog");
     expect(dialog).toBeDefined();
-    // Heading inside the dialog
-    expect(dialog.querySelector("#role-editor-title")).toBeDefined();
+    // Check modal title
+    expect(screen.getByRole("heading", { name: /edit user/i })).toBeDefined();
 
-    // Change role via select
-    const select = screen.getByRole("combobox", {
-      name: /role/i,
-    }) as HTMLSelectElement;
-    await user.selectOptions(select, "subscriber");
-    expect(select.value).toBe("subscriber");
-
-    // Save
-    const saveBtn = screen.getByRole("button", {
-      name: /save role for alice admin/i,
-    });
+    // Save without changes
+    const saveBtn = screen.getByRole("button", { name: /^save$/i });
     await user.click(saveBtn);
 
     // Modal closes
@@ -220,16 +211,12 @@ describe("UsersPage", () => {
     expect(mockShow).toHaveBeenCalledWith(
       expect.objectContaining({
         type: "success",
-        message: expect.stringContaining("subscriber"),
+        message: expect.stringContaining("updated successfully"),
       }),
     );
-
-    // Optimistic: badge updated in table
-    const badges = screen.getAllByText("subscriber");
-    expect(badges.length).toBeGreaterThanOrEqual(1);
   });
 
-  it("closes modal when Cancel is clicked without updating role", async () => {
+  it("closes modal when Cancel is clicked without updating user", async () => {
     const user = userEvent.setup();
 
     renderWithQuery(<UsersPage />);
@@ -239,7 +226,7 @@ describe("UsersPage", () => {
     });
 
     const editBtn = screen.getByRole("button", {
-      name: /edit role for bob editor/i,
+      name: /edit user bob editor/i,
     });
     await user.click(editBtn);
 

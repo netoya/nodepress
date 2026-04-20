@@ -186,6 +186,15 @@ const mockTags: WpTerm[] = [
   { id: 13, name: "api", slug: "api", taxonomy: "post_tag", count: 2 },
 ];
 
+const mockSettings = {
+  title: "NodePress",
+  description: "A modern CMS platform",
+  url: "http://localhost:3000",
+  email: "admin@nodepress.dev",
+  posts_per_page: 10,
+  default_category: 1,
+};
+
 const mockUsers: WpUser[] = [
   {
     id: 1,
@@ -334,7 +343,29 @@ export const handlers = [
     });
   }),
 
-  // PUT /wp/v2/users/:id — update user role
+  // POST /wp/v2/users — create user
+  http.post(`${BASE_URL}/wp/v2/users`, async ({ request }) => {
+    const body = (await request.json()) as {
+      name?: string;
+      email?: string;
+      password?: string;
+      roles?: WpUserRole[];
+    };
+
+    const newId = Math.max(...mockUsers.map((u) => u.id), 0) + 1;
+    const created: WpUser = {
+      id: newId,
+      name: body.name ?? "New User",
+      email: body.email ?? `user${newId}@nodepress.dev`,
+      roles: body.roles ?? ["subscriber"],
+      registered_date: new Date().toISOString(),
+      slug: (body.name ?? "user").toLowerCase().replace(/\s+/g, "-"),
+    };
+    mockUsers.push(created);
+    return HttpResponse.json(created, { status: 201 });
+  }),
+
+  // PUT /wp/v2/users/:id — update user
   http.put(`${BASE_URL}/wp/v2/users/:id`, async ({ params, request }) => {
     const id = Number(params["id"]);
     const user = mockUsers.find((u) => u.id === id);
@@ -344,13 +375,46 @@ export const handlers = [
         { status: 404 },
       );
     }
-    const body = (await request.json()) as { roles?: WpUserRole[] };
+    const body = (await request.json()) as {
+      name?: string;
+      email?: string;
+      password?: string;
+      roles?: WpUserRole[];
+    };
     const updated: WpUser = {
       ...user,
+      ...(body.name !== undefined ? { name: body.name } : {}),
+      ...(body.email !== undefined ? { email: body.email } : {}),
       roles: body.roles ?? user.roles,
     };
+    // Update in mockUsers array
+    const idx = mockUsers.findIndex((u) => u.id === id);
+    if (idx >= 0) {
+      mockUsers[idx] = updated;
+    }
     return HttpResponse.json(updated);
   }),
+
+  // DELETE /wp/v2/users/:id — delete user with reassign
+  http.delete(
+    `${BASE_URL}/wp/v2/users/:id`,
+    ({ params }) => {
+      const id = Number(params["id"]);
+      const user = mockUsers.find((u) => u.id === id);
+      if (!user) {
+        return HttpResponse.json(
+          { code: "rest_user_invalid_id", message: "Invalid user ID." },
+          { status: 404 },
+        );
+      }
+      // Remove user from mockUsers
+      const idx = mockUsers.findIndex((u) => u.id === id);
+      if (idx >= 0) {
+        mockUsers.splice(idx, 1);
+      }
+      return HttpResponse.json({ deleted: true, previous: user });
+    },
+  ),
 
   // ---------------------------------------------------------------------------
   // Pages handlers — GET list, GET single, POST, PUT, DELETE
@@ -465,5 +529,22 @@ export const handlers = [
       return HttpResponse.json({ deleted: true, previous: post });
     }
     return HttpResponse.json({ ...post, status: "trash" });
+  }),
+
+  // GET /wp/v2/settings — get site settings
+  http.get(`${BASE_URL}/wp/v2/settings`, () => {
+    return HttpResponse.json(mockSettings);
+  }),
+
+  // PUT /wp/v2/settings — update site settings
+  http.put(`${BASE_URL}/wp/v2/settings`, async ({ request }) => {
+    const body = (await request.json()) as Partial<typeof mockSettings>;
+    const updated = {
+      ...mockSettings,
+      ...body,
+    };
+    // Update mockSettings
+    Object.assign(mockSettings, updated);
+    return HttpResponse.json(updated);
   }),
 ];

@@ -4,6 +4,15 @@ description: Project memory for Marta (Dev Frontend) in NodePress
 type: project
 ---
 
+## Sprint 7 — M9 + M10 (2026-04-20)
+
+- **M9 — Admin Users CRUD UI implemented:** UserEditorModal (create/edit modes), DeleteUserConfirmModal (reassign dropdown), updated UsersPage with "New user" button, Edit/Delete action buttons per row. Modal component from Lucas reused. 13 tests green (UserEditorModal 7, DeleteUserConfirmModal 6). **Date:** 2026-04-20
+- **M10 — Admin Settings form implemented:** SettingsPage with 6 fields (title, description, url, email, posts_per_page, default_category). useSettings hook (GET /wp/v2/settings), useSaveSettings hook (PUT /wp/v2/settings), useCategories hook (GET /wp/v2/categories). 6 tests green. **Date:** 2026-04-20
+- **Router updated:** /settings route added to router.tsx, SettingsPage linked. Sidebar already had Settings entry. **Date:** 2026-04-20
+- **MSW handlers extended:** POST /wp/v2/users (create), PUT /wp/v2/users/:id (update), DELETE /wp/v2/users/:id (delete), GET/PUT /wp/v2/settings (new endpoints). Mock data for settings with 6 fields. **Date:** 2026-04-20
+- **Typing issues resolved:** Input component error handling with bracket notation for errors object, Select component onChange signature (string, not event), Radix Select pattern for tests (skip selectOptions, use direct interaction). **Date:** 2026-04-20
+- **ESLint:** react-hooks/set-state-in-effect disabled in SettingsPage for API sync use case (legitimate). All files pass lint + type checks. **Date:** 2026-04-20
+
 ## Meet 2026-04-19 — Mini sprint + CSS/templates
 
 - **Acción #2: implementar Paso A (22-04).** CSS inline en `InlineThemeEngine` para `single`, `archive`, y 404 unificada. Tokens copiados de `admin/src/styles/tokens.css`. No usar valores hardcodeados. **Date:** 2026-04-19

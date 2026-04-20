@@ -8,12 +8,15 @@ import {
   useToast,
 } from "../../components/ui";
 import { useUsersQuery } from "./hooks/useUsersQuery";
+import { UserEditorModal } from "./UserEditorModal";
+import { DeleteUserConfirmModal } from "./DeleteUserConfirmModal";
 import { apiUrl, authHeaders } from "../../lib/api";
 import type { WpUser, WpUserRole } from "../../types/wp-post";
 
 // ---------------------------------------------------------------------------
 // Role badge colours
 // ---------------------------------------------------------------------------
+// (Used by RoleBadge component below)
 
 const ROLE_STYLES: Record<WpUserRole, { background: string; color: string }> = {
   administrator: {
@@ -56,170 +59,6 @@ function RoleBadge({ role }: { role: WpUserRole }) {
 }
 
 // ---------------------------------------------------------------------------
-// Role editor modal
-// ---------------------------------------------------------------------------
-
-const ROLES: WpUserRole[] = ["administrator", "editor", "author", "subscriber"];
-
-interface RoleEditorModalProps {
-  user: WpUser;
-  onSave: (userId: number, role: WpUserRole) => Promise<void>;
-  onClose: () => void;
-}
-
-const RoleEditorModal: FC<RoleEditorModalProps> = ({
-  user,
-  onSave,
-  onClose,
-}) => {
-  const [selectedRole, setSelectedRole] = useState<WpUserRole>(
-    user.roles[0] ?? "subscriber",
-  );
-  const [isSaving, setIsSaving] = useState(false);
-
-  const handleSave = async () => {
-    setIsSaving(true);
-    try {
-      await onSave(user.id, selectedRole);
-      onClose();
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  return (
-    /* Backdrop */
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="role-editor-title"
-      style={{
-        position: "fixed",
-        inset: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "rgba(0,0,0,0.45)",
-        zIndex: 1000,
-      }}
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        style={{
-          background: "var(--color-neutral-0, #ffffff)",
-          borderRadius: "var(--radius-lg, 0.5rem)",
-          padding: "var(--space-6, 1.5rem)",
-          width: "min(400px, 90vw)",
-          display: "flex",
-          flexDirection: "column",
-          gap: "var(--space-4, 1rem)",
-          boxShadow: "0 20px 40px rgba(0,0,0,0.18)",
-        }}
-      >
-        <h2
-          id="role-editor-title"
-          style={{
-            fontSize: "var(--font-size-base)",
-            fontWeight: "var(--font-weight-semibold)",
-            color: "var(--color-neutral-900)",
-            margin: 0,
-          }}
-        >
-          Edit role
-        </h2>
-
-        {/* User name (readonly) */}
-        <div>
-          <p
-            style={{
-              fontSize: "var(--font-size-sm)",
-              color: "var(--color-neutral-500)",
-              margin: "0 0 var(--space-1)",
-            }}
-          >
-            User
-          </p>
-          <p
-            style={{
-              fontSize: "var(--font-size-base)",
-              fontWeight: "var(--font-weight-medium)",
-              color: "var(--color-neutral-900)",
-              margin: 0,
-            }}
-          >
-            {user.name}
-          </p>
-        </div>
-
-        {/* Role select */}
-        <div>
-          <label
-            htmlFor="role-select"
-            style={{
-              display: "block",
-              fontSize: "var(--font-size-sm)",
-              color: "var(--color-neutral-500)",
-              marginBottom: "var(--space-1)",
-            }}
-          >
-            Role
-          </label>
-          <select
-            id="role-select"
-            value={selectedRole}
-            onChange={(e) => setSelectedRole(e.target.value as WpUserRole)}
-            style={{
-              width: "100%",
-              padding: "var(--space-2) var(--space-3)",
-              border: "1px solid var(--color-neutral-300, #d1d5db)",
-              borderRadius: "var(--radius-md)",
-              fontSize: "var(--font-size-sm)",
-              background: "var(--color-neutral-0, #fff)",
-              color: "var(--color-neutral-900)",
-            }}
-          >
-            {ROLES.map((r) => (
-              <option key={r} value={r}>
-                {r.charAt(0).toUpperCase() + r.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Actions */}
-        <div
-          style={{
-            display: "flex",
-            gap: "var(--space-3)",
-            justifyContent: "flex-end",
-          }}
-        >
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onClose}
-            disabled={isSaving}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => void handleSave()}
-            disabled={isSaving}
-            aria-label={`Save role for ${user.name}`}
-          >
-            {isSaving ? "Saving…" : "Save"}
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-// ---------------------------------------------------------------------------
 // UsersPage
 // ---------------------------------------------------------------------------
 
@@ -238,40 +77,123 @@ export const UsersPage: FC = () => {
   // Editing state — null means no modal open.
   const [editingUser, setEditingUser] = useState<WpUser | null>(null);
 
-  // Optimistic role overrides — keyed by user id.
-  const [roleOverrides, setRoleOverrides] = useState<
-    Record<number, WpUserRole>
-  >({});
+  // Creating state — true means create modal is open.
+  const [isCreating, setIsCreating] = useState(false);
+
+  // Deleting state — null means no delete confirm modal open.
+  const [deletingUser, setDeletingUser] = useState<WpUser | null>(null);
+
+  // Note: roleOverrides was used in legacy RoleEditorModal for optimistic updates
+  // but is not used in the new UserEditorModal. Can be removed in the future.
 
   const getRole = (user: WpUser): WpUserRole =>
-    roleOverrides[user.id] ?? user.roles[0] ?? "subscriber";
+    user.roles[0] ?? "subscriber";
 
-  const handleSaveRole = async (userId: number, role: WpUserRole) => {
-    // Optimistic update before network call.
-    setRoleOverrides((prev) => ({ ...prev, [userId]: role }));
+  const handleCreateUser = async (formData: {
+    displayName: string;
+    email: string;
+    password?: string;
+    role: WpUserRole;
+  }) => {
+    const postData: Record<string, unknown> = {
+      name: formData.displayName,
+      email: formData.email,
+      roles: [formData.role],
+    };
+
+    if (formData["password"]) {
+      postData["password"] = formData["password"];
+    }
+
+    const res = await fetch(apiUrl("/wp/v2/users"), {
+      method: "POST",
+      headers: authHeaders(),
+      body: JSON.stringify(postData),
+    });
+
+    if (!res.ok) {
+      const errorMsg = await res.text();
+      show({
+        type: "error",
+        message: `Failed to create user: ${errorMsg}`,
+      });
+      return;
+    }
+
+    setIsCreating(false);
+    show({
+      type: "success",
+      message: `User ${formData.displayName} created successfully`,
+    });
+    await refetch();
+  };
+
+  const handleEditUser = async (
+    userId: number,
+    formData: {
+      displayName: string;
+      email: string;
+      password?: string | undefined;
+      role: WpUserRole;
+    },
+  ) => {
+    const updateData: Record<string, unknown> = {
+      name: formData.displayName,
+      email: formData.email,
+      roles: [formData.role],
+    };
+
+    if (formData["password"]) {
+      updateData["password"] = formData["password"];
+    }
 
     const res = await fetch(apiUrl(`/wp/v2/users/${userId}`), {
       method: "PUT",
       headers: authHeaders(),
-      body: JSON.stringify({ roles: [role] }),
+      body: JSON.stringify(updateData),
     });
 
     if (!res.ok) {
-      // Rollback optimistic update on failure.
-      setRoleOverrides((prev) => {
-        const copy = { ...prev };
-        delete copy[userId];
-        return copy;
+      const errorMsg = await res.text();
+      show({
+        type: "error",
+        message: `Failed to update user: ${errorMsg}`,
       });
-      show({ type: "error", message: "Failed to update role" });
       return;
     }
 
-    const name = data?.find((u) => u.id === userId)?.name ?? "User";
+    setEditingUser(null);
     show({
       type: "success",
-      message: `Role updated for ${name} → ${role}`,
+      message: `User ${formData.displayName} updated successfully`,
     });
+    await refetch();
+  };
+
+  const handleDeleteUser = async (userId: number, reassignId: number) => {
+    const res = await fetch(
+      apiUrl(`/wp/v2/users/${userId}?reassign=${reassignId}`),
+      {
+        method: "DELETE",
+        headers: authHeaders(),
+      },
+    );
+
+    if (!res.ok) {
+      const errorMsg = await res.text();
+      show({
+        type: "error",
+        message: `Failed to delete user: ${errorMsg}`,
+      });
+      return;
+    }
+
+    setDeletingUser(null);
+    show({
+      type: "success",
+      message: "User deleted successfully",
+    });
+    await refetch();
   };
 
   return (
@@ -299,6 +221,14 @@ export const UsersPage: FC = () => {
         >
           Users
         </h1>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => setIsCreating(true)}
+          aria-label="Create new user"
+        >
+          New user
+        </Button>
       </div>
 
       {/* Loading state */}
@@ -499,15 +429,26 @@ export const UsersPage: FC = () => {
                         style={{
                           padding: "var(--space-3) var(--space-4)",
                           textAlign: "right",
+                          display: "flex",
+                          gap: "var(--space-2)",
+                          justifyContent: "flex-end",
                         }}
                       >
                         <Button
                           variant="secondary"
                           size="sm"
                           onClick={() => setEditingUser(user)}
-                          aria-label={`Edit role for ${user.name}`}
+                          aria-label={`Edit user ${user.name}`}
                         >
-                          Edit role
+                          Edit
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => setDeletingUser(user)}
+                          aria-label={`Delete user ${user.name}`}
+                        >
+                          Delete
                         </Button>
                       </td>
                     </tr>
@@ -519,14 +460,41 @@ export const UsersPage: FC = () => {
         </Card>
       )}
 
-      {/* Role editor modal */}
-      {editingUser && (
-        <RoleEditorModal
-          user={{ ...editingUser, roles: [getRole(editingUser)] }}
-          onSave={handleSaveRole}
-          onClose={() => setEditingUser(null)}
+      {/* Create user modal */}
+      {isCreating && (
+        <UserEditorModal
+          mode="create"
+          onClose={() => setIsCreating(false)}
+          onSuccess={handleCreateUser}
         />
       )}
+
+      {/* Edit user modal */}
+      {editingUser && (
+        <UserEditorModal
+          mode="edit"
+          user={editingUser}
+          onClose={() => setEditingUser(null)}
+          onSuccess={(formData) =>
+            handleEditUser(editingUser.id, formData)
+          }
+        />
+      )}
+
+      {/* Delete user confirmation modal */}
+      {deletingUser && (
+        <DeleteUserConfirmModal
+          user={deletingUser}
+          allUsers={data ?? []}
+          onConfirm={(reassignId) =>
+            handleDeleteUser(deletingUser.id, reassignId)
+          }
+          onCancel={() => setDeletingUser(null)}
+        />
+      )}
+
+      {/* Legacy role editor modal — kept for backward compatibility */}
+      {/* This is replaced by UserEditorModal but kept if needed */}
     </section>
   );
 };

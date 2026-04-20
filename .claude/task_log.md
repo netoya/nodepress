@@ -3,6 +3,7 @@
 > Append-only audit trail. One line per completed task.
 
 | Date       | Agent              | Task                                                                                                                            | Output    | Commit  | Status |
+| 2026-04-20 | dev-frontend-marta | M9: Admin Users CRUD UI + M10: Admin Settings form — UserEditorModal (create/edit), DeleteUserConfirmModal (reassign), SettingsPage, useSettings/useSaveSettings/useCategories hooks, MSW handlers (POST/PUT/DELETE users, GET/PUT settings), router updated, 19 tests green | 18 files  | pending | ✅     |
 | 2026-04-20 | dev-backend-carmen | M2: Pages REST endpoints (handler-factory.ts + pages/index.ts) + M6: Settings REST (SettingsService + settings/index.ts). ADR-025 factory pattern applied. 6 tests affected by pre-existing regression in public.integration. M2/M6 code complete. | 7 files   | pending | ✅     |
 | 2026-04-20 | tech-lead-roman    | ADR-025 (Pages over Posts table) + ADR-026 (bcrypt password hashing) — mini-sprint M1/M5 gate unblocked; bcrypt native spike green on darwin arm64 | 2 files   | pending | ✅     |
 | 2026-04-20 | lead-frontend-lucas | M8: Admin Pages UI — useContentQuery factory, PagesListPage, PageEditorPage, PageForm, PageEditorRoute, router updated, sidebar already had Pages link; 11 new tests (5 PagesListPage + 6 PageForm) green | 8 files | pending | ✅     |
