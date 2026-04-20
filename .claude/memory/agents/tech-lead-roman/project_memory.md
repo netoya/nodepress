@@ -4,6 +4,15 @@
 
 ---
 
+## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
+
+- **Patrón reincidente confirmado:** Tres incidentes en tres semanas con misma firma: tests verdes, producto roto. Lección R-2 escrita el 19-04 AM y no accionada → volvimos a pagar la misma deuda 10h después. **Date:** 2026-04-19
+- **Tests `bridge.wasm.test.ts` acordados:** Sin mock de `@php-wasm/node`. Config vitest separada. 5-6 casos: singleton lifecycle, pilot injection order, stubs en error, concurrencia, timeout. Raúl implementa 2026-04-21. **Date:** 2026-04-19
+- **`NODEPRESS_TIER2=true` sin test REST real:** El env var que activa el bridge en `handlers.ts` no se ejerce con `true` en ningún test existente. Ingrid añade describe en `posts.real-db.test.ts`. **Date:** 2026-04-19
+- **Regla `e2e/skipped/` adoptada:** Specs sin assert principal van a `e2e/skipped/` con issue bloqueante abierto. CI no pasa con specs en `skipped/` sin issue. Documentar en amendment ADR-014. **Date:** 2026-04-19
+- **Amendment ADR-014 pendiente:** Extender invariant a `NODEPRESS_TIER2=true` + regla `e2e/skipped/`. Román prepara, Ingrid + Helena co-sign. Plazo: 2026-04-22. **Date:** 2026-04-19
+- **`function_exists` guard obligatorio:** Todo PHP en `buildBootstrapCode` o `buildPhpCode` de pilotos debe usar `if (!function_exists(...))`. Constraint en ADR-017. Verificación obligatoria en code review. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — PoC PHP plugins en rama
 
 - **Rama:** `poc/php-real-plugins` — demostrar plugin PHP real ejecutando shortcodes. **NO** demostrar install desde wordpress.org. **Date:** 2026-04-19

@@ -1,3 +1,10 @@
+## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
+
+- **Acción #1: `bridge.wasm.test.ts`:** Tests con runtime PHP-WASM real, sin mock. Config vitest separada. Casos: singleton lifecycle, pilot order, stubs en error, concurrencia. Plazo: 2026-04-21. **Date:** 2026-04-19
+- **Acción #2: test negativo VFS:** `file_get_contents('../../../.env')` → false desde PHP real. Bloqueante para co-sign Helena en ADR-017. Plazo: 2026-04-20. **Date:** 2026-04-19
+- **Acción #3: log BRIDGE_FATAL en development:** `console.error` cuando `NODE_ENV=development`. No cambia comportamiento en prod. Plazo: 2026-04-20. **Date:** 2026-04-19
+- **Acción #9 (Sprint 8): `error_detail_hash` en BridgeSpan:** Primeros 64 bytes del error hasheados. Dashboard agrupa por hash → patrones visibles antes de que usuario reporte. **Date:** 2026-04-19
+
 ## Sprint 2 — #0 Fix Bridge BRIDGE_FATAL (PHP parse + function redeclaration) (2026-04-20)
 
 **Ticket:** Bug report - Tier 2 Bridge failing with BRIDGE_FATAL

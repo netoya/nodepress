@@ -1,3 +1,10 @@
+## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
+
+- **Regla `e2e/skipped/` adoptada por el equipo:** Specs sin assert principal van a `e2e/skipped/` con issue bloqueante abierto. No a `demo/`. CI no pasa con specs en `skipped/` sin issue. **Date:** 2026-04-19
+- **Acción #6: `public-site-shortcodes.spec.ts`:** Suite fuera de `demo/`. Assert negativo: `not.toContain('[footnote]')`. Assert positivo: `sup.footnote-ref` visible. Plazo: 2026-04-22. **Date:** 2026-04-19
+- **Cero cobertura public site en CI:** `testIgnore: ["**/demo/**"]` en `playwright.config.ts` excluye los únicos specs que ejercen el renderizado. `GET /p/:slug` nunca ha corrido en CI. **Date:** 2026-04-19
+- **`demo-30-04.spec.ts` pasos 11-14 (pending-carmen):** Listos para activar cuando Carmen mergee el theme engine. No están en CI — activarlos dentro de `public-site-shortcodes.spec.ts` o spec separado. **Date:** 2026-04-19
+
 ## Sprint 5 — #68 React Router v7 migration (2026-04-18)
 
 - **Migration complete:** Hash routing manual (window.location.hash + split('/')) replaced with `createHashRouter`. Commit f5d9a2b. **Date:** 2026-04-18

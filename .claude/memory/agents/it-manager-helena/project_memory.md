@@ -4,6 +4,14 @@ description: Project memory for Helena (IT Manager) in NodePress
 type: project
 ---
 
+## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
+
+- **ADR-018 §Consequences #2 incumplido:** Gate de stubs contra runtime real estaba escrito. No se cerró. Once stubs (`exec`, `system`, etc.) sin test de integración real. **Date:** 2026-04-19
+- **Acción #5: CI step `bridge-e2e`:** Añadir a `ci.yml` como step separado, condicional a cambios en `packages/server/src/bridge/**`. Comparte servicios Postgres existentes. Plazo: 2026-04-21. **Date:** 2026-04-19
+- **Co-sign ADR-017 bloqueada hasta test negativo VFS en CI:** Raúl debe entregar `file_get_contents('../../../.env') → false` (acción #2) antes de que Helena firme. Plazo co-sign: 2026-04-21 AM. **Date:** 2026-04-19
+- **Co-sign ADR-014 amendment condicionada:** Los tests que el ADR dice que existen deben existir y correr en CI. Helena verifica antes de firmar. **Date:** 2026-04-19
+- **`function_exists` guard obligatorio:** Nuevo constraint ADR-017 — toda función/clase en `buildBootstrapCode` o `buildPhpCode` requiere guard. El revisor de PR verifica. **Date:** 2026-04-19
+
 ## Sprint 1 día 1 — Tooling quality gates (2026-04-17)
 
 - **ESLint v9 flat config en `eslint.config.js` (root).** Stack: typescript-eslint@8.58.2, eslint-config-prettier@10.1.8, eslint-plugin-react-hooks@7.1.1, eslint-plugin-react@7.37.5 — todo pinned. **Date:** 2026-04-17

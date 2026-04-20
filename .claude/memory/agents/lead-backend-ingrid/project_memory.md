@@ -1,3 +1,11 @@
+## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
+
+- **Mock de runtime completo = ilusión de cobertura:** `simulateBridgeWithFootnotes` mide reimplementación JS, no PHP real. Patrón activamente dañino — si modificas el PHP, los tests siguen verdes. **Date:** 2026-04-19
+- **Acción #4: test REST con `NODEPRESS_TIER2=true`:** Añadir describe en `posts.real-db.test.ts` con `process.env.NODEPRESS_TIER2 = "true"` activando bridge real en handler. Plazo: 2026-04-22. **Date:** 2026-04-19
+- **Escaping en template strings PHP es el mayor riesgo activo:** Cuatro niveles de escaping en juego (JS string → PHP double-quoted → JSON.stringify → PHP json_decode). Cualquier fix puede introducir otro bug sin que los tests lo detecten. **Date:** 2026-04-19
+- **Co-sign amendment ADR-014 condicionada:** El amendment debe especificar explícitamente qué env vars activan qué flows en CI y cuál es el smoke mínimo por flow. **Date:** 2026-04-19
+- **Acción #10 (Sprint 8): auditoría "qué mockea cada suite"** por módulo (bridge, plugin-loader, theme-engine). Identifica falsos verdes sistémicos. **Date:** 2026-04-19
+
 ## Meet 2026-04-18 — Kickoff Sprint 5
 
 - **Bug activo: paginación en memoria GET /wp/v2/users:** La query carga toda la tabla y pagina en JS. Fix: `db.select().from(users).limit(perPage).offset((page-1)*perPage)`. Carmen cierra como hotfix 2026-04-18. Patrón: igual que /categories. **Date:** 2026-04-18
