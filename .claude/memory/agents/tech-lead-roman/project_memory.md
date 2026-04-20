@@ -2,6 +2,27 @@
 
 > Decisiones, contexto y aprendizajes específicos de este proyecto.
 
+## CHECKPOINT — Pausa mini-sprint Pages/Users/Settings (2026-04-20)
+
+> **Sesión pausada a petición del usuario. Retomar desde aquí.**
+> Acta completa: `.claude/logs/20260420-checkpoint-pausa-mini-sprint.md`
+
+- **Estado:** Mini-sprint **COMPLETADO 11/11 tickets**. 7 commits efectivos + 1 planning desde `36aa0cc`. Código en verde, arquitectura coherente, deuda técnica cero introducida. **Date:** 2026-04-20
+- **ADRs Accepted:** ADR-025 (pages sobre `posts` table, factory pattern) + ADR-026 (bcrypt cost 12). Ambos firmados mismo día en commit `9b2f58c`. **Date:** 2026-04-20
+- **Commits mapa:** `9b2f58c` ADRs → `2e39476` M2+M6 REST → `1ec6fae` M3+M4+M7 backend → `1b908c8` M8 admin pages → `5bca636` M9+M10 admin users/settings → `d60502d` M11 E2E. Scaffolding previo `35f981a` (Modal genérico + MSW). **Date:** 2026-04-20
+- **Bloqueante único al volver:** Helena sign-off M4 (security review bcrypt + users CRUD). Sin firma Helena, no se anuncia como shipped en README. **Date:** 2026-04-20
+- **R-5 clean-clone smoke test obligatorio antes de cerrar:** este sprint tocó `packages/db/seeds`, `packages/server/routes/{pages,users,settings}`, `handler-factory.ts` — scope R-5 aplica. Ejecutar fresh-clone + curl a los 3 surfaces antes del cierre en README/PROJECT_STATUS. **Date:** 2026-04-20
+- **Pendiente al retomar (orden):** (1) Helena M4, (2) R-5 smoke, (3) review viernes Tomás+Martín, (4) retro corta con 2 puntos ya preparados (dominó ADRs día 1 + factory pattern `useContentQuery`), (5) PROJECT_STATUS + README cierre, (6) task_log.md append. **Date:** 2026-04-20
+- **Factory `handler-factory.ts` como NEW file funcionó:** no rompió ni un test preexistente de posts. Patrón reutilizable para `post_type="attachment"` (media) en Sprint 8+. **Date:** 2026-04-20
+- **bcrypt nativo compiló en Alpine sin incidentes:** spike Raúl 20min, fallback bcryptjs no activado. ADR-026 documenta ruta con nativo como default. **Date:** 2026-04-20
+- **`authorId` hardcodeado en `handlers.ts:157` corregido a `request.user.id`** en M2, verificado por test M3 creando page con usuario no-admin y asertando `author !== 1`. Deuda cerrada. **Date:** 2026-04-20
+- **Demo E2E M11 6 escenas verde:** create page → edit → list users → create user → change settings → reload & persist. 1/1 en `admin/e2e/demo/mini-sprint.spec.ts`. **Date:** 2026-04-20
+- **Retro gap S7 mitigado operativamente:** (a) OpenAPI actualizada ANTES de frontend en M3, (b) seeds idempotentes con `ON CONFLICT DO NOTHING` en M7. Ambos puntos de retro S7 resueltos sin necesidad de tracking adicional. **Date:** 2026-04-20
+- **Tech debt abierta para Sprint 8+ (documentada en NO-DO):** hierarchy tree view admin, password reset email, settings capabilities granulares, user avatars/gravatar, rate limit POST/PUT users, guard circular parent. Todo en el scope NO-DO ya — ningún item nuevo descubierto. **Date:** 2026-04-20
+- **Decisión reabrible cuando haya señal:** `useContentQuery` factory de Lucas (hoy en `admin/src/features/shared/`) → extraer a paquete si medios/taxonomías lo reutilizan en Sprint 9. No promover antes de tener segundo consumer real. **Date:** 2026-04-20
+
+---
+
 ## Planning Mini-Sprint Pages/Users/Settings — 2026-07-14
 
 - **Mini-sprint 5 días acordado:** ventana 2026-07-14 → 2026-07-18. 11 tickets, 3 cadenas independientes. Feature freeze jueves 17 jul 12:00. **Date:** 2026-07-14
