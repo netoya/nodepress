@@ -4,6 +4,13 @@
 
 ---
 
+## Meet 2026-04-19 — Cierre de sprint + README
+
+- **Secciones mutables del README al cierre de sprint:** badge, "What's shipped" (bullets sprint cerrado), "What's in Sprint N+1" (reemplazar completo), nº tests si cambia el orden de magnitud. Todo lo demás congelado — solo cambia con ADR. **Date:** 2026-04-19
+- **Fallback reviewer:** si Román no responde en 24h post-retro, el Lead más contribuyente ese sprint puede aprobar. Documentar en `contributing.md`. **Date:** 2026-04-19
+- **Proceso Proposed hasta cierre S7:** No formalizar en `contributing.md` hasta primer run en S7. Formalización Sprint 8. Patrón ADR-014. **Date:** 2026-04-19
+- **R-7 "README Sprint-Close Refresh":** Nuevo ítem en la serie de lecciones. CI guard + DoD sprint + plantilla retro = triángulo redundante. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — Mini sprint + CSS/templates
 
 - **Paso A acordado (Sprint 7):** Inline CSS con tokens en `InlineThemeEngine` (single, archive, 404 unificada). Sin ADR nuevo — cabe en ADR-021. Marta implementa 2026-04-22. **Date:** 2026-04-19

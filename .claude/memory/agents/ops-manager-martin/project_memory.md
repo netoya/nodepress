@@ -1,3 +1,8 @@
+## Meet 2026-04-19 — Cierre de sprint + README
+
+- **CI guard en commit de cierre, no en cada PR:** Convención `docs(readme): Sprint N close` activa el job. Sin esa convención el guard no dispara — evita ruido en feature branches. **Date:** 2026-04-19
+- **Fallback reviewer documentado:** Si Román no responde en 24h post-retro, el Lead que más contribuyó ese sprint puede aprobar el README. Va en `contributing.md`. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — Mini sprint + CSS/templates
 
 - **Sprint 7 ajustado:** #91 dark mode desplazado a Sprint 8 para dar capacity al Paso A (CSS público InlineThemeEngine). **Date:** 2026-04-19

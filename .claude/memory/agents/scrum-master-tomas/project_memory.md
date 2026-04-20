@@ -1,3 +1,9 @@
+## Meet 2026-04-19 — Cierre de sprint + README
+
+- **Sprint Closing Checklist acordado (4 ítems):** (1) retro cerrada + log en `.claude/logs/`, (2) PROJECT_STATUS a CERRADO, (3) README revisado/confirmado por Román, (4) commit `docs(readme): Sprint N close`. Tomás lo escribe como `docs/process/sprint-close-checklist.md` antes del kickoff S7. **Date:** 2026-04-19
+- **CI guard propuesto a Helena:** `readme-freshness.yml` que falla si el badge de sprint en README no coincide con PROJECT_STATUS. Se activa solo en commits con convención `docs(readme): Sprint N close`, no en cada PR. **Date:** 2026-04-19
+- **Proceso Proposed hasta cierre S7:** No se formaliza en `contributing.md` hasta correr el proceso una vez. Formalización en Sprint 8 si S7 run sale bien. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — Logs Sprint 6 + README
 
 - **Logs de ceremonias como gate de cierre:** A partir de Sprint 7, ningún sprint se cierra sin log de kickoff + retro en `.claude/logs/`. **Date:** 2026-04-19
