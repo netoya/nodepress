@@ -1,3 +1,9 @@
+## Meet 2026-04-19 — Mini sprint + CSS/templates
+
+- **Paso A en Sprint 7:** Sofía entrega spec visual 21-04 → Marta implementa CSS en `InlineThemeEngine` → Sofía aprueba screenshot 23-04. Lucas supervisa arquitectura y añade screenshot assertion a `public-site-shortcodes.spec.ts` 23-04. **Date:** 2026-04-19
+- **`INLINE_CSS` del 404 es anti-patrón:** CSS de negocio en el handler con valores hardcodeados fuera de paleta. Unificar en el Paso A. **Date:** 2026-04-19
+- **Tokens copiados para Paso A:** `admin/src/styles/tokens.css` → `packages/theme-engine/src/themes/default/tokens.css`. Consolidación como P0 en Sprint 9. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
 
 - **Regla `e2e/skipped/` adoptada por el equipo:** Specs sin assert principal van a `e2e/skipped/` con issue bloqueante abierto. No a `demo/`. CI no pasa con specs en `skipped/` sin issue. **Date:** 2026-04-19

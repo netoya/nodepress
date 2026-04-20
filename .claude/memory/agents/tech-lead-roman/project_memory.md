@@ -4,6 +4,14 @@
 
 ---
 
+## Meet 2026-04-19 — Mini sprint + CSS/templates
+
+- **Paso A acordado (Sprint 7):** Inline CSS con tokens en `InlineThemeEngine` (single, archive, 404 unificada). Sin ADR nuevo — cabe en ADR-021. Marta implementa 2026-04-22. **Date:** 2026-04-19
+- **Paso B es Sprint 8:** `FileThemeEngine` real con templates en disco. Requiere ADR-025. Escribir ADR-025 el día 1 de Sprint 8. **Date:** 2026-04-19
+- **Tokens: copiar para Paso A, consolidar Sprint 9 P0:** Refactor a `@nodepress/design-tokens` es correcto a largo plazo. Out of scope Paso A para no alargar 2 días a 4 ni arriesgar regresión en admin. **Date:** 2026-04-19
+- **Gate de merge: screenshot approval de Sofía:** Nada del frontend público entra a main sin aprobación visual de Sofía sobre render real. **Date:** 2026-04-19
+- **Mini sprint intermedio: delivery sólido.** Bridge PHP-WASM fix, marketplace UI, plugin status fix, demo video 3 plugins. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
 
 - **Patrón reincidente confirmado:** Tres incidentes en tres semanas con misma firma: tests verdes, producto roto. Lección R-2 escrita el 19-04 AM y no accionada → volvimos a pagar la misma deuda 10h después. **Date:** 2026-04-19

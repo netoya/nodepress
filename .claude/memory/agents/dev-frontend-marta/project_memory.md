@@ -4,6 +4,13 @@ description: Project memory for Marta (Dev Frontend) in NodePress
 type: project
 ---
 
+## Meet 2026-04-19 — Mini sprint + CSS/templates
+
+- **Acción #2: implementar Paso A (22-04).** CSS inline en `InlineThemeEngine` para `single`, `archive`, y 404 unificada. Tokens copiados de `admin/src/styles/tokens.css`. No usar valores hardcodeados. **Date:** 2026-04-19
+- **Gate: screenshot review de Sofía antes de merge.** Entregar render de `/p/:slug` y `/` a Sofía 22-04 para aprobación 23-04. **Date:** 2026-04-19
+- **Precondición aceptada:** ticket `@nodepress/design-tokens` comprometido como P0 en Sprint 9 (no P2). Sin ese compromiso, el drift de tokens se queda indefinidamente. **Date:** 2026-04-19
+- **Anti-patrón a eliminar:** `INLINE_CSS` en `handlers.ts` con valores hardcodeados (`#0066cc`, `#333`, `#fafafa`) fuera de paleta. Moverlo al theme engine en el Paso A. **Date:** 2026-04-19
+
 ## Sprint 1 día 1 — #24 Design system atómico (2026-04-17)
 
 - **6 componentes atómicos entregados:** Button, Badge, Card (+ 4 sub-components), Spinner, EmptyState, ErrorBoundary. 46 tests verdes. **Date:** 2026-04-17

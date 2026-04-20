@@ -1,8 +1,15 @@
 ---
 agent: design-head-sofia
 project: nodepress
-last_updated: 2026-04-09
+last_updated: 2026-04-19
 ---
+
+## Meet 2026-04-19 — Mini sprint + CSS/templates
+
+- **Acción #1: spec visual frontend público para 21-04.** Tipografía body del artículo, columna de lectura, h2/h3/blockquote/code dentro del content, shortcodes (CF7, footnotes) en article, archive vacío, 404 alineada con tokens. Derivada de tokens existentes del admin. **Date:** 2026-04-19
+- **Gate de merge: screenshot approval obligatorio.** No aprueba Paso A sin ver render real de `/p/:slug` y `/`. CF7 y footnotes deben verse bien dentro del article. **Date:** 2026-04-19
+- **Estado actual del frontend público:** HTML desnudo, estilo por defecto del navegador, 404 con colores hardcodeados fuera de paleta. Contraste con admin panel (Deep Violet, Inter, tokens) daña la credibilidad del demo. **Date:** 2026-04-19
+- **Tokens admin son la fuente:** `admin/src/styles/tokens.css` — paleta Deep Violet, Inter, escala 4px. Copiados para Paso A, consolidados en paquete compartido Sprint 9. **Date:** 2026-04-19
 
 # Project Memory — Sofía @ NodePress
 

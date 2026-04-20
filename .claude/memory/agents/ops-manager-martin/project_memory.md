@@ -1,3 +1,10 @@
+## Meet 2026-04-19 — Mini sprint + CSS/templates
+
+- **Sprint 7 ajustado:** #91 dark mode desplazado a Sprint 8 para dar capacity al Paso A (CSS público InlineThemeEngine). **Date:** 2026-04-19
+- **Ticket consolidación tokens como P0 Sprint 9:** `@nodepress/design-tokens` — comprometido como P0, no P2, desde hoy. **Date:** 2026-04-19
+- **Paso B (FileThemeEngine, ADR-025) = Sprint 8:** No entra en S7. Román escribe ADR-025 el día 1 de Sprint 8. **Date:** 2026-04-19
+- **Mini sprint intermedio: delivery sólido.** Bridge PHP-WASM fix, marketplace UI, plugin status fix, demo video 3 plugins. Deuda CSS/templates documentada, ahora con fecha. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — Logs Sprint 6 + README
 
 - **CLA deadline:** Alejandro confirma Org Admin access antes del 2026-04-26. Sin confirmación → escalar como D-039. **Date:** 2026-04-19
