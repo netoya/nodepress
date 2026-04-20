@@ -2,7 +2,34 @@
 
 > Decisiones, contexto y aprendizajes específicos de este proyecto.
 
+## Planning Mini-Sprint Pages/Users/Settings — 2026-07-14
+
+- **Mini-sprint 5 días acordado:** ventana 2026-07-14 → 2026-07-18. 11 tickets, 3 cadenas independientes. Feature freeze jueves 17 jul 12:00. **Date:** 2026-07-14
+- **ADRs gate bloqueante día 1:** M1 (ADR-025) + M5 (ADR-026) antes de las 12:00 del lunes. Sin ADRs = efecto dominó en toda la semana. **Date:** 2026-07-14
+- **Handler factory confirmado:** `createPostHandler(postType)` en fichero `handler-factory.ts` nuevo — NO in-place edit. `listPosts` filtra por `type="post"` desde M2 (deuda activa — sin fix, GET /wp/v2/posts devuelve pages). **Date:** 2026-07-14
+- **`authorId` hardcodeado en handlers.ts:157 se corrige en M2:** usar `request.user.id`. Si no se toca, pages creadas tendrán siempre `author=1`. **Date:** 2026-07-14
+- **bcryptjs pre-acordado como fallback automático:** si bcrypt nativo falla build en Alpine, fallback a `bcryptjs` sin nueva decisión. Resultado del spike de Raúl va en ADR-026. **Date:** 2026-07-14
+- **`menu_order` permanece en scope:** WP-compat obligatorio. **Date:** 2026-07-14
+- **`parent` + `menu_order` en root del schema:** no embebidos. PageSchema extiende PostSchema con parent integer nullable + menu_order integer default 0. **Date:** 2026-07-14
+- **Helena gate en M4:** firma obligatoria antes de merge. Martín confirma disponibilidad antes de las 14:00 del lunes. **Date:** 2026-07-14
+- **Settings JSONB constraint:** SettingsService extrae valor escalar nativo del JSONB. Constraint explícito en brief de M6 para Carmen. **Date:** 2026-07-14
+- **M8 = 2 días:** estimación real de Lucas aceptada. Circular parent = guard en cliente, tech debt Sprint 8. **Date:** 2026-07-14
+- **DoD mini-sprint:** ADRs Accepted, endpoints WP-compat 3 áreas, ≥18 tests, E2E verde, OpenAPI actualizada, clean-clone smoke test, logs ceremonia. **Date:** 2026-07-14
+- **Retro S7 gap:** retro de Sprint 7 no estaba en logs. Puntos: (1) falta OpenAPI antes del frontend, (2) seeds no idempotentes. Ambos mitigados en este sprint. **Date:** 2026-07-14
+
 ---
+
+## Mini-Sprint Scope — Pages, Users, Settings (2026-04-19)
+
+- **Brief:** usuario pidió scope técnico de mini-sprint intermedio 3 áreas (Pages / Users CRUD / Settings). Entregado en `.claude/memory/agents/tech-lead-roman/mini-sprint-scope.md` — 11 tickets, 2 ADRs, ventana 5 días. **Date:** 2026-04-19
+- **Decisión arquitectónica #1 — Pages reutiliza `posts` table (no nueva tabla):** `posts.type` ya es `varchar(20) default "post"`, `parentId` ya existe, `posts_type_status_idx` ya cubre el query pattern. Pages = `post_type="page"` idéntico al modelo WP. 0 migraciones. Handler parametrizado por `postType` string — NO duplicar código posts↔pages. Formalizado en ADR-025. **Date:** 2026-04-19
+- **Decisión arquitectónica #2 — Users CRUD con `bcrypt(12)`:** Password nunca en response. PUT rota solo si body incluye `password` explícito (omisión = no tocar hash). DELETE con `?reassign=<id>` WP-style. Dep bcrypt añadida en packages/server — cost-factor 12 vs argon2/scrypt ergonomía > marginal security. Formalizado en ADR-026 (co-autor Raúl). Security review Helena obligatoria antes de merge de M4. **Date:** 2026-04-19
+- **Decisión arquitectónica #3 — Settings key→value sobre `options` table:** GET/PUT /wp/v2/settings devuelve objeto flat con 6 keys whitelisted (siteTitle, siteDescription, siteUrl, adminEmail, postsPerPage, defaultCategory). Internamente cada key = row en `options` con JSONB value + `autoload=true`. Extensible sin migración (plugin añade option key). Mapping nombres WP-compat exacto: title/description/url/email/posts_per_page/default_category. **Date:** 2026-04-19
+- **Estado actual confirmado en repo:** `packages/db/src/schema/` — posts/users/options/terms/comments/plugin-registry/plugin-ratings todas operativas. `packages/server/src/routes/users/index.ts` tiene solo GET list + GET /me (falta POST/PUT/DELETE + GET /:id). Admin `features/users/UsersPage.tsx` (534 LOC) tiene list + RoleEditorModal pero NO create/edit/delete. Sin endpoints ni admin UI para settings. **Date:** 2026-04-19
+- **Paralelización posible:** 3 cadenas independientes (M1→M2→M3+M8 pages / M5→M4→M9 users / M6→M7+M10 settings). Convergen solo en M11 (demo E2E). Ruta crítica = M4 (bcrypt stack) + M2 (parametrización handler). **Date:** 2026-04-19
+- **NO-DO explícito para evitar scope creep:** pages hierarchy tree view, password reset email, settings capabilities granulares, custom settings beyond whitelist, page revisions, user avatars/gravatar. Todo Sprint 8+. **Date:** 2026-04-19
+- **Riesgos identificados:** (1) refactor handler posts para parametrizar postType puede romper tests existentes — mitigar con handler factory NO in-place edit. (2) bcrypt nativo en Alpine/Docker build — spike Raúl 30min day 1, fallback `bcryptjs`. (3) Settings cache invalidation con plugins activos — Sprint MVP sin cache, bust on PUT. **Date:** 2026-04-19
+- **Regla latente:** cuando una tabla ya tiene columna discriminator (`type` en posts), NUNCA crear tabla paralela para variantes. Handler parametrizado sobre la discriminator + WP expone endpoints distintos por convención. Aplica también a futuro `post_type="attachment"` (media) y custom post types. **Date:** 2026-04-19
 
 ## Meet 2026-04-19 — Cierre de sprint + README
 

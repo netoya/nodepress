@@ -1,3 +1,15 @@
+## Planning Mini-Sprint Pages/Users/Settings — 2026-07-14
+
+- **Mini-sprint 5 días:** ventana 2026-07-14 → 2026-07-18. 25 persona-días teóricos, 21 efectivos con buffer 15%. 9 tickets P0, 2 P1. **Date:** 2026-07-14
+- **GitHub Issues:** crear bloque contiguo para los 11 tickets antes del EOD del lunes con labels P0/P1. **Date:** 2026-07-14
+- **NO-DO etiquetados como sprint-8:** items del scope doc fuera de scope se etiquetan hoy como `sprint-8` para no flotar en el backlog. **Date:** 2026-07-14
+- **ADRs cuello de botella día 1:** M1 (ADR-025) + M5 (ADR-026) deben cerrarse antes de las 12:00 del lunes. **Date:** 2026-07-14
+- **bcryptjs pre-acordado como fallback automático:** sin nueva decisión en sprint. Resultado del spike de Raúl en ADR-026. **Date:** 2026-07-14
+- **Helena no estuvo en el planning:** confirmar disponibilidad para firmar M4 antes de las 14:00 del lunes o escalar a Alejandro. **Date:** 2026-07-14
+- **menu_order en scope:** WP-compat obligatorio. Pregunta de Román cerrada — los clients WP esperan el campo. **Date:** 2026-07-14
+- **DELETE users con transacción:** constraint confirmado — reasignar posts antes de borrar usuario. No negociable. **Date:** 2026-07-14
+- **Retro S7 no documentada:** gap de proceso. Tomás documenta EOD con los puntos rescatados. **Date:** 2026-07-14
+
 ## Meet 2026-04-19 — Cierre de sprint + README
 
 - **CI guard en commit de cierre, no en cada PR:** Convención `docs(readme): Sprint N close` activa el job. Sin esa convención el guard no dispara — evita ruido en feature branches. **Date:** 2026-04-19

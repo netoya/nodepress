@@ -1,3 +1,14 @@
+## Planning Mini-Sprint Pages/Users/Settings — 2026-07-14
+
+- **Mini-sprint 5 días acordado:** ventana 2026-07-14 → 2026-07-18. Equipo completo, sin ausencias. Ceremonias: daily async, mid-point miércoles 16 EOD (15'), review+retro viernes 18 PM (60'). **Date:** 2026-07-14
+- **Feature freeze:** jueves 17 julio a las 12:00 — NO EOD. **Date:** 2026-07-14
+- **Scope freeze activo desde hoy:** cualquier ticket nuevo pasa por Román + Tomás. Si es Sprint 8, va a Sprint 8. **Date:** 2026-07-14
+- **Retro S7 gap cerrado hoy:** retro no documentada. Puntos rescatados: (1) falta OpenAPI antes del frontend, (2) seeds no idempotentes. Documentar en `.claude/logs/` EOD. **Date:** 2026-07-14
+- **Helena gate en M4:** confirmar disponibilidad antes de las 14:00 del lunes o escalar a Alejandro. **Date:** 2026-07-14
+- **DoD mini-sprint:** ADRs Accepted, endpoints WP-compat 3 áreas, ≥18 tests, E2E verde, OpenAPI actualizada, clean-clone smoke test, logs ceremonia. **Date:** 2026-07-14
+- **Modal genérico extraído por Lucas el lunes AM:** prerequisito para que Marta arranque M9 el martes. **Date:** 2026-07-14
+- **Lección reafirmada:** ceremonias sin log en `.claude/logs/` no existen para el equipo. **Date:** 2026-07-14
+
 ## Meet 2026-04-19 — Cierre de sprint + README
 
 - **Sprint Closing Checklist acordado (4 ítems):** (1) retro cerrada + log en `.claude/logs/`, (2) PROJECT_STATUS a CERRADO, (3) README revisado/confirmado por Román, (4) commit `docs(readme): Sprint N close`. Tomás lo escribe como `docs/process/sprint-close-checklist.md` antes del kickoff S7. **Date:** 2026-04-19

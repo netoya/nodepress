@@ -1,3 +1,14 @@
+## Planning Mini-Sprint Pages/Users/Settings — 2026-07-14
+
+- **M8 = 2 días confirmados:** parent selector con guard circular, `useContentQuery(endpoint)` hook factory, router, sidebar. Terminar el jueves al mediodía para dar tiempo a M11. **Date:** 2026-07-14
+- **`useContentQuery(endpoint)` hook factory:** parametriza CRUD hooks para posts y pages sin duplicar código. **Date:** 2026-07-14
+- **`parent` + `menu_order` en root:** no embebidos. Integer ID en root. Contrato cerrado con Ingrid. **Date:** 2026-07-14
+- **Circular parent = tech debt Sprint 8:** guard en cliente excluye page actual de la lista de parents. Caso indirecto = TODO en código. Backend no valida en MVP. **Date:** 2026-07-14
+- **Modal genérico extraído el lunes AM:** 0.5 días día 1. Prerequisito para M9 de Marta el martes. **Date:** 2026-07-14
+- **Brief de M9 cerrado hoy:** `UserEditorModal` con `mode="create"|"edit"`. Password required en create, opcional en edit. **Date:** 2026-07-14
+- **MSW handler de pages desde día 1:** para no bloquearse esperando M2. **Date:** 2026-07-14
+- **M10 settings:** `defaultCategory` carga categorías desde GET /wp/v2/categories — existe y operativo. **Date:** 2026-07-14
+
 ## Meet 2026-04-19 — Mini sprint + CSS/templates
 
 - **Paso A en Sprint 7:** Sofía entrega spec visual 21-04 → Marta implementa CSS en `InlineThemeEngine` → Sofía aprueba screenshot 23-04. Lucas supervisa arquitectura y añade screenshot assertion a `public-site-shortcodes.spec.ts` 23-04. **Date:** 2026-04-19

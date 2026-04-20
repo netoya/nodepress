@@ -1,3 +1,16 @@
+## Planning Mini-Sprint Pages/Users/Settings — 2026-07-14
+
+- **PageSchema acordado:** extiende PostSchema con `parent` integer nullable y `menu_order` integer default 0, AMBOS en root. Contrato cerrado con Lucas. **Date:** 2026-07-14
+- **Handler factory en M2:** `createPostHandler(postType)` en `handler-factory.ts` nuevo. `listPosts` filtra por `type` en M2 — sin fix, GET /wp/v2/posts devuelve pages. Deuda activa. **Date:** 2026-07-14
+- **`authorId` hardcodeado corregir en M2:** usar `request.user.id`. **Date:** 2026-07-14
+- **M4 distribución:** Ingrid = GET/:id + POST (bcrypt, coordinación Helena). Carmen = PUT + DELETE. **Date:** 2026-07-14
+- **DELETE users con db.transaction():** reasignar posts ANTES de borrar. Sin transacción = riesgo FK. No negociable. **Date:** 2026-07-14
+- **Tests M4 con Testcontainers:** patrón real-db, no mocks manuales. **Date:** 2026-07-14
+- **Tests WP-conformance pages los escribe Ingrid:** 8 casos mínimos. **Date:** 2026-07-14
+- **Settings JSONB serializer:** extraer valor escalar nativo. Constraint explícito en brief de M6. **Date:** 2026-07-14
+- **Helena gate M4:** Ingrid tiene M4 en revisión para el miércoles EOD si M5 está cerrado antes del mediodía del lunes. **Date:** 2026-07-14
+- **M7 seeds:** 6 rows a seed existente con ON CONFLICT DO NOTHING. Idempotente por diseño. **Date:** 2026-07-14
+
 ## Meet 2026-04-19 — Flujos sin cobertura — bridge PHP-WASM
 
 - **Mock de runtime completo = ilusión de cobertura:** `simulateBridgeWithFootnotes` mide reimplementación JS, no PHP real. Patrón activamente dañino — si modificas el PHP, los tests siguen verdes. **Date:** 2026-04-19
