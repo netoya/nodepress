@@ -37,3 +37,11 @@ type: project
 - **record-demo-video.sh integrado:** Step 2 reemplazado por `npm run demo:reset` con fallback a `db:seed`. **Date:** 2026-04-18
 - **Tests:** 2 unit tests en `reset.test.ts` verifican carga sin conexiones y exportación de `runSeed`. **Date:** 2026-04-18
 - **Docs actualizado:** `docs/guides/seeding.md` nuevo apartado "Reset para desarrollo (destructivo)". **Date:** 2026-04-18
+
+## Sprint 7 — #91 Dark mode admin panel (2026-04-19)
+
+- **CSS custom properties dark mode:** `[data-theme="dark"]` selector en tokens.css con override de 6 variables semánticas (--color-bg, --color-surface, --color-text-primary, --color-text-secondary, --color-border) + 4 variables de estado (--color-success, --color-error, --color-warning, --color-info) + 5 shell layout vars (--shell-header-bg, --shell-sidebar-bg, etc.). **Date:** 2026-04-19
+- **Hook useDarkMode():** localStorage persistence (key "theme" con valores "dark"/"light") + prefers-color-scheme fallback + event listener para cambios de sistema preference. Aplica/remueve `data-theme="dark"` en `document.documentElement`. **Date:** 2026-04-19
+- **DarkModeToggle component:** botón accesible en Header section derecha. Unicode moon emoji (🌙) para light mode, sun emoji (☀️) para dark mode. WCAG AA: aria-label descriptivo, aria-pressed state, keyboard accessible (no tabindex negativo). **Date:** 2026-04-19
+- **Tests 13/13 verdes:** 7 hook tests (init light, apply dark via toggle, remove dark, localStorage save/restore, prefers-color-scheme fallback, toggle cycling) + 6 component tests (moon icon when light, sun icon when dark, aria-pressed reflected, onclick handler, keyboard activation, naturally focusable). **Date:** 2026-04-19
+- **No deps añadidas:** solo CSS vars + React hooks (useEffect, useState). Cero Tailwind/Radix tokens. **Date:** 2026-04-19

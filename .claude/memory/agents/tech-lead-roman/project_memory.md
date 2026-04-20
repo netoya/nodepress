@@ -4,6 +4,18 @@
 
 ---
 
+## Meet 2026-04-19 — PoC PHP plugins en rama
+
+- **Rama:** `poc/php-real-plugins` — demostrar plugin PHP real ejecutando shortcodes. **NO** demostrar install desde wordpress.org. **Date:** 2026-04-19
+- **Circuito completo definido:** DB post → GET /wp/v2/posts/:id → bridge → PHP-WASM → HTML → ThemeEngine + BridgeSpan. **Date:** 2026-04-19
+- **`RealPhpPilot` compile-time:** `buildPhpCode()` lee fixture del spike desde disco. `ACTIVE_PILOTS` compile-time — mantiene ADR-017. Opción C prohibida. **Date:** 2026-04-19
+- **Scope PoC = Footnotes únicamente:** 119 LOC, sin deps externas. Display Posts condicional. CF7 excluido (failure mode confunde al PO). **Date:** 2026-04-19
+- **VFS scope = aislamiento real en php-wasm:** `open_basedir` de PHP no aplica directamente; el aislamiento viene del scope del VFS montado. Requiere verificación empírica de Raúl. **Date:** 2026-04-19
+- **`vfsMounts` añadido al contrato `BridgePilot`:** campo opcional `{ virtualPath, hostPath }[]`. Retrocompatible. **Date:** 2026-04-19
+- **Amendment ADR-017 obligatorio antes de merge:** nota VFS + campo vfsMounts. Co-sign Helena bloqueante. Gate: amendment firmado + test PHP-WASM real + test negativo VFS. **Date:** 2026-04-19
+- **Triángulo ADR-014:** test PHP-WASM real (no JS simulation) + Quickstart `npm run poc:php` + regresión pilotos TS existentes. **Date:** 2026-04-19
+- **Plugin registry NO entra en PoC:** install-service PHP es sprint formal con ADR propio. **Date:** 2026-04-19
+
 ## Meet 2026-04-19 — Logs Sprint 6 + README
 
 - **README framing:** "Beta abierta a contribuidores técnicos" — honesto, gestiona expectativas, no promete SLA enterprise. Commit fcb714d. **Date:** 2026-04-19

@@ -35,7 +35,8 @@
     "smoke:fresh-clone": "tsx scripts/smoke-fresh-clone.ts",
     "prepare": "husky",
     "demo:reset": "npm run db:reset",
-    "demo:video": "cd admin && npx playwright test --config=playwright.demo.config.ts"
+    "demo:video": "cd admin && npx playwright test --config=playwright.demo.config.ts",
+    "demo:video:php": "cd admin && npx playwright test e2e/demo/demo-php-plugin.spec.ts --config=playwright.demo.config.ts"
   },
   "devDependencies": {
     "@testcontainers/postgresql": "^11.14.0",

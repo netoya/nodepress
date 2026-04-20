@@ -281,3 +281,10 @@
 - **Sprint 4 arranca 2026-05-19:** Goal = NodePress extensible con vm.Context sandbox, ThemeEngine MVP y gestión post-lanzamiento. **Date:** 2026-05-19
 - **Ingrid en P2:** GET /wp/v2/users readonly (#64) con Carmen. Unblocked tras cierre P1. **Date:** 2026-05-19
 - **Issues externos triage <48h:** proceso activo desde 19-05. CLA obligatorio en primer PR externo. **Date:** 2026-05-19
+
+## Meet 2026-04-19 — PoC PHP plugins en rama
+
+- **`vfsMounts` en BridgePilot:** Campo opcional `vfsMounts?: { virtualPath: string; hostPath: string }[]`. Amendment ADR-017 obligatorio. Pilotos TS existentes no lo necesitan. **Date:** 2026-04-19
+- **Install-service PHP:** NO entra en la PoC. Gap conocido: `get(slug)` devuelve `null` para plugins PHP llegados como directorio. Flujo necesario para sprint formal: `parsePhpHeaders → register(pending) → resolveDependencies → activate`. **Date:** 2026-04-19
+- **Plugin registry en PoC:** solo `ACTIVE_PILOTS` compile-time. El install-service con soporte PHP es sprint formal con ADR propio. **Date:** 2026-04-19
+- **Scope PoC:** Footnotes solamente (119 LOC, sin deps externas). Display Posts condicional si Footnotes valida el patrón. **Date:** 2026-04-19

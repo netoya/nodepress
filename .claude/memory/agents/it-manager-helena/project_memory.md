@@ -157,3 +157,10 @@ type: project
 - **Fix applied — coverage.yml:** Added `Push DB schema` step (`npm run db:drizzle:push` with `DATABASE_URL`) before `Run tests with coverage`. **Date:** 2026-04-18
 - **`npx tsc --build` local:** clean (0 errors). **Date:** 2026-04-18
 - **Pattern documented:** Any workflow that runs tests touching `@nodepress/db` (directly or via `importOriginal`) MUST have Postgres service + `DATABASE_URL` + `db:drizzle:push` before the test step. No exceptions. **Date:** 2026-04-18
+
+## Meet 2026-04-19 — PoC PHP plugins en rama
+
+- **Co-sign conditions (3 bloqueantes):** (1) test negativo VFS empírico: `file_get_contents('../../../.env')` → false desde PHP; (2) amendment ADR-017 firmado antes de merge; (3) test de integración usa `renderShortcodes()` real, no mock. **Date:** 2026-04-19
+- **ADR-018 discrepancia resuelta:** `open_basedir` no aplica en php-wasm (VFS virtual). Alternativa aceptada: VFS scope montado solo al directorio del fixture. Requiere nota en ADR-017: "En php-wasm el filesystem es virtual; el aislamiento se logra mediante el scope del VFS montado, no mediante `open_basedir` de PHP." **Date:** 2026-04-19
+- **R-H2 (lectura FS local):** `file_get_contents` de rutas locales no stubbed hoy. La PoC DEBE demostrar que el VFS scope lo contiene. Test negativo es obligatorio. **Date:** 2026-04-19
+- **CF7 excluido de la PoC:** Helena propuso excluirlo. CF7 failing durante el demo PO generaría conversaciones incorrectas. Footnotes perfecto > CF7 parcialmente roto. **Date:** 2026-04-19
