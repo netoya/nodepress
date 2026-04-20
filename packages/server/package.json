@@ -17,6 +17,7 @@
     "@nodepress/db": "*",
     "@nodepress/theme-engine": "*",
     "@php-wasm/node": "^3.1.20",
+    "bcrypt": "^5.1.1",
     "dotenv": "16.4.5",
     "drizzle-orm": "^0.40.0",
     "fastify": "^5.0.0",
