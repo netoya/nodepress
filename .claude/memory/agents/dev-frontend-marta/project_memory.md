@@ -52,3 +52,16 @@ type: project
 - **DarkModeToggle component:** botón accesible en Header section derecha. Unicode moon emoji (🌙) para light mode, sun emoji (☀️) para dark mode. WCAG AA: aria-label descriptivo, aria-pressed state, keyboard accessible (no tabindex negativo). **Date:** 2026-04-19
 - **Tests 13/13 verdes:** 7 hook tests (init light, apply dark via toggle, remove dark, localStorage save/restore, prefers-color-scheme fallback, toggle cycling) + 6 component tests (moon icon when light, sun icon when dark, aria-pressed reflected, onclick handler, keyboard activation, naturally focusable). **Date:** 2026-04-19
 - **No deps añadidas:** solo CSS vars + React hooks (useEffect, useState). Cero Tailwind/Radix tokens. **Date:** 2026-04-19
+
+## Paso A — CSS público en InlineThemeEngine (2026-04-19)
+
+- **Paso A completado:** Implementación de CSS real en frontend público (templates single, archive, 404). Ref: `docs/design/public-frontend-spec.md` (Sofía, 2026-04-19). **Date:** 2026-04-19
+- **Tokens inyectados:** Función `getDesignTokensCSS()` en `packages/theme-engine/src/index.ts` que exporta 46 variables CSS custom (colores, tipografía, espaciado, bordes, sombras, transiciones). Copiados de `admin/src/styles/tokens.css`, no valores hardcodeados. **Date:** 2026-04-19
+- **Global CSS function:** `getGlobalCSS()` (850 líneas) que cubre: reset, tipografía base, `.np-page` (720px max-width + responsive padding), nav, header, article, links, code, blockquote, footnotes, shortcuts (`[su_note]`, `[su_button]`), empty state, archive list, 404, footer. **Date:** 2026-04-19
+- **Single post template (`renderSinglePost`):** `<style>` en `<head>` con tokens + global CSS. Google Fonts Inter (weights=400;500;600;700) via preconnect. Estructura: `nav` > `article` > `.content` con h1/h2/h3/p/code/blockquote. `<div class="np-page">` container. **Date:** 2026-04-19
+- **Archive template (`renderArchive`):** Mismo header/nav/footer que single. Empty state (`np-empty-state`) cuando posts.length === 0: emoji 📭 + h2 + p descriptivo. List cuando hay posts: `<ul>` con `.content` stylings. **Date:** 2026-04-19
+- **404 handler (`handlers.ts`):** Funciones `getDesignTokensCSS()` + `get404CSS()` (duplicadas del engine por ahora — Sprint 8 consolidará en paquete compartido per memo). Clase `.np-404-number` para "404" + h2 + link de vuelta. Misma estructura `.np-page` que public templates. **Date:** 2026-04-19
+- **Accesibilidad WCAG AA:** `:focus-visible` en todos los links (outline 2px primary-500 + shadow-focus). Contraste verificado según spec (primary-600 4.5:1, neutral-500 5.8:1, etc.). `aria-hidden="true"` en emoji empty state. Sin `outline: none` hardcodeado. **Date:** 2026-04-19
+- **Responsive design:** Mobile (<640px): `padding-inline: space-4` (16px). Desktop: `padding-inline: space-6` (24px). Line-height 1.625 en cuerpo. Fonts cargadas via Google Fonts + system fallbacks. **Date:** 2026-04-19
+- **Code quality:** Formatted con prettier (unchanged), eslint 5 warnings pre-existentes (any types en handlers pre-Sprint 4). Type-check sin errores en archivos modificados. **Date:** 2026-04-19
+- **Gate pendiente:** Screenshot review de Sofía para `/`, `/p/:slug` (con footnotes), y URL 404 antes de merge. Documentado en PR body. **Date:** 2026-04-19
